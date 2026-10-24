@@ -15,7 +15,7 @@ export default function SortableTaskCard({
   disabled,
 }: SortableTaskCardProps) {
   const { attributes, isDragging, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: card.id, disabled });
+    useSortable({ id: `card:${card.id}`, disabled });
 
   return (
     <article
