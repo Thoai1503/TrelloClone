@@ -12,6 +12,6 @@ With Cache Components enabled, request-time database work must sit behind a `Sus
 
 ## Workspace detail URLs and board ordering
 
-Workspace links now carry AES-GCM opaque tokens instead of exposing a workspace primary key. Server reads and reorder writes verify the mock user's workspace access independently; invalid tokens and inaccessible workspaces render as not found. Board order updates validate the complete active-board ID set and persist positions transactionally. The board row's existing `position` column is reused; no migration is needed.
+Workspace links now carry AES-GCM opaque tokens instead of exposing a workspace primary key. Server reads and reorder writes verify the authenticated session user's workspace access independently; invalid tokens and inaccessible workspaces render as not found. Board order updates validate the complete active-board ID set and persist positions transactionally. The board row's existing `position` column is reused; no migration is needed.
 
 The workspace detail view also supports appending boards. Creation re-checks workspace access in a database transaction, calculates a position after the last active board, and returns only serializable board fields to the UI.

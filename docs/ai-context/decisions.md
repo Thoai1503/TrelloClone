@@ -9,11 +9,12 @@
 
 ## Current-user boundary
 
-- Until authentication exists, user ID `1` is the explicit mock identity used by the server-side current-user provider.
-- The root provider passes a minimal serializable projection (`id`, `email`, `full_name`, `avatar_url`, derived `username`) into a local React context.
+- NextAuth Credentials authenticates email/password with bcrypt and stores the authenticated identity in its encrypted JWT HttpOnly cookie with a seven-day expiry. The current-user provider resolves the ID against Prisma on each request, provides the session through NextAuth `SessionProvider`, and passes a minimal serializable profile (`id`, `email`, `full_name`, `avatar_url`, derived `username`) into the local React context.
 - Client components read user information through `useUser()` rather than querying the user independently.
-- Replace the mock ID with a verified authenticated identity when implementing authentication; do not treat the hard-coded ID as an authorization mechanism.
-- `/` is the public product landing page; `/u/{username}/board` hosts the workspace list. The route username is a display slug derived from user data plus ID and is validated in the feature component, not used as an identity or authorization mechanism.
+- The workspace server actions resolve the same verified NextAuth session themselves and never trust a client-supplied user ID or username for authorization.
+- Email login compares the submitted password with the bcrypt hash stored in `user.password_hash`; return a generic credential error for unknown users and invalid passwords. `NEXTAUTH_SECRET` must be a random, private secret distinct from other encryption keys.
+- `/` is the public product landing page; `/u/{username}/board` hosts the workspace list. The route username is a display slug derived from user data plus ID and is validated against the session user, not used as an identity or authorization mechanism.
+- The `/` and `/login` server routes share `redirectAuthenticatedUser()`: authenticated users go to their own workspace list, while unauthenticated visitors see the landing page or login form respectively.
 
 ## Server-rendering behavior
 
@@ -24,7 +25,6 @@
 ## Workspace URL identifiers and board ordering
 
 - Workspace IDs in client-facing links are encrypted with AES-256-GCM using a random IV and authentication tag. The key is supplied by `WORKSPACE_ID_ENCRYPTION_KEY` and must be shared across app instances.
-- Encryption hides the raw identifier and detects token tampering; it is not an authorization mechanism. Each detail/read/write action checks the server-side mock user's ownership or membership.
-- Until authentication exists, workspace server actions use mock user ID `1` internally; they do not trust a user ID supplied by the browser.
+- Encryption hides the raw identifier and detects token tampering; it is not an authorization mechanism. Each detail/read/write action checks the authenticated session user's ownership or membership.
 - Board ordering uses `@dnd-kit/core`, `@dnd-kit/sortable`, and `@dnd-kit/utilities`; persisted order is represented by the board's existing `position` field, so this UI change requires no schema migration.
 - New boards append at the last active board position plus `1000` (or position `1000` for an empty workspace), calculated inside the create transaction so a new board appears immediately after the current last board.

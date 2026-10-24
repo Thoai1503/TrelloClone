@@ -24,7 +24,10 @@ export default function WorkspaceHome({
       <WorkspaceHeader onSearchChange={onSearchChange} search={search} user={user} />
 
       <div className="mx-auto flex min-h-[calc(100vh-68px)] max-w-[1440px]">
-        <WorkspaceSidebar workspaceCount={workspaces.length} />
+        <WorkspaceSidebar
+          workspaceCount={workspaces.length}
+          workspaceHref={`/u/${encodeURIComponent(user.username)}/board`}
+        />
 
         <main className="w-full min-w-0 px-5 py-8 sm:px-9 sm:py-10 lg:px-12">
           <div className="mx-auto max-w-6xl">

@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import { connection } from "next/server";
 
-import { findUserById } from "@/app/actions/user";
+import { getCurrentAuthSession, getCurrentUser } from "@/utils/auth-session";
 
-import { UserProvider } from "./UserProvider";
+import AuthProviders from "./AuthProviders";
 
 type CurrentUserProviderProps = {
   children: ReactNode;
@@ -11,7 +11,8 @@ type CurrentUserProviderProps = {
 
 export default async function CurrentUserProvider({ children }: CurrentUserProviderProps) {
   await connection();
-  const user = await findUserById(1);
+  const session = await getCurrentAuthSession();
+  const user = await getCurrentUser(session);
 
-  return <UserProvider user={user}>{children}</UserProvider>;
+  return <AuthProviders session={session} user={user}>{children}</AuthProviders>;
 }
