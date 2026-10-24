@@ -26,3 +26,4 @@
 - Encryption hides the raw identifier and detects token tampering; it is not an authorization mechanism. Each detail/read/write action checks the server-side mock user's ownership or membership.
 - Until authentication exists, workspace server actions use mock user ID `1` internally; they do not trust a user ID supplied by the browser.
 - Board ordering uses `@dnd-kit/core`, `@dnd-kit/sortable`, and `@dnd-kit/utilities`; persisted order is represented by the board's existing `position` field, so this UI change requires no schema migration.
+- New boards append at the last active board position plus `1000` (or position `1000` for an empty workspace), calculated inside the create transaction so a new board appears immediately after the current last board.
