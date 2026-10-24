@@ -7,7 +7,8 @@ Last verified: 2026-10-24.
 - The app is a Next.js 16 App Router project using React 19, TypeScript, Tailwind CSS 4, Prisma 7, and MySQL.
 - `app/layout.tsx` wraps routes in a server-side `CurrentUserProvider` and a client-side `UserProvider`.
 - Authentication is not implemented. `CurrentUserProvider` temporarily loads database user ID `1`.
-- The home route shows the user's active workspaces, including workspaces they created and workspaces where they have a membership row.
+- Usernames in workspace-list routes are stable slugs derived from the user's full name or email plus their ID; they are URL handles, not authentication credentials.
+- The root route (`/`) is the product introduction landing page. The user's workspace list is at `/u/{username}/board`, including workspaces they created and workspaces where they have a membership row.
 - Workspace loading, empty, missing-user, and query-error states are separate.
 - The home UI follows Atomic Design under `app/components/atoms`, `molecules`, `organisms`, and `templates`. Route-level workspace data and state are in `app/features/workspaces`.
 - Workspace cards link to an AES-256-GCM encrypted workspace identifier. The detail screen displays active boards in a horizontally scrollable, sortable `@dnd-kit` list and persists reordered positions.

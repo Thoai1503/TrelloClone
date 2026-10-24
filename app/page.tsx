@@ -1,5 +1,5 @@
-import WorkspacePageContent from "./features/workspaces/WorkspacePageContent";
+import LandingPageContent from "./features/landing/LandingPageContent";
 
 export default function Home() {
-  return <WorkspacePageContent />;
+  return <LandingPageContent />;
 }

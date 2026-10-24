@@ -12,7 +12,11 @@ import {
 } from "@/app/components/organisms";
 import { WorkspaceHome } from "@/app/components/templates";
 
-export default function WorkspacePageContent() {
+type WorkspacePageContentProps = {
+  username: string;
+};
+
+export default function WorkspacePageContent({ username }: WorkspacePageContentProps) {
   const user = useUser();
   const [workspaces, setWorkspaces] = useState<WorkspaceItem[]>([]);
   const [search, setSearch] = useState("");
@@ -56,7 +60,7 @@ export default function WorkspacePageContent() {
     };
   }, [retryCount, user]);
 
-  if (!user) {
+  if (!user || user.username !== username) {
     return <WorkspaceNotFoundState />;
   }
 
