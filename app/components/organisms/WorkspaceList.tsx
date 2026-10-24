@@ -42,10 +42,10 @@ export default function WorkspaceList({
 
       {filteredWorkspaces.length > 0 ? (
         <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {filteredWorkspaces.map((workspace) => (
+          {filteredWorkspaces.map((workspace, index) => (
             <WorkspaceCard
-              color={workspaceColors[Number(workspace.id) % workspaceColors.length]}
-              key={workspace.id}
+              color={workspaceColors[index % workspaceColors.length]}
+              key={workspace.encryptedId}
               workspace={workspace}
             />
           ))}

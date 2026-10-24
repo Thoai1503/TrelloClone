@@ -4,6 +4,8 @@
 - Keep changes focused; inspect the existing implementation and related docs before changing behavior.
 - Preserve the Server/Client Component boundary: database access belongs on the server, and client components receive serializable props or call server actions.
 - Do not import Prisma or database credentials into client components.
+- Treat encrypted URL identifiers as opaque references, not access control; verify ownership or membership for every read and mutation.
+- Keep encryption secrets in environment variables and never commit them.
 - Report data-loading failures explicitly. Do not turn errors into empty success states.
 - Keep UI components in the Atomic Design layer that matches their responsibility. Import only from the same or lower layers.
 - Update the relevant architecture or AI-context documentation when a verified design decision or system behavior changes.
@@ -19,6 +21,7 @@
 - `app/features/`: route-level feature orchestration, state, and data loading.
 - `app/types/`: shared serializable application data contracts.
 - `lib/`: server-side shared infrastructure, including the Prisma client.
+- `utils/`: reusable pure helpers and server-only identifier encryption/decryption.
 - `prisma/`: Prisma schema and migrations.
 - `generated/prisma/`: generated Prisma Client; never edit by hand.
 - `.github/instructions/`: scoped Copilot instructions.

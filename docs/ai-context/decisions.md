@@ -19,3 +19,10 @@
 - `next.config.ts` enables Cache Components and Partial Prefetching.
 - Request-time database access is awaited beneath a `Suspense` boundary; keep database-dependent content streamable.
 - Server actions return mapped serializable data to client components.
+
+## Workspace URL identifiers and board ordering
+
+- Workspace IDs in client-facing links are encrypted with AES-256-GCM using a random IV and authentication tag. The key is supplied by `WORKSPACE_ID_ENCRYPTION_KEY` and must be shared across app instances.
+- Encryption hides the raw identifier and detects token tampering; it is not an authorization mechanism. Each detail/read/write action checks the server-side mock user's ownership or membership.
+- Until authentication exists, workspace server actions use mock user ID `1` internally; they do not trust a user ID supplied by the browser.
+- Board ordering uses `@dnd-kit/core`, `@dnd-kit/sortable`, and `@dnd-kit/utilities`; persisted order is represented by the board's existing `position` field, so this UI change requires no schema migration.
