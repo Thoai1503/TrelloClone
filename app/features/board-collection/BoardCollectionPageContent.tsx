@@ -2,35 +2,31 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { findWorkspacesByUserId } from "@/app/actions/workspace";
+import { getAccessibleWorkspaces } from "@/app/actions/workspaces";
 import { useUser } from "@/app/providers/UserProvider";
 import { useWorkspaceSearch } from "@/app/providers/WorkspaceSearchProvider";
-import type { WorkspaceItem } from "@/app/types/workspace";
+import type { WorkspaceSummary } from "@/app/types/workspace";
+import { filterWorkspaceBoards } from "@/utils/filter-workspaces";
 import {
   WorkspaceErrorState,
-  WorkspaceHomeSkeleton,
+  BoardCollectionSkeleton,
   WorkspaceNotFoundState,
 } from "@/app/components/organisms";
-import { WorkspaceHome } from "@/app/components/templates";
+import { BoardCollectionPage } from "@/app/components/templates";
 
-type WorkspacePageContentProps = {
+type BoardCollectionPageContentProps = {
   username: string;
 };
 
-export default function WorkspacePageContent({ username }: WorkspacePageContentProps) {
+export default function BoardCollectionPageContent({ username }: BoardCollectionPageContentProps) {
   const user = useUser();
   const { search, setSearch, setWorkspaces: setSearchWorkspaces } = useWorkspaceSearch();
-  const [workspaces, setWorkspaces] = useState<WorkspaceItem[]>([]);
+  const [workspaces, setWorkspaces] = useState<WorkspaceSummary[]>([]);
   const [isLoading, setIsLoading] = useState(user !== null);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const filteredWorkspaces = useMemo(() => {
-    const query = search.trim().toLocaleLowerCase("vi");
-    if (!query) return workspaces;
-
-    return workspaces.filter((workspace) =>
-      `${workspace.name} ${workspace.description ?? ""}`.toLocaleLowerCase("vi").includes(query)
-    );
+    return filterWorkspaceBoards(workspaces, search);
   }, [search, workspaces]);
 
   useEffect(() => {
@@ -38,7 +34,7 @@ export default function WorkspacePageContent({ username }: WorkspacePageContentP
 
     let isCurrentRequest = true;
 
-    findWorkspacesByUserId()
+    getAccessibleWorkspaces()
       .then((result) => {
         if (isCurrentRequest) {
           setWorkspaces(result);
@@ -46,9 +42,9 @@ export default function WorkspacePageContent({ username }: WorkspacePageContentP
         }
       })
       .catch((cause: unknown) => {
-        console.error("Failed to load workspaces for the current user.", cause);
+        console.error("Failed to load the current user's board collection.", cause);
         if (isCurrentRequest) {
-          setError("Không thể tải workspace. Vui lòng thử lại.");
+          setError("Không thể tải các bảng. Vui lòng thử lại.");
         }
       })
       .finally(() => {
@@ -67,7 +63,7 @@ export default function WorkspacePageContent({ username }: WorkspacePageContentP
   }
 
   if (isLoading) {
-    return <WorkspaceHomeSkeleton />;
+    return <BoardCollectionSkeleton />;
   }
 
   if (error) {
@@ -84,7 +80,7 @@ export default function WorkspacePageContent({ username }: WorkspacePageContentP
   }
 
   return (
-    <WorkspaceHome
+    <BoardCollectionPage
       filteredWorkspaces={filteredWorkspaces}
       onSearchChange={setSearch}
       search={search}

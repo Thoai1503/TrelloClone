@@ -14,6 +14,8 @@
 ## Project structure
 
 - `app/`: Next.js App Router routes, root layout, global styles, server actions, and providers.
+- Organize server actions by domain model (`workspaces.ts`, `boards.ts`, `lists.ts`); keep each action module focused on its domain.
+- Keep domain contracts separated by model in `app/types/` (for example `workspace.ts` and `board.ts`), and name feature pages/components after the business entity they render.
 - `app/components/atoms/`: single-purpose UI primitives.
 - `app/components/molecules/`: small UI compositions built from atoms.
 - `app/components/organisms/`: feature-level UI sections built from atoms and molecules.

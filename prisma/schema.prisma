@@ -8,8 +8,15 @@ datasource db {
 }
 
 enum WorkspaceRole {
+  OWNER
   ADMIN
   MEMBER
+}
+
+enum BoardRole {
+  ADMIN
+  EDITOR
+  VIEWER
 }
 
 model user {
@@ -22,6 +29,7 @@ model user {
   updated_at    DateTime? @db.DateTime(6)
 
   workspace_members workspace_member[]
+  board_members     board_member[]
 }
 
 model workspace {
@@ -57,21 +65,53 @@ model workspace_member {
 }
 
 model board {
-  id           BigInt @id @default(autoincrement())
-  workspace_id BigInt @map("workspace_id")
-  created_by   BigInt @map("created_by")
+  id              BigInt    @id @default(autoincrement())
+  workspace_id    BigInt    @map("workspace_id")
+  created_by      BigInt    @map("created_by")
+  backgroundColor String    @default("#0c66e4") @map("background_color") @db.Char(7)
+  name            String    @db.VarChar(150)
+  description     String?   @db.Text
+  created_at      DateTime  @default(now()) @map("created_at") @db.DateTime(3)
+  updated_at      DateTime? @updatedAt @map("updated_at") @db.DateTime(3)
+  archived_at     DateTime? @map("archived_at") @db.DateTime(3)
 
-  name        String    @db.VarChar(150)
-  description String?   @db.Text
-  background  String?   @db.VarChar(500)
-  position    Decimal   @default(1000) @db.Decimal(20, 6)
-  created_at  DateTime  @default(now()) @map("created_at") @db.DateTime(3)
-  updated_at  DateTime?  @updatedAt @map("updated_at") @db.DateTime(3)
-  archived_at DateTime? @map("archived_at") @db.DateTime(3)
-
-  workspace workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  workspace     workspace      @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  board_members board_member[]
+  lists         list[]
 
   @@index([workspace_id, archived_at])
   @@index([created_by])
   @@map("board")
+}
+
+model board_member {
+  board_id BigInt    @map("board_id")
+  user_id  Int       @map("user_id") @db.UnsignedInt
+  role     BoardRole @default(EDITOR)
+
+  joined_at DateTime @default(now()) @map("joined_at") @db.DateTime(3)
+
+  board board @relation(fields: [board_id], references: [id], onDelete: Cascade)
+  user  user  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@id([board_id, user_id])
+  @@index([user_id])
+  @@map("board_members")
+}
+
+model list {
+  id       BigInt @id @default(autoincrement())
+  board_id BigInt @map("board_id")
+
+  name     String  @db.VarChar(150)
+  position Decimal @default(1000) @db.Decimal(20, 6)
+
+  created_at  DateTime  @default(now()) @map("created_at") @db.DateTime(3)
+  updated_at  DateTime? @updatedAt @map("updated_at") @db.DateTime(3)
+  archived_at DateTime? @map("archived_at") @db.DateTime(3)
+
+  board board @relation(fields: [board_id], references: [id], onDelete: Cascade)
+
+  @@index([board_id, position])
+  @@map("lists")
 }

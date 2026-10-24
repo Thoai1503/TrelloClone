@@ -1,16 +1,16 @@
 import { Suspense } from "react";
 
-import { WorkspaceHomeSkeleton } from "@/app/components/organisms";
-import WorkspaceListRouteContent from "@/app/features/workspaces/WorkspaceListRouteContent";
+import { BoardCollectionSkeleton } from "@/app/components/organisms";
+import BoardCollectionRouteContent from "@/app/features/board-collection/BoardCollectionRouteContent";
 
-type WorkspaceListPageProps = {
+type BoardCollectionRouteProps = {
   params: Promise<{ username: string }>;
 };
 
-export default function WorkspaceListPage({ params }: WorkspaceListPageProps) {
+export default function BoardCollectionRoute({ params }: BoardCollectionRouteProps) {
   return (
-    <Suspense fallback={<WorkspaceHomeSkeleton />}>
-      <WorkspaceListRouteContent params={params} />
+    <Suspense fallback={<BoardCollectionSkeleton />}>
+      <BoardCollectionRouteContent params={params} />
     </Suspense>
   );
 }

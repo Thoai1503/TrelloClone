@@ -10,8 +10,8 @@ The workspace listing originally used a mock user ID directly and queried from t
 
 With Cache Components enabled, request-time database work must sit behind a `Suspense` boundary. The root server provider uses `connection()` below that boundary so the route can keep its static shell and stream its dynamic content.
 
-## Workspace detail URLs and board ordering
+## Workspace/board URLs and board ordering
 
-Workspace links now carry AES-GCM opaque tokens instead of exposing a workspace primary key. Server reads and reorder writes verify the authenticated session user's workspace access independently; invalid tokens and inaccessible workspaces render as not found. Board order updates validate the complete active-board ID set and persist positions transactionally. The board row's existing `position` column is reused; no migration is needed.
+Workspace and board links use AES-GCM opaque tokens instead of exposing primary keys. Server reads and writes verify the authenticated session user's workspace or board access independently; invalid tokens and inaccessible resources render as not found. Board cards are not draggable; their displayed order follows the existing board `position` column.
 
-The workspace detail view also supports appending boards. Creation re-checks workspace access in a database transaction, calculates a position after the last active board, and returns only serializable board fields to the UI.
+The workspace list now shows boards under each workspace, supports board creation, and routes to `/board/{encryptedBoardId}`. Board detail loads active lists, supports appending a list after the current last position, and supports drag-and-drop ordering with persisted list positions. Domain modules use `workspaces.ts`, `boards.ts`, and `lists.ts` for server actions and separate `workspace.ts`/`board.ts` type contracts. Server actions verify the authenticated user has workspace or board access before reads and writes.

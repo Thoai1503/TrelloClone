@@ -9,20 +9,20 @@ import {
   type SetStateAction,
 } from "react";
 
-import type { WorkspaceItem } from "@/app/types/workspace";
+import type { WorkspaceSummary } from "@/app/types/workspace";
 
 type WorkspaceSearchContextValue = {
   search: string;
   setSearch: (value: string) => void;
-  workspaces: WorkspaceItem[];
-  setWorkspaces: Dispatch<SetStateAction<WorkspaceItem[]>>;
+  workspaces: WorkspaceSummary[];
+  setWorkspaces: Dispatch<SetStateAction<WorkspaceSummary[]>>;
 };
 
 const WorkspaceSearchContext = createContext<WorkspaceSearchContextValue | null>(null);
 
 export function WorkspaceSearchProvider({ children }: { children: ReactNode }) {
   const [search, setSearch] = useState("");
-  const [workspaces, setWorkspaces] = useState<WorkspaceItem[]>([]);
+  const [workspaces, setWorkspaces] = useState<WorkspaceSummary[]>([]);
 
   return (
     <WorkspaceSearchContext.Provider

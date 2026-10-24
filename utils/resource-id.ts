@@ -61,3 +61,11 @@ export function decryptWorkspaceId(token: string): bigint | null {
     return null;
   }
 }
+
+export function encryptBoardId(boardId: bigint | string): string {
+  return encryptWorkspaceId(boardId);
+}
+
+export function decryptBoardId(token: string): bigint | null {
+  return decryptWorkspaceId(token);
+}

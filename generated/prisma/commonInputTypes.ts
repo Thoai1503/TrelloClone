@@ -233,6 +233,23 @@ export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDecimalFilter<$PrismaModel>
 }
 
+export type EnumBoardRoleFilter<$PrismaModel = never> = {
+  equals?: $Enums.BoardRole | Prisma.EnumBoardRoleFieldRefInput<$PrismaModel>
+  in?: $Enums.BoardRole[]
+  notIn?: $Enums.BoardRole[]
+  not?: Prisma.NestedEnumBoardRoleFilter<$PrismaModel> | $Enums.BoardRole
+}
+
+export type EnumBoardRoleWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BoardRole | Prisma.EnumBoardRoleFieldRefInput<$PrismaModel>
+  in?: $Enums.BoardRole[]
+  notIn?: $Enums.BoardRole[]
+  not?: Prisma.NestedEnumBoardRoleWithAggregatesFilter<$PrismaModel> | $Enums.BoardRole
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBoardRoleFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBoardRoleFilter<$PrismaModel>
+}
+
 export type NestedIntFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
   in?: number[]
@@ -467,6 +484,23 @@ export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedDecimalFilter<$PrismaModel>
   _min?: Prisma.NestedDecimalFilter<$PrismaModel>
   _max?: Prisma.NestedDecimalFilter<$PrismaModel>
+}
+
+export type NestedEnumBoardRoleFilter<$PrismaModel = never> = {
+  equals?: $Enums.BoardRole | Prisma.EnumBoardRoleFieldRefInput<$PrismaModel>
+  in?: $Enums.BoardRole[]
+  notIn?: $Enums.BoardRole[]
+  not?: Prisma.NestedEnumBoardRoleFilter<$PrismaModel> | $Enums.BoardRole
+}
+
+export type NestedEnumBoardRoleWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BoardRole | Prisma.EnumBoardRoleFieldRefInput<$PrismaModel>
+  in?: $Enums.BoardRole[]
+  notIn?: $Enums.BoardRole[]
+  not?: Prisma.NestedEnumBoardRoleWithAggregatesFilter<$PrismaModel> | $Enums.BoardRole
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBoardRoleFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBoardRoleFilter<$PrismaModel>
 }
 
 

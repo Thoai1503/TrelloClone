@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useId, useState, type FormEvent } from "react";
 
 import { Button } from "../atoms";
 
@@ -10,6 +10,7 @@ type AddBoardCardProps = {
 };
 
 export default function AddBoardCard({ disabled, onAdd }: AddBoardCardProps) {
+  const inputId = useId();
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +33,7 @@ export default function AddBoardCard({ disabled, onAdd }: AddBoardCardProps) {
       setName("");
       setIsOpen(false);
     } catch (cause: unknown) {
-      console.error("Failed to create workspace board.", cause);
+      console.error("Failed to create board.", cause);
       setError("Không thể thêm bảng. Vui lòng thử lại.");
     } finally {
       setIsSubmitting(false);
@@ -42,12 +43,12 @@ export default function AddBoardCard({ disabled, onAdd }: AddBoardCardProps) {
   if (!isOpen) {
     return (
       <button
-        className="flex h-36 w-64 shrink-0 items-center justify-center rounded-xl border border-dashed border-white/50 bg-white/15 px-4 text-sm font-semibold text-white transition hover:border-white hover:bg-white/25 disabled:cursor-not-allowed disabled:opacity-60"
+        className="flex h-36 w-64 shrink-0 items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 text-sm font-semibold text-gray-700 transition hover:border-blue-400 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-60"
         disabled={disabled}
         onClick={() => setIsOpen(true)}
         type="button"
       >
-        + Thêm danh sách khác
+        + Thêm bảng
       </button>
     );
   }
@@ -57,14 +58,14 @@ export default function AddBoardCard({ disabled, onAdd }: AddBoardCardProps) {
       className="flex h-36 w-64 shrink-0 flex-col rounded-xl border border-gray-200 bg-white p-3 text-gray-900 shadow-sm"
       onSubmit={handleSubmit}
     >
-      <label className="sr-only" htmlFor="new-board-name">
+      <label className="sr-only"       htmlFor={inputId}>
         Tên bảng
       </label>
       <input
         autoFocus
         className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
         disabled={isSubmitting}
-        id="new-board-name"
+        id={inputId}
         maxLength={150}
         onChange={(event) => {
           setName(event.target.value);
