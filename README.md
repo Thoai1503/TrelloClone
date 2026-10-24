@@ -20,6 +20,27 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Prisma with MySQL
+
+Prisma is configured to use MySQL. Copy `.env.example` to `.env` and replace
+`USER` and `PASSWORD` with your MySQL credentials. Make sure the database
+`trello_clone` exists and the MySQL server is running.
+
+Generate Prisma Client after changing `prisma/schema.prisma`:
+
+```bash
+npm run db:generate
+```
+
+Create and apply a development migration after adding your Prisma models:
+
+```bash
+npm run db:migrate -- --name init
+```
+
+Import the shared Prisma Client instance from `@/lib/prisma` in server-side
+code. Do not import it into Client Components.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
