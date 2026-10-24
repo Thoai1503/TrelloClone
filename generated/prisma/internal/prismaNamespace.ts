@@ -740,6 +740,7 @@ export const WorkspaceScalarFieldEnum = {
   id: 'id',
   name: 'name',
   description: 'description',
+  backgroundColor: 'backgroundColor',
   created_by: 'created_by',
   created_at: 'created_at',
   updated_at: 'updated_at',
@@ -803,7 +804,8 @@ export type userOrderByRelevanceFieldEnum = (typeof userOrderByRelevanceFieldEnu
 
 export const workspaceOrderByRelevanceFieldEnum = {
   name: 'name',
-  description: 'description'
+  description: 'description',
+  backgroundColor: 'backgroundColor'
 } as const
 
 export type workspaceOrderByRelevanceFieldEnum = (typeof workspaceOrderByRelevanceFieldEnum)[keyof typeof workspaceOrderByRelevanceFieldEnum]

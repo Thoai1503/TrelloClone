@@ -25,13 +25,14 @@ model user {
 }
 
 model workspace {
-  id          BigInt    @id @default(autoincrement())
-  name        String    @db.VarChar(150)
-  description String?   @db.Text
-  created_by  BigInt    @map("created_by")
-  created_at  DateTime  @default(now()) @map("created_at") @db.DateTime(3)
-  updated_at  DateTime? @updatedAt @map("updated_at") @db.DateTime(3)
-  archived_at DateTime? @map("archived_at") @db.DateTime(3)
+  id              BigInt    @id @default(autoincrement())
+  name            String    @db.VarChar(150)
+  description     String?   @db.Text
+  backgroundColor String    @default("#0c66e4") @map("background_color") @db.Char(7)
+  created_by      BigInt    @map("created_by")
+  created_at      DateTime  @default(now()) @map("created_at") @db.DateTime(3)
+  updated_at      DateTime? @updatedAt @map("updated_at") @db.DateTime(3)
+  archived_at     DateTime? @map("archived_at") @db.DateTime(3)
 
   members workspace_member[]
   boards  board[]

@@ -17,10 +17,11 @@ app/
 ├── layout.tsx                  Root document and provider boundary
 ├── actions/                    Server actions for data access
 ├── providers/                  Shared server/client React context
+├── (user)/                     Authenticated workspace route group and shared user header
 ├── features/                   Route-level feature state and orchestration
 ├── types/                      Shared serializable application data contracts
-├── u/[username]/board/          Current user's workspace list
-├── workspaces/[workspaceId]/   Workspace detail route with opaque ID param
+├── (user)/u/[username]/board/   Current user's workspace list
+├── (user)/workspaces/[workspaceId]/ Workspace detail route with opaque ID param
 └── components/
     ├── atoms/                  UI primitives
     ├── molecules/              Small compositions of atoms
@@ -36,6 +37,8 @@ prisma/
 ```
 
 The component dependency direction is one-way: atoms may not depend on higher layers; molecules compose atoms; organisms compose atoms and molecules; templates compose lower layers. Feature orchestration lives outside the visual component hierarchy.
+
+The `(user)` route-group layout renders one shared account header for the workspace list and workspace detail routes. Page-specific search and workspace navigation remain in their respective page content.
 
 The login route uses a Formik client form and NextAuth's Credentials provider to verify bcrypt password hashes. NextAuth stores a seven-day encrypted JWT session in its HttpOnly cookie. The server-side current-user provider passes the session into `SessionProvider`, reloads the user profile from Prisma, and supplies that profile to the local `UserProvider`. Workspace server actions derive authorization from this session rather than accepting a user ID from the browser. Google sign-in remains presentation-only.
 

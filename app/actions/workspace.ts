@@ -4,6 +4,7 @@ import { decryptWorkspaceId, encryptWorkspaceId } from "@/utils/workspace-id";
 import { getCurrentUser } from "@/utils/auth-session";
 import { prisma } from "@/lib/prisma";
 import type { WorkspaceBoard, WorkspaceItem } from "@/app/types/workspace";
+import { isWorkspaceColor } from "@/utils/workspace-colors";
 
 export async function findWorkspacesByUserId(): Promise<WorkspaceItem[]> {
   const currentUser = await getCurrentUser();
@@ -25,6 +26,7 @@ export async function findWorkspacesByUserId(): Promise<WorkspaceItem[]> {
       id: true,
       name: true,
       description: true,
+      backgroundColor: true,
       created_by: true,
       members: {
         where: { user_id: userId },
@@ -42,6 +44,7 @@ export async function findWorkspacesByUserId(): Promise<WorkspaceItem[]> {
     encryptedId: encryptWorkspaceId(workspace.id),
     name: workspace.name,
     description: workspace.description,
+    backgroundColor: workspace.backgroundColor,
     memberCount:
       workspace._count.members +
       (workspace.created_by === createdById && workspace.members.length === 0
@@ -53,6 +56,56 @@ export async function findWorkspacesByUserId(): Promise<WorkspaceItem[]> {
         ? "ADMIN"
         : (workspace.members[0]?.role ?? "MEMBER"),
   }));
+}
+
+export async function createWorkspace(
+  name: string,
+  backgroundColor: string,
+): Promise<Pick<WorkspaceItem, "encryptedId" | "name" | "backgroundColor"> | null> {
+  if (
+    typeof name !== "string" ||
+    typeof backgroundColor !== "string" ||
+    !isWorkspaceColor(backgroundColor)
+  ) {
+    return null;
+  }
+
+  const trimmedName = name.trim();
+  if (!trimmedName || trimmedName.length > 150) {
+    return null;
+  }
+
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    return null;
+  }
+
+  const workspace = await prisma.$transaction(async (transaction) => {
+    const createdWorkspace = await transaction.workspace.create({
+      data: {
+        name: trimmedName,
+        backgroundColor,
+        created_by: BigInt(currentUser.id),
+      },
+      select: { id: true, name: true, backgroundColor: true },
+    });
+
+    await transaction.workspace_member.create({
+      data: {
+        workspace_id: createdWorkspace.id,
+        user_id: currentUser.id,
+        role: "ADMIN",
+      },
+    });
+
+    return createdWorkspace;
+  });
+
+  return {
+    encryptedId: encryptWorkspaceId(workspace.id),
+    name: workspace.name,
+    backgroundColor: workspace.backgroundColor,
+  };
 }
 
 export async function findWorkspaceByEncryptedId(token: string) {
@@ -85,6 +138,7 @@ export async function findWorkspaceByEncryptedId(token: string) {
       id: true,
       name: true,
       description: true,
+      backgroundColor: true,
       boards: {
         where: { archived_at: null },
         select: {
@@ -106,6 +160,7 @@ export async function findWorkspaceByEncryptedId(token: string) {
     id: token,
     name: workspace.name,
     description: workspace.description,
+    backgroundColor: workspace.backgroundColor,
     boards: workspace.boards.map((board) => ({
       id: board.id.toString(),
       name: board.name,

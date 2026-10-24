@@ -5,10 +5,9 @@ import { Icon } from "../atoms";
 
 type WorkspaceCardProps = {
   workspace: WorkspaceItem;
-  color: string;
 };
 
-export default function WorkspaceCard({ workspace, color }: WorkspaceCardProps) {
+export default function WorkspaceCard({ workspace }: WorkspaceCardProps) {
   const initial = workspace.name.trim().charAt(0).toLocaleUpperCase("vi") || "?";
 
   return (
@@ -17,7 +16,7 @@ export default function WorkspaceCard({ workspace, color }: WorkspaceCardProps) 
       href={`/workspaces/${workspace.encryptedId}`}
     >
       <article>
-        <div className={`relative h-[92px] bg-gradient-to-br ${color} p-4`}>
+        <div className="relative h-[92px] p-4" style={{ backgroundColor: workspace.backgroundColor }}>
           <div className="absolute inset-0 opacity-20 [background-image:radial-gradient(circle_at_20%_20%,white_0,transparent_35%),radial-gradient(circle_at_85%_80%,white_0,transparent_34%)]" />
           <div className="relative flex h-full items-start justify-between">
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-white/20 text-xl font-bold text-white ring-1 ring-white/30 backdrop-blur-sm">

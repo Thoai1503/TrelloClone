@@ -1,7 +1,6 @@
 export default function WorkspaceHomeSkeleton() {
   return (
-    <div className="min-h-screen bg-[#f7f8fa]">
-      <header className="h-[68px] border-b border-gray-200 bg-white" />
+    <div className="min-h-[calc(100vh-68px)] bg-[#f7f8fa]">
       <div className="mx-auto flex min-h-[calc(100vh-68px)] max-w-[1440px]">
         <aside className="hidden w-60 shrink-0 border-r border-gray-200 bg-white md:block" />
         <main className="w-full p-6 sm:p-10">

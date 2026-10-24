@@ -2,7 +2,7 @@ import type { CurrentUser } from "@/app/types/user";
 import type { WorkspaceItem } from "@/app/types/workspace";
 
 import { WorkspaceCounter } from "../molecules";
-import { WorkspaceHeader, WorkspaceList, WorkspaceSidebar } from "../organisms";
+import { WorkspaceList, WorkspaceSidebar } from "../organisms";
 
 type WorkspaceHomeProps = {
   user: CurrentUser;
@@ -20,9 +20,7 @@ export default function WorkspaceHome({
   onSearchChange,
 }: WorkspaceHomeProps) {
   return (
-    <div className="min-h-screen bg-[#f7f8fa] text-gray-900">
-      <WorkspaceHeader onSearchChange={onSearchChange} search={search} user={user} />
-
+    <div className="min-h-[calc(100vh-68px)] bg-[#f7f8fa] text-gray-900">
       <div className="mx-auto flex min-h-[calc(100vh-68px)] max-w-[1440px]">
         <WorkspaceSidebar
           workspaceCount={workspaces.length}

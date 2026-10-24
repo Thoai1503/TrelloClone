@@ -230,7 +230,7 @@ export type BoardGroupByOutputType = {
   background: string | null
   position: runtime.Decimal
   created_at: Date
-  updated_at: Date
+  updated_at: Date | null
   archived_at: Date | null
   _count: BoardCountAggregateOutputType | null
   _avg: BoardAvgAggregateOutputType | null
@@ -266,7 +266,7 @@ export type boardWhereInput = {
   background?: Prisma.StringNullableFilter<"board"> | string | null
   position?: Prisma.DecimalFilter<"board"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFilter<"board"> | Date | string
-  updated_at?: Prisma.DateTimeFilter<"board"> | Date | string
+  updated_at?: Prisma.DateTimeNullableFilter<"board"> | Date | string | null
   archived_at?: Prisma.DateTimeNullableFilter<"board"> | Date | string | null
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.workspaceWhereInput>
 }
@@ -280,7 +280,7 @@ export type boardOrderByWithRelationInput = {
   background?: Prisma.SortOrderInput | Prisma.SortOrder
   position?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
-  updated_at?: Prisma.SortOrder
+  updated_at?: Prisma.SortOrderInput | Prisma.SortOrder
   archived_at?: Prisma.SortOrderInput | Prisma.SortOrder
   workspace?: Prisma.workspaceOrderByWithRelationInput
   _relevance?: Prisma.boardOrderByRelevanceInput
@@ -298,7 +298,7 @@ export type boardWhereUniqueInput = Prisma.AtLeast<{
   background?: Prisma.StringNullableFilter<"board"> | string | null
   position?: Prisma.DecimalFilter<"board"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFilter<"board"> | Date | string
-  updated_at?: Prisma.DateTimeFilter<"board"> | Date | string
+  updated_at?: Prisma.DateTimeNullableFilter<"board"> | Date | string | null
   archived_at?: Prisma.DateTimeNullableFilter<"board"> | Date | string | null
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.workspaceWhereInput>
 }, "id">
@@ -312,7 +312,7 @@ export type boardOrderByWithAggregationInput = {
   background?: Prisma.SortOrderInput | Prisma.SortOrder
   position?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
-  updated_at?: Prisma.SortOrder
+  updated_at?: Prisma.SortOrderInput | Prisma.SortOrder
   archived_at?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.boardCountOrderByAggregateInput
   _avg?: Prisma.boardAvgOrderByAggregateInput
@@ -333,7 +333,7 @@ export type boardScalarWhereWithAggregatesInput = {
   background?: Prisma.StringNullableWithAggregatesFilter<"board"> | string | null
   position?: Prisma.DecimalWithAggregatesFilter<"board"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeWithAggregatesFilter<"board"> | Date | string
-  updated_at?: Prisma.DateTimeWithAggregatesFilter<"board"> | Date | string
+  updated_at?: Prisma.DateTimeNullableWithAggregatesFilter<"board"> | Date | string | null
   archived_at?: Prisma.DateTimeNullableWithAggregatesFilter<"board"> | Date | string | null
 }
 
@@ -345,7 +345,7 @@ export type boardCreateInput = {
   background?: string | null
   position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
-  updated_at?: Date | string
+  updated_at?: Date | string | null
   archived_at?: Date | string | null
   workspace: Prisma.workspaceCreateNestedOneWithoutBoardsInput
 }
@@ -359,7 +359,7 @@ export type boardUncheckedCreateInput = {
   background?: string | null
   position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
-  updated_at?: Date | string
+  updated_at?: Date | string | null
   archived_at?: Date | string | null
 }
 
@@ -371,7 +371,7 @@ export type boardUpdateInput = {
   background?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   workspace?: Prisma.workspaceUpdateOneRequiredWithoutBoardsNestedInput
 }
@@ -385,7 +385,7 @@ export type boardUncheckedUpdateInput = {
   background?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -398,7 +398,7 @@ export type boardCreateManyInput = {
   background?: string | null
   position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
-  updated_at?: Date | string
+  updated_at?: Date | string | null
   archived_at?: Date | string | null
 }
 
@@ -410,7 +410,7 @@ export type boardUpdateManyMutationInput = {
   background?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -423,7 +423,7 @@ export type boardUncheckedUpdateManyInput = {
   background?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -554,7 +554,7 @@ export type boardCreateWithoutWorkspaceInput = {
   background?: string | null
   position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
-  updated_at?: Date | string
+  updated_at?: Date | string | null
   archived_at?: Date | string | null
 }
 
@@ -566,7 +566,7 @@ export type boardUncheckedCreateWithoutWorkspaceInput = {
   background?: string | null
   position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
-  updated_at?: Date | string
+  updated_at?: Date | string | null
   archived_at?: Date | string | null
 }
 
@@ -608,7 +608,7 @@ export type boardScalarWhereInput = {
   background?: Prisma.StringNullableFilter<"board"> | string | null
   position?: Prisma.DecimalFilter<"board"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFilter<"board"> | Date | string
-  updated_at?: Prisma.DateTimeFilter<"board"> | Date | string
+  updated_at?: Prisma.DateTimeNullableFilter<"board"> | Date | string | null
   archived_at?: Prisma.DateTimeNullableFilter<"board"> | Date | string | null
 }
 
@@ -620,7 +620,7 @@ export type boardCreateManyWorkspaceInput = {
   background?: string | null
   position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
-  updated_at?: Date | string
+  updated_at?: Date | string | null
   archived_at?: Date | string | null
 }
 
@@ -632,7 +632,7 @@ export type boardUpdateWithoutWorkspaceInput = {
   background?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -644,7 +644,7 @@ export type boardUncheckedUpdateWithoutWorkspaceInput = {
   background?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -656,7 +656,7 @@ export type boardUncheckedUpdateManyWithoutWorkspaceInput = {
   background?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -710,7 +710,7 @@ export type $boardPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     background: string | null
     position: runtime.Decimal
     created_at: Date
-    updated_at: Date
+    updated_at: Date | null
     archived_at: Date | null
   }, ExtArgs["result"]["board"]>
   composites: {}

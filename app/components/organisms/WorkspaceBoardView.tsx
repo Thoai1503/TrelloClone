@@ -26,8 +26,8 @@ import type { WorkspaceBoard, WorkspaceDetail } from "@/app/types/workspace";
 import { useUser } from "@/app/providers/UserProvider";
 import { getWorkspaceBoardBackground } from "@/utils/workspace-background";
 
-import { Avatar, Button, Icon } from "../atoms";
-import { AddBoardCard, SignOutButton, SortableBoardCard } from "../molecules";
+import { Button, Icon } from "../atoms";
+import { AddBoardCard, SortableBoardCard } from "../molecules";
 
 type WorkspaceBoardViewProps = {
   workspace: WorkspaceDetail;
@@ -37,8 +37,6 @@ export default function WorkspaceBoardView({
   workspace,
 }: WorkspaceBoardViewProps) {
   const user = useUser();
-  const displayName =
-    user?.full_name?.trim() || user?.email || "Tài khoản demo";
   const [boards, setBoards] = useState(workspace.boards);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -90,8 +88,16 @@ export default function WorkspaceBoardView({
   }
 
   return (
-    <main className="flex h-screen flex-col overflow-hidden bg-[#0c66e4] text-white">
-      <header className="flex h-14 shrink-0 items-center justify-between border-b border-white/15 bg-[#0757c7]/90 px-4 backdrop-blur-sm sm:px-6">
+    <main
+      className="flex h-[calc(100vh-68px)] flex-col overflow-hidden text-white"
+      style={{ backgroundColor: workspace.backgroundColor }}
+    >
+      <div
+        className="flex h-14 shrink-0 items-center border-b border-white/15 px-4 backdrop-blur-sm sm:px-6"
+        style={{
+          backgroundColor: `color-mix(in srgb, ${workspace.backgroundColor} 85%, black)`,
+        }}
+      >
         <div className="flex min-w-0 items-center gap-3">
           <Link
             aria-label="Quay lại danh sách workspace"
@@ -108,14 +114,7 @@ export default function WorkspaceBoardView({
             <p className="text-xs text-white/70">Không gian làm việc</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="hidden max-w-48 truncate text-sm text-white/80 sm:inline">
-            {displayName}
-          </span>
-          <Avatar label={displayName} userId={user?.id} />
-          <SignOutButton className="rounded-md px-3 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/15" />
-        </div>
-      </header>
+      </div>
 
       <div className="min-h-0 flex-1 overflow-y-hidden">
         <div className="flex h-full min-w-0 flex-col p-5 sm:p-7">
