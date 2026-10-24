@@ -402,7 +402,9 @@ export const ModelName = {
   workspace_member: 'workspace_member',
   board: 'board',
   board_member: 'board_member',
-  list: 'list'
+  list: 'list',
+  card: 'card',
+  card_member: 'card_member'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -418,7 +420,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "workspace" | "workspace_member" | "board" | "board_member" | "list"
+    modelProps: "user" | "workspace" | "workspace_member" | "board" | "board_member" | "list" | "card" | "card_member"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -818,6 +820,138 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    card: {
+      payload: Prisma.$cardPayload<ExtArgs>
+      fields: Prisma.cardFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.cardFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$cardPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.cardFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$cardPayload>
+        }
+        findFirst: {
+          args: Prisma.cardFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$cardPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.cardFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$cardPayload>
+        }
+        findMany: {
+          args: Prisma.cardFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$cardPayload>[]
+        }
+        create: {
+          args: Prisma.cardCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$cardPayload>
+        }
+        createMany: {
+          args: Prisma.cardCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.cardDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$cardPayload>
+        }
+        update: {
+          args: Prisma.cardUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$cardPayload>
+        }
+        deleteMany: {
+          args: Prisma.cardDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.cardUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.cardUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$cardPayload>
+        }
+        aggregate: {
+          args: Prisma.CardAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCard>
+        }
+        groupBy: {
+          args: Prisma.cardGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CardGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.cardCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CardCountAggregateOutputType> | number
+        }
+      }
+    }
+    card_member: {
+      payload: Prisma.$card_memberPayload<ExtArgs>
+      fields: Prisma.card_memberFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.card_memberFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$card_memberPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.card_memberFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$card_memberPayload>
+        }
+        findFirst: {
+          args: Prisma.card_memberFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$card_memberPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.card_memberFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$card_memberPayload>
+        }
+        findMany: {
+          args: Prisma.card_memberFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$card_memberPayload>[]
+        }
+        create: {
+          args: Prisma.card_memberCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$card_memberPayload>
+        }
+        createMany: {
+          args: Prisma.card_memberCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.card_memberDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$card_memberPayload>
+        }
+        update: {
+          args: Prisma.card_memberUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$card_memberPayload>
+        }
+        deleteMany: {
+          args: Prisma.card_memberDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.card_memberUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.card_memberUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$card_memberPayload>
+        }
+        aggregate: {
+          args: Prisma.Card_memberAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCard_member>
+        }
+        groupBy: {
+          args: Prisma.card_memberGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Card_memberGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.card_memberCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Card_memberCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -901,7 +1035,6 @@ export const BoardScalarFieldEnum = {
   backgroundColor: 'backgroundColor',
   name: 'name',
   description: 'description',
-  position: 'position',
   created_at: 'created_at',
   updated_at: 'updated_at',
   archived_at: 'archived_at'
@@ -931,6 +1064,33 @@ export const ListScalarFieldEnum = {
 } as const
 
 export type ListScalarFieldEnum = (typeof ListScalarFieldEnum)[keyof typeof ListScalarFieldEnum]
+
+
+export const CardScalarFieldEnum = {
+  id: 'id',
+  list_id: 'list_id',
+  created_by: 'created_by',
+  title: 'title',
+  description: 'description',
+  position: 'position',
+  priority: 'priority',
+  due_date: 'due_date',
+  completed_at: 'completed_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  archived_at: 'archived_at'
+} as const
+
+export type CardScalarFieldEnum = (typeof CardScalarFieldEnum)[keyof typeof CardScalarFieldEnum]
+
+
+export const Card_memberScalarFieldEnum = {
+  card_id: 'card_id',
+  user_id: 'user_id',
+  assigned_at: 'assigned_at'
+} as const
+
+export type Card_memberScalarFieldEnum = (typeof Card_memberScalarFieldEnum)[keyof typeof Card_memberScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -984,6 +1144,14 @@ export const listOrderByRelevanceFieldEnum = {
 export type listOrderByRelevanceFieldEnum = (typeof listOrderByRelevanceFieldEnum)[keyof typeof listOrderByRelevanceFieldEnum]
 
 
+export const cardOrderByRelevanceFieldEnum = {
+  title: 'title',
+  description: 'description'
+} as const
+
+export type cardOrderByRelevanceFieldEnum = (typeof cardOrderByRelevanceFieldEnum)[keyof typeof cardOrderByRelevanceFieldEnum]
+
+
 
 /**
  * Field references
@@ -1026,6 +1194,13 @@ export type EnumWorkspaceRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
 
 
 /**
+ * Reference to a field of type 'BoardRole'
+ */
+export type EnumBoardRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BoardRole'>
+    
+
+
+/**
  * Reference to a field of type 'Decimal'
  */
 export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
@@ -1033,9 +1208,9 @@ export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
- * Reference to a field of type 'BoardRole'
+ * Reference to a field of type 'CardPriority'
  */
-export type EnumBoardRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BoardRole'>
+export type EnumCardPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CardPriority'>
     
 
 
@@ -1202,6 +1377,8 @@ export type GlobalOmitConfig = {
   board?: Prisma.boardOmit
   board_member?: Prisma.board_memberOmit
   list?: Prisma.listOmit
+  card?: Prisma.cardOmit
+  card_member?: Prisma.card_memberOmit
 }
 
 /* Types for Logging */

@@ -1,9 +1,6 @@
 "use server";
 
-import {
-  encryptBoardId,
-  encryptWorkspaceId,
-} from "@/utils/resource-id";
+import { encryptBoardId, encryptWorkspaceId } from "@/utils/resource-id";
 import { getCurrentUser } from "@/utils/auth-session";
 import { prisma } from "@/lib/prisma";
 import type { WorkspaceSummary } from "@/app/types/workspace";
@@ -69,7 +66,7 @@ export async function getAccessibleWorkspaces(): Promise<WorkspaceSummary[]> {
             },
           },
         },
-        orderBy: [{ position: "asc" }, { id: "asc" }],
+        orderBy: [{ created_at: "asc" }, { id: "asc" }],
       },
     },
     orderBy: { updated_at: "desc" },
@@ -106,7 +103,10 @@ export async function getAccessibleWorkspaces(): Promise<WorkspaceSummary[]> {
 export async function createWorkspace(
   name: string,
   backgroundColor: string,
-): Promise<Pick<WorkspaceSummary, "encryptedId" | "name" | "backgroundColor"> | null> {
+): Promise<Pick<
+  WorkspaceSummary,
+  "encryptedId" | "name" | "backgroundColor"
+> | null> {
   if (
     typeof name !== "string" ||
     typeof backgroundColor !== "string" ||

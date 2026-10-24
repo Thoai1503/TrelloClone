@@ -56,7 +56,9 @@ export const ModelName = {
   workspace_member: 'workspace_member',
   board: 'board',
   board_member: 'board_member',
-  list: 'list'
+  list: 'list',
+  card: 'card',
+  card_member: 'card_member'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -119,7 +121,6 @@ export const BoardScalarFieldEnum = {
   backgroundColor: 'backgroundColor',
   name: 'name',
   description: 'description',
-  position: 'position',
   created_at: 'created_at',
   updated_at: 'updated_at',
   archived_at: 'archived_at'
@@ -149,6 +150,33 @@ export const ListScalarFieldEnum = {
 } as const
 
 export type ListScalarFieldEnum = (typeof ListScalarFieldEnum)[keyof typeof ListScalarFieldEnum]
+
+
+export const CardScalarFieldEnum = {
+  id: 'id',
+  list_id: 'list_id',
+  created_by: 'created_by',
+  title: 'title',
+  description: 'description',
+  position: 'position',
+  priority: 'priority',
+  due_date: 'due_date',
+  completed_at: 'completed_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  archived_at: 'archived_at'
+} as const
+
+export type CardScalarFieldEnum = (typeof CardScalarFieldEnum)[keyof typeof CardScalarFieldEnum]
+
+
+export const Card_memberScalarFieldEnum = {
+  card_id: 'card_id',
+  user_id: 'user_id',
+  assigned_at: 'assigned_at'
+} as const
+
+export type Card_memberScalarFieldEnum = (typeof Card_memberScalarFieldEnum)[keyof typeof Card_memberScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -200,4 +228,12 @@ export const listOrderByRelevanceFieldEnum = {
 } as const
 
 export type listOrderByRelevanceFieldEnum = (typeof listOrderByRelevanceFieldEnum)[keyof typeof listOrderByRelevanceFieldEnum]
+
+
+export const cardOrderByRelevanceFieldEnum = {
+  title: 'title',
+  description: 'description'
+} as const
+
+export type cardOrderByRelevanceFieldEnum = (typeof cardOrderByRelevanceFieldEnum)[keyof typeof cardOrderByRelevanceFieldEnum]
 
