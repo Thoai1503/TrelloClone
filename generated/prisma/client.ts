@@ -61,3 +61,13 @@ export type workspace_member = Prisma.workspace_memberModel
  * 
  */
 export type board = Prisma.boardModel
+/**
+ * Model board_member
+ * 
+ */
+export type board_member = Prisma.board_memberModel
+/**
+ * Model list
+ * 
+ */
+export type list = Prisma.listModel

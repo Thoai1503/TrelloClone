@@ -400,7 +400,9 @@ export const ModelName = {
   user: 'user',
   workspace: 'workspace',
   workspace_member: 'workspace_member',
-  board: 'board'
+  board: 'board',
+  board_member: 'board_member',
+  list: 'list'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -416,7 +418,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "workspace" | "workspace_member" | "board"
+    modelProps: "user" | "workspace" | "workspace_member" | "board" | "board_member" | "list"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -684,6 +686,138 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    board_member: {
+      payload: Prisma.$board_memberPayload<ExtArgs>
+      fields: Prisma.board_memberFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.board_memberFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$board_memberPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.board_memberFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$board_memberPayload>
+        }
+        findFirst: {
+          args: Prisma.board_memberFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$board_memberPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.board_memberFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$board_memberPayload>
+        }
+        findMany: {
+          args: Prisma.board_memberFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$board_memberPayload>[]
+        }
+        create: {
+          args: Prisma.board_memberCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$board_memberPayload>
+        }
+        createMany: {
+          args: Prisma.board_memberCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.board_memberDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$board_memberPayload>
+        }
+        update: {
+          args: Prisma.board_memberUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$board_memberPayload>
+        }
+        deleteMany: {
+          args: Prisma.board_memberDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.board_memberUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.board_memberUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$board_memberPayload>
+        }
+        aggregate: {
+          args: Prisma.Board_memberAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBoard_member>
+        }
+        groupBy: {
+          args: Prisma.board_memberGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Board_memberGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.board_memberCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Board_memberCountAggregateOutputType> | number
+        }
+      }
+    }
+    list: {
+      payload: Prisma.$listPayload<ExtArgs>
+      fields: Prisma.listFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.listFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$listPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.listFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$listPayload>
+        }
+        findFirst: {
+          args: Prisma.listFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$listPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.listFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$listPayload>
+        }
+        findMany: {
+          args: Prisma.listFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$listPayload>[]
+        }
+        create: {
+          args: Prisma.listCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$listPayload>
+        }
+        createMany: {
+          args: Prisma.listCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.listDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$listPayload>
+        }
+        update: {
+          args: Prisma.listUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$listPayload>
+        }
+        deleteMany: {
+          args: Prisma.listDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.listUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.listUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$listPayload>
+        }
+        aggregate: {
+          args: Prisma.ListAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateList>
+        }
+        groupBy: {
+          args: Prisma.listGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ListGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.listCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ListCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -764,9 +898,9 @@ export const BoardScalarFieldEnum = {
   id: 'id',
   workspace_id: 'workspace_id',
   created_by: 'created_by',
+  backgroundColor: 'backgroundColor',
   name: 'name',
   description: 'description',
-  background: 'background',
   position: 'position',
   created_at: 'created_at',
   updated_at: 'updated_at',
@@ -774,6 +908,29 @@ export const BoardScalarFieldEnum = {
 } as const
 
 export type BoardScalarFieldEnum = (typeof BoardScalarFieldEnum)[keyof typeof BoardScalarFieldEnum]
+
+
+export const Board_memberScalarFieldEnum = {
+  board_id: 'board_id',
+  user_id: 'user_id',
+  role: 'role',
+  joined_at: 'joined_at'
+} as const
+
+export type Board_memberScalarFieldEnum = (typeof Board_memberScalarFieldEnum)[keyof typeof Board_memberScalarFieldEnum]
+
+
+export const ListScalarFieldEnum = {
+  id: 'id',
+  board_id: 'board_id',
+  name: 'name',
+  position: 'position',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  archived_at: 'archived_at'
+} as const
+
+export type ListScalarFieldEnum = (typeof ListScalarFieldEnum)[keyof typeof ListScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -812,12 +969,19 @@ export type workspaceOrderByRelevanceFieldEnum = (typeof workspaceOrderByRelevan
 
 
 export const boardOrderByRelevanceFieldEnum = {
+  backgroundColor: 'backgroundColor',
   name: 'name',
-  description: 'description',
-  background: 'background'
+  description: 'description'
 } as const
 
 export type boardOrderByRelevanceFieldEnum = (typeof boardOrderByRelevanceFieldEnum)[keyof typeof boardOrderByRelevanceFieldEnum]
+
+
+export const listOrderByRelevanceFieldEnum = {
+  name: 'name'
+} as const
+
+export type listOrderByRelevanceFieldEnum = (typeof listOrderByRelevanceFieldEnum)[keyof typeof listOrderByRelevanceFieldEnum]
 
 
 
@@ -865,6 +1029,13 @@ export type EnumWorkspaceRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'Decimal'
  */
 export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+/**
+ * Reference to a field of type 'BoardRole'
+ */
+export type EnumBoardRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BoardRole'>
     
 
 
@@ -1029,6 +1200,8 @@ export type GlobalOmitConfig = {
   workspace?: Prisma.workspaceOmit
   workspace_member?: Prisma.workspace_memberOmit
   board?: Prisma.boardOmit
+  board_member?: Prisma.board_memberOmit
+  list?: Prisma.listOmit
 }
 
 /* Types for Logging */

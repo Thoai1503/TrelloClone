@@ -3,21 +3,25 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { createWorkspace } from "@/app/actions/workspace";
+import { createBoard } from "@/app/actions/boards";
 import { useWorkspaceSearch } from "@/app/providers/WorkspaceSearchProvider";
 import { WORKSPACE_COLORS } from "@/utils/workspace-colors";
 
 import { Button, Icon } from "../atoms";
 
-export default function CreateWorkspaceDialog() {
+export default function CreateBoardDialog() {
   const router = useRouter();
-  const { setWorkspaces } = useWorkspaceSearch();
+  const { workspaces } = useWorkspaceSearch();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState("");
+  const [workspaceId, setWorkspaceId] = useState("");
   const [backgroundColor, setBackgroundColor] = useState<string>(WORKSPACE_COLORS[0].value);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const manageableWorkspaces = workspaces.filter(
+    (workspace) => workspace.canManageBoards,
+  );
 
   useEffect(() => {
     if (!isOpen) return;
@@ -49,29 +53,22 @@ export default function CreateWorkspaceDialog() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+    if (!workspaceId) {
+      setError("Vui lòng chọn workspace.");
+      return;
+    }
     setIsSubmitting(true);
 
     try {
-      const workspace = await createWorkspace(name, backgroundColor);
-      if (!workspace) {
-        setError("Không thể tạo workspace. Hãy kiểm tra tên workspace và đăng nhập lại.");
+      const board = await createBoard(workspaceId, name, backgroundColor);
+      if (!board) {
+        setError("Không thể tạo bảng. Hãy kiểm tra quyền truy cập và tên bảng.");
         return;
       }
-
-      setWorkspaces((current) => [
-        {
-          ...workspace,
-          description: null,
-          memberCount: 1,
-          boardCount: 0,
-          role: "ADMIN",
-        },
-        ...current,
-      ]);
-      router.push(`/workspaces/${workspace.encryptedId}`);
+      router.push(`/board/${board.encryptedId}`);
     } catch (cause: unknown) {
-      console.error("Failed to create workspace.", cause);
-      setError("Đã xảy ra lỗi khi tạo workspace. Vui lòng thử lại.");
+      console.error("Failed to create board.", cause);
+      setError("Đã xảy ra lỗi khi tạo bảng. Vui lòng thử lại.");
     } finally {
       setIsSubmitting(false);
     }
@@ -83,27 +80,28 @@ export default function CreateWorkspaceDialog() {
         className="inline-flex h-10 shrink-0 items-center gap-2 whitespace-nowrap"
         onClick={() => {
           setError(null);
+          setWorkspaceId(manageableWorkspaces[0]?.encryptedId ?? "");
           setIsOpen(true);
         }}
       >
         <span aria-hidden="true" className="text-lg leading-none">+</span>
-        <span className="hidden sm:inline">Tạo mới</span>
+        <span className="hidden sm:inline">Tạo bảng</span>
       </Button>
 
       {isOpen && (
         <div className="absolute right-0 top-full z-50 mt-2 w-[min(22rem,calc(100vw-2rem))]">
           <section
-            aria-labelledby="create-workspace-title"
+            aria-labelledby="create-board-title"
             className="w-full rounded-xl border border-gray-200 bg-white p-5 text-gray-900 shadow-xl"
             role="dialog"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-lg font-semibold" id="create-workspace-title">
-                  Tạo workspace mới
+                <h2 className="text-lg font-semibold" id="create-board-title">
+                  Tạo bảng mới
                 </h2>
                 <p className="mt-1 text-sm text-gray-500">
-                  Đặt tên và chọn màu nền cho không gian làm việc.
+                  Chọn workspace và đặt tên cho bảng của bạn.
                 </p>
               </div>
               <button
@@ -119,23 +117,43 @@ export default function CreateWorkspaceDialog() {
 
             <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
               <div>
-                <label className="mb-1.5 block text-sm font-medium" htmlFor="workspace-name">
-                  Tên workspace
+                <label className="mb-1.5 block text-sm font-medium" htmlFor="board-workspace">
+                  Workspace
+                </label>
+                <select
+                  autoFocus
+                  className="h-10 w-full rounded-md border border-gray-300 bg-white px-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  id="board-workspace"
+                  onChange={(event) => setWorkspaceId(event.target.value)}
+                  required
+                  value={workspaceId}
+                >
+                  <option disabled value="">Chọn workspace...</option>
+                  {manageableWorkspaces.map((workspace) => (
+                    <option key={workspace.encryptedId} value={workspace.encryptedId}>
+                      {workspace.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-sm font-medium" htmlFor="board-name">
+                  Tên bảng
                 </label>
                 <input
-                  autoFocus
                   className="h-10 w-full rounded-md border border-gray-300 px-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                  id="workspace-name"
+                  id="board-name"
                   maxLength={150}
                   onChange={(event) => setName(event.target.value)}
-                  placeholder="Ví dụ: Marketing"
+                  placeholder="Ví dụ: Kế hoạch marketing"
                   required
                   value={name}
                 />
               </div>
 
               <fieldset>
-                <legend className="mb-2 text-sm font-medium">Màu nền workspace</legend>
+                <legend className="mb-2 text-sm font-medium">Màu nền bảng</legend>
                 <div className="flex flex-wrap gap-3">
                   {WORKSPACE_COLORS.map((color) => (
                     <button
@@ -160,6 +178,12 @@ export default function CreateWorkspaceDialog() {
                 </div>
               </fieldset>
 
+              {manageableWorkspaces.length === 0 && (
+                <p className="text-sm text-gray-500">
+                  Bạn chưa có workspace nào được phép tạo bảng.
+                </p>
+              )}
+
               {error && (
                 <p className="text-sm text-red-600" role="alert">
                   {error}
@@ -175,8 +199,11 @@ export default function CreateWorkspaceDialog() {
                 >
                   Hủy
                 </button>
-                <Button disabled={isSubmitting || !name.trim()} type="submit">
-                  {isSubmitting ? "Đang tạo..." : "Tạo workspace"}
+                <Button
+                  disabled={isSubmitting || !name.trim() || !workspaceId || manageableWorkspaces.length === 0}
+                  type="submit"
+                >
+                  {isSubmitting ? "Đang tạo..." : "Tạo bảng"}
                 </Button>
               </div>
             </form>

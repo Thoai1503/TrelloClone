@@ -1,24 +1,13 @@
-export type WorkspaceItem = {
+import type { BoardSummary } from "./board";
+
+export type WorkspaceSummary = {
   encryptedId: string;
   name: string;
   description: string | null;
   backgroundColor: string;
   memberCount: number;
   boardCount: number;
-  role: "ADMIN" | "MEMBER";
-};
-
-export type WorkspaceBoard = {
-  id: string;
-  name: string;
-  description: string | null;
-  background: string | null;
-};
-
-export type WorkspaceDetail = {
-  id: string;
-  name: string;
-  description: string | null;
-  backgroundColor: string;
-  boards: WorkspaceBoard[];
+  canManageBoards: boolean;
+  role: "OWNER" | "ADMIN" | "MEMBER";
+  boards: BoardSummary[];
 };

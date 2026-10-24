@@ -16,12 +16,17 @@ app/
 ├── api/auth/[...nextauth]/     NextAuth Credentials API endpoint
 ├── layout.tsx                  Root document and provider boundary
 ├── actions/                    Server actions for data access
+│   ├── workspaces.ts           Workspace listing and creation
+│   ├── boards.ts               Board reads and creation
+│   └── lists.ts                Board-column/list creation and ordering
 ├── providers/                  Shared server/client React context
 ├── (user)/                     Authenticated workspace route group and shared user header
 ├── features/                   Route-level feature state and orchestration
-├── types/                      Shared serializable application data contracts
-├── (user)/u/[username]/board/   Current user's workspace list
-├── (user)/workspaces/[workspaceId]/ Workspace detail route with opaque ID param
+│   ├── board-collection/        Board collection route orchestration
+│   └── boards/                  Board-detail route orchestration
+├── types/                      Domain data contracts split by model
+├── (user)/u/[username]/board/   Current user's boards grouped by workspace
+├── (user)/board/[boardId]/      Board detail route with opaque board ID
 └── components/
     ├── atoms/                  UI primitives
     ├── molecules/              Small compositions of atoms
@@ -30,17 +35,19 @@ app/
 lib/
 └── prisma.ts                   Shared Prisma Client and MariaDB adapter
 utils/
-├── workspace-id.ts             AES-256-GCM opaque workspace identifiers
-└── workspace-background.ts     Board background presentation helper
+├── resource-id.ts              AES-256-GCM opaque workspace and board identifiers
+└── filter-workspaces.ts        Workspace and board search filtering
 prisma/
 └── schema.prisma               MySQL data model
 ```
 
 The component dependency direction is one-way: atoms may not depend on higher layers; molecules compose atoms; organisms compose atoms and molecules; templates compose lower layers. Feature orchestration lives outside the visual component hierarchy.
 
-The `(user)` route-group layout renders one shared account header for the workspace list and workspace detail routes. Page-specific search and workspace navigation remain in their respective page content.
+The `(user)` route-group layout renders one shared account header for the board collection and board detail routes. The `/u/{username}/board` page presents horizontal board cards grouped under simple workspace-name headings; workspace cards are not the primary content. Board search results are grouped by workspace and board, while ordering controls are disabled for partial board matches. Empty workspaces retain their board-creation control.
 
 The login route uses a Formik client form and NextAuth's Credentials provider to verify bcrypt password hashes. NextAuth stores a seven-day encrypted JWT session in its HttpOnly cookie. The server-side current-user provider passes the session into `SessionProvider`, reloads the user profile from Prisma, and supplies that profile to the local `UserProvider`. Workspace server actions derive authorization from this session rather than accepting a user ID from the browser. Google sign-in remains presentation-only.
+
+The shared user-header board-creation dialog lets the user choose a manageable workspace. `createBoard` appends the board in that workspace and creates a `board_member` record for the current user with the `ADMIN` role in the same transaction.
 
 Set `NEXTAUTH_SECRET` to a private random value of at least 32 characters in every runtime environment. Do not reuse the workspace ID encryption key.
 
@@ -60,42 +67,47 @@ flowchart TD
     Login --> Authenticate["NextAuth Credentials: verify bcrypt hash"]
     Authenticate --> Cookie["Set encrypted NextAuth JWT cookie"]
     Cookie --> WorkspaceRoute["/u/{username}/board"]
-    WorkspaceRoute --> Feature["WorkspacePageContent"]
+    WorkspaceRoute --> Feature["BoardCollectionPageContent"]
     Feature --> UserHook["useUser()"]
-    Feature --> WorkspaceAction["findWorkspacesByUserId() resolves session"]
+    Feature --> WorkspaceAction["getAccessibleWorkspaces() resolves session"]
     WorkspaceAction --> Prisma
-    Feature --> Template["WorkspaceHome template"]
-    Template --> Organisms["Header, sidebar, workspace list"]
-    Organisms --> Molecules["Workspace card, search, empty state, counter"]
-    Molecules --> Atoms["Avatar, button, icon"]
+    Feature --> Template["BoardCollectionPage template"]
+    Template --> Organisms["Sidebar, board collection"]
+    Organisms --> Boards["Workspace headings with horizontal board cards"]
+    Boards --> BoardAction["Create boards in workspace"]
+    Boards --> BoardRoute["/board/{opaque-board-token}"]
+    BoardRoute --> BoardDetail["BoardDetailPageContent"]
+    BoardDetail --> Lists["Read/create lists (columns)"]
+    Template --> Atoms["Avatar, button, icon"]
 ```
 
 The current-user provider awaits `connection()` before resolving the NextAuth session and loading the user profile. It is rendered beneath a root-layout `Suspense` boundary, provides the session through NextAuth `SessionProvider`, and serializes only a small user projection into the local client context. Workspace records are requested by the client-side feature orchestrator through a server action; the action independently derives identity from the session and returns mapped, serializable data.
 
-### Workspace detail and board ordering
+### Board detail and workspace ordering
 
 ```mermaid
 flowchart TD
-    Card["WorkspaceCard link"] --> Encrypt["encryptWorkspaceId (AES-256-GCM)"]
-    Encrypt --> Url["/workspaces/{opaque-token}"]
-    Url --> Detail["WorkspaceDetailPageContent"]
-    Detail --> Decrypt["decrypt token on server"]
-    Decrypt --> Access["Verify session user owns or belongs to workspace"]
-    Access --> Boards["Read active boards ordered by position"]
-    Boards --> Dnd["WorkspaceBoardView using @dnd-kit"]
-    Dnd --> Save["saveWorkspaceBoardOrder server action"]
-    Save --> Verify["Re-verify token, membership and exact active board ID set"]
-    Verify --> Transaction["Persist positions in a database transaction"]
+    Collection["Board collection grouped by workspace"] --> Boards["Sortable boards within workspace"]
+    Boards --> Encrypt["encryptBoardId (AES-256-GCM)"]
+    Encrypt --> Url["/board/{opaque-board-token}"]
+    Url --> Detail["BoardDetailPageContent"]
+    Detail --> Decrypt["decryptBoardId on server"]
+    Decrypt --> Access["Verify board creator, board member, or workspace member"]
+    Access --> ReadLists["Read active lists ordered by position"]
+    ReadLists --> CreateList["createBoardList server action"]
+    Detail --> DragLists["Drag/drop lists with @dnd-kit"]
+    DragLists --> ReorderLists["reorderBoardLists validates access and active list IDs"]
+    ReorderLists --> Persist["Persist list.position transactionally"]
 ```
 
-The workspace encryption key is `WORKSPACE_ID_ENCRYPTION_KEY` (64 hexadecimal characters); session encryption uses NextAuth's separate `NEXTAUTH_SECRET` (at least 32 characters). Both secrets must be configured consistently across instances. AES-GCM tokens are randomized, authenticated opaque identifiers; authorization is always checked against the authenticated session user.
+The shared AES-256-GCM ID utility encrypts both workspace and board identifiers. The workspace encryption key is `WORKSPACE_ID_ENCRYPTION_KEY` (64 hexadecimal characters); session encryption uses NextAuth's separate `NEXTAUTH_SECRET` (at least 32 characters). Both secrets must be configured consistently across instances. AES-GCM tokens are randomized, authenticated opaque identifiers; authorization is always checked against the authenticated session user.
 
 ## Error and loading states
 
 - The root layout provides a neutral suspense fallback while the request-time user lookup runs.
-- The workspace feature displays a skeleton while workspaces load.
+- The board-collection feature displays a skeleton while workspaces and boards load.
 - An unauthenticated or missing user has a not-found state; a failed workspace query has a distinct error state with retry.
-- A successful query returning no workspaces displays the empty state.
+- A successful query with no boards displays an empty state; accessible empty workspaces remain visible with a board-creation control.
 
 ## Infrastructure
 

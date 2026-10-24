@@ -1,30 +1,35 @@
 import type { CurrentUser } from "@/app/types/user";
-import type { WorkspaceItem } from "@/app/types/workspace";
+import type { WorkspaceSummary } from "@/app/types/workspace";
 
-import { WorkspaceCounter } from "../molecules";
-import { WorkspaceList, WorkspaceSidebar } from "../organisms";
+import { BoardCounter } from "../molecules";
+import { BoardCollection, BoardCollectionSidebar } from "../organisms";
 
-type WorkspaceHomeProps = {
+type BoardCollectionPageProps = {
   user: CurrentUser;
-  workspaces: WorkspaceItem[];
-  filteredWorkspaces: WorkspaceItem[];
+  workspaces: WorkspaceSummary[];
+  filteredWorkspaces: WorkspaceSummary[];
   search: string;
   onSearchChange: (value: string) => void;
 };
 
-export default function WorkspaceHome({
+export default function BoardCollectionPage({
   user,
   workspaces,
   filteredWorkspaces,
   search,
   onSearchChange,
-}: WorkspaceHomeProps) {
+}: BoardCollectionPageProps) {
+  const boardCount = workspaces.reduce(
+    (total, workspace) => total + workspace.boardCount,
+    0,
+  );
+
   return (
     <div className="min-h-[calc(100vh-68px)] bg-[#f7f8fa] text-gray-900">
       <div className="mx-auto flex min-h-[calc(100vh-68px)] max-w-[1440px]">
-        <WorkspaceSidebar
-          workspaceCount={workspaces.length}
-          workspaceHref={`/u/${encodeURIComponent(user.username)}/board`}
+        <BoardCollectionSidebar
+          boardCount={boardCount}
+          boardCollectionHref={`/u/${encodeURIComponent(user.username)}/board`}
         />
 
         <main className="w-full min-w-0 px-5 py-8 sm:px-9 sm:py-10 lg:px-12">
@@ -36,13 +41,13 @@ export default function WorkspaceHome({
                   Trang chủ
                 </h1>
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-500">
-                  Tiếp tục công việc của bạn bằng cách mở một không gian làm việc.
+                  Mở một bảng trong workspace để tiếp tục công việc của bạn.
                 </p>
               </div>
-              <WorkspaceCounter count={workspaces.length} />
+              <BoardCounter count={boardCount} />
             </section>
 
-            <WorkspaceList
+            <BoardCollection
               filteredWorkspaces={filteredWorkspaces}
               onSearchChange={onSearchChange}
               search={search}

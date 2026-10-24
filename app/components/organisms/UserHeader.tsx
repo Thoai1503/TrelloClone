@@ -6,14 +6,14 @@ import { usePathname } from "next/navigation";
 import { useUser } from "@/app/providers/UserProvider";
 import { useWorkspaceSearch } from "@/app/providers/WorkspaceSearchProvider";
 import { Avatar } from "@/app/components/atoms";
-import { SignOutButton, WorkspaceSearch } from "@/app/components/molecules";
-import CreateWorkspaceDialog from "./CreateWorkspaceDialog";
+import { BoardSearch, SignOutButton } from "@/app/components/molecules";
+import CreateBoardDialog from "./CreateBoardDialog";
 
 export default function UserHeader() {
   const user = useUser();
   const pathname = usePathname();
   const { search, setSearch } = useWorkspaceSearch();
-  const isWorkspaceList = /^\/u\/[^/]+\/board\/?$/.test(pathname);
+  const isBoardCollection = /^\/u\/[^/]+\/board\/?$/.test(pathname);
   const displayName = user?.full_name?.trim() || user?.email || "Tài khoản";
 
   return (
@@ -29,21 +29,21 @@ export default function UserHeader() {
         <span className="text-[21px] font-bold tracking-tight text-gray-800">trello</span>
       </Link>
 
-      {isWorkspaceList && (
+      {isBoardCollection && (
         <div className="mx-4 hidden w-full max-w-[560px] flex-1 items-center gap-2 md:flex">
-          <WorkspaceSearch
+          <BoardSearch
             className="w-full flex-1"
             onChange={setSearch}
             value={search}
           />
-          <CreateWorkspaceDialog />
+          <CreateBoardDialog />
         </div>
       )}
 
       <div className="flex items-center gap-3">
-        {isWorkspaceList && (
+        {isBoardCollection && (
           <div className="md:hidden">
-            <CreateWorkspaceDialog />
+            <CreateBoardDialog />
           </div>
         )}
         {user ? (

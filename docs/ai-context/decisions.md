@@ -26,5 +26,5 @@
 
 - Workspace IDs in client-facing links are encrypted with AES-256-GCM using a random IV and authentication tag. The key is supplied by `WORKSPACE_ID_ENCRYPTION_KEY` and must be shared across app instances.
 - Encryption hides the raw identifier and detects token tampering; it is not an authorization mechanism. Each detail/read/write action checks the authenticated session user's ownership or membership.
-- Board ordering uses `@dnd-kit/core`, `@dnd-kit/sortable`, and `@dnd-kit/utilities`; persisted order is represented by the board's existing `position` field, so this UI change requires no schema migration.
-- New boards append at the last active board position plus `1000` (or position `1000` for an empty workspace), calculated inside the create transaction so a new board appears immediately after the current last board.
+- Board cards are not draggable; their visual order is read from the existing board `position` field. New boards append at the last active board position plus `1000` (or position `1000` for an empty workspace), calculated inside the create transaction.
+- Board-detail lists use `@dnd-kit/core`, `@dnd-kit/sortable`, and `@dnd-kit/utilities`; the active list order is persisted in each list's existing `position` field.

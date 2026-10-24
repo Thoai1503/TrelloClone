@@ -54,7 +54,9 @@ export const ModelName = {
   user: 'user',
   workspace: 'workspace',
   workspace_member: 'workspace_member',
-  board: 'board'
+  board: 'board',
+  board_member: 'board_member',
+  list: 'list'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -114,9 +116,9 @@ export const BoardScalarFieldEnum = {
   id: 'id',
   workspace_id: 'workspace_id',
   created_by: 'created_by',
+  backgroundColor: 'backgroundColor',
   name: 'name',
   description: 'description',
-  background: 'background',
   position: 'position',
   created_at: 'created_at',
   updated_at: 'updated_at',
@@ -124,6 +126,29 @@ export const BoardScalarFieldEnum = {
 } as const
 
 export type BoardScalarFieldEnum = (typeof BoardScalarFieldEnum)[keyof typeof BoardScalarFieldEnum]
+
+
+export const Board_memberScalarFieldEnum = {
+  board_id: 'board_id',
+  user_id: 'user_id',
+  role: 'role',
+  joined_at: 'joined_at'
+} as const
+
+export type Board_memberScalarFieldEnum = (typeof Board_memberScalarFieldEnum)[keyof typeof Board_memberScalarFieldEnum]
+
+
+export const ListScalarFieldEnum = {
+  id: 'id',
+  board_id: 'board_id',
+  name: 'name',
+  position: 'position',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  archived_at: 'archived_at'
+} as const
+
+export type ListScalarFieldEnum = (typeof ListScalarFieldEnum)[keyof typeof ListScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -162,10 +187,17 @@ export type workspaceOrderByRelevanceFieldEnum = (typeof workspaceOrderByRelevan
 
 
 export const boardOrderByRelevanceFieldEnum = {
+  backgroundColor: 'backgroundColor',
   name: 'name',
-  description: 'description',
-  background: 'background'
+  description: 'description'
 } as const
 
 export type boardOrderByRelevanceFieldEnum = (typeof boardOrderByRelevanceFieldEnum)[keyof typeof boardOrderByRelevanceFieldEnum]
+
+
+export const listOrderByRelevanceFieldEnum = {
+  name: 'name'
+} as const
+
+export type listOrderByRelevanceFieldEnum = (typeof listOrderByRelevanceFieldEnum)[keyof typeof listOrderByRelevanceFieldEnum]
 

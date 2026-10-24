@@ -1,8 +1,10 @@
 export { default as WorkspaceErrorState } from "./WorkspaceErrorState";
-export { default as WorkspaceBoardView } from "./WorkspaceBoardView";
-export { default as WorkspaceHomeSkeleton } from "./WorkspaceHomeSkeleton";
-export { default as WorkspaceList } from "./WorkspaceList";
+export { default as BoardDetailView } from "./BoardDetailView";
+export { default as BoardDetailSkeleton } from "./BoardDetailSkeleton";
+export { default as BoardCollectionSkeleton } from "./BoardCollectionSkeleton";
+export { default as BoardCollection } from "./BoardCollection";
 export { default as WorkspaceNotFoundState } from "./WorkspaceNotFoundState";
-export { default as WorkspaceSidebar } from "./WorkspaceSidebar";
+export { default as BoardCollectionSidebar } from "./BoardCollectionSidebar";
 export { default as UserHeader } from "./UserHeader";
-export { default as CreateWorkspaceDialog } from "./CreateWorkspaceDialog";
+export { default as CreateBoardDialog } from "./CreateBoardDialog";
+export { default as WorkspaceBoards } from "./WorkspaceBoards";
