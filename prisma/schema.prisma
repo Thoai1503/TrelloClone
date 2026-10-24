@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum WorkspaceRole {
+  ADMIN
+  MEMBER
+}
+
+model user {
+  id            Int       @id @default(autoincrement()) @db.UnsignedInt
+  email         String?   @db.VarChar(255)
+  password_hash String?   @db.VarChar(255)
+  full_name     String?   @db.VarChar(255)
+  avatar_url    String?   @db.VarChar(255)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updated_at    DateTime? @db.DateTime(6)
+
+  workspace_members workspace_member[]
+}
+
+model workspace {
+  id          BigInt    @id @default(autoincrement())
+  name        String    @db.VarChar(150)
+  description String?   @db.Text
+  created_by  BigInt    @map("created_by")
+  created_at  DateTime  @default(now()) @map("created_at") @db.DateTime(3)
+  updated_at  DateTime? @updatedAt @map("updated_at") @db.DateTime(3)
+  archived_at DateTime? @map("archived_at") @db.DateTime(3)
+
+  members workspace_member[]
+  boards  board[]
+
+  @@index([created_by])
+  @@map("workspace")
+}
+
+model workspace_member {
+  workspace_id BigInt        @map("workspace_id")
+  user_id      Int           @map("user_id") @db.UnsignedInt
+  role         WorkspaceRole @default(MEMBER)
+
+  joined_at DateTime @default(now()) @map("joined_at") @db.DateTime(3)
+
+  workspace workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  user      user      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@id([workspace_id, user_id])
+  @@index([user_id])
+  @@map("workspace_member")
+}
+
+model board {
+  id           BigInt @id @default(autoincrement())
+  workspace_id BigInt @map("workspace_id")
+  created_by   BigInt @map("created_by")
+
+  name        String    @db.VarChar(150)
+  description String?   @db.Text
+  background  String?   @db.VarChar(500)
+  position    Decimal   @default(1000) @db.Decimal(20, 6)
+  created_at  DateTime  @default(now()) @map("created_at") @db.DateTime(3)
+  updated_at  DateTime?  @updatedAt @map("updated_at") @db.DateTime(3)
+  archived_at DateTime? @map("archived_at") @db.DateTime(3)
+
+  workspace workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+
+  @@index([workspace_id, archived_at])
+  @@index([created_by])
+  @@map("board")
+}
