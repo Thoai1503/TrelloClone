@@ -10,9 +10,10 @@
 ## Current-user boundary
 
 - Until authentication exists, user ID `1` is the explicit mock identity used by the server-side current-user provider.
-- The root provider passes a minimal serializable projection (`id`, `email`, `full_name`, `avatar_url`) into a local React context.
+- The root provider passes a minimal serializable projection (`id`, `email`, `full_name`, `avatar_url`, derived `username`) into a local React context.
 - Client components read user information through `useUser()` rather than querying the user independently.
 - Replace the mock ID with a verified authenticated identity when implementing authentication; do not treat the hard-coded ID as an authorization mechanism.
+- `/` is the public product landing page; `/u/{username}/board` hosts the workspace list. The route username is a display slug derived from user data plus ID and is validated in the feature component, not used as an identity or authorization mechanism.
 
 ## Server-rendering behavior
 

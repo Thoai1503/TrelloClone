@@ -11,12 +11,13 @@
 
 ```text
 app/
-├── page.tsx                    Route entry
+├── page.tsx                    Product landing page
 ├── layout.tsx                  Root document and provider boundary
 ├── actions/                    Server actions for data access
 ├── providers/                  Shared server/client React context
 ├── features/                   Route-level feature state and orchestration
 ├── types/                      Shared serializable application data contracts
+├── u/[username]/board/          Current user's workspace list
 ├── workspaces/[workspaceId]/   Workspace detail route with opaque ID param
 └── components/
     ├── atoms/                  UI primitives
@@ -44,8 +45,9 @@ flowchart TD
     FindUser --> Prisma["Shared Prisma Client"]
     Prisma --> MySQL[("MySQL")]
     CurrentUser --> Context["UserProvider (client context)"]
-    Context --> Route["app/page.tsx"]
-    Route --> Feature["WorkspacePageContent"]
+    Context --> Landing["app/page.tsx (product landing)"]
+    Landing --> WorkspaceRoute["/u/{username}/board"]
+    WorkspaceRoute --> Feature["WorkspacePageContent"]
     Feature --> UserHook["useUser()"]
     Feature --> WorkspaceAction["findWorkspacesByUserId(user.id)"]
     WorkspaceAction --> Prisma

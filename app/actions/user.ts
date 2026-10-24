@@ -2,13 +2,14 @@
 
 import { prisma } from "@/lib/prisma";
 import type { CurrentUser } from "@/app/types/user";
+import { createUsername } from "@/utils/user-username";
 
 export async function findUserById(userId: number): Promise<CurrentUser | null> {
   if (!Number.isSafeInteger(userId) || userId < 1) {
     throw new Error("userId must be a positive safe integer.");
   }
 
-  return prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
       id: true,
@@ -17,4 +18,13 @@ export async function findUserById(userId: number): Promise<CurrentUser | null> 
       avatar_url: true,
     },
   });
+
+  if (!user) {
+    return null;
+  }
+
+  return {
+    ...user,
+    username: createUsername(user.full_name, user.email, user.id),
+  };
 }

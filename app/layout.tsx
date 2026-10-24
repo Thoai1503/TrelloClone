@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Trang chủ | Trello",
-  description: "Quản lý công việc và không gian làm việc của bạn.",
+  title: "Trello | Lên kế hoạch, phối hợp và hoàn thành công việc",
+  description: "Một không gian trực quan để sắp xếp công việc và cùng đội nhóm tiến về phía trước.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
