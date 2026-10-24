@@ -49,3 +49,5 @@ erDiagram
 ## Workspace listing
 
 `findWorkspacesByUserId` returns active workspaces either created by the requested user or linked through `workspace_member`. It maps database `BigInt` IDs to strings before returning them to client UI and includes board/member counts and the user's membership role. A creator is treated as an admin even if no separate membership row exists.
+
+Workspace cards expose only a randomized encrypted URL token, not the database workspace ID. Detail reads and board-order updates decrypt the token on the server and independently require that the mock user owns the workspace or has a membership row. Active boards are ordered by `position`, then `id`; reorder writes assign positions in increments of 1000 within one transaction.

@@ -16,4 +16,8 @@ applyTo:
 - After schema changes, run `npx prisma validate` and `npm run db:generate`; add migrations only when the task requires changing the database.
 - Do not hand-edit `generated/prisma/`.
 - Make missing records and operational failures distinguishable. Do not silently substitute empty data for a failed query.
+- Treat encrypted/opaque identifiers as defense-in-depth, not authorization. Every workspace read or mutation must independently verify the current server-side user's ownership or membership.
+- Never accept a user ID from a client as proof of identity. Until authentication exists, use the explicit server-side mock identity; replace it with the authenticated session when auth is implemented.
+- Keep encryption keys in environment variables, never in source control. Use authenticated encryption for identifiers placed in URLs, and validate/decrypt them only on the server.
+- Validate complete reorder submissions against the current workspace's active board IDs before persisting order changes transactionally.
 - When changing provider or server-action behavior, document verified data flow in `docs/architecture/` and relevant decisions in `docs/ai-context/`.

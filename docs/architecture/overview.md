@@ -17,6 +17,7 @@ app/
 ├── providers/                  Shared server/client React context
 ├── features/                   Route-level feature state and orchestration
 ├── types/                      Shared serializable application data contracts
+├── workspaces/[workspaceId]/   Workspace detail route with opaque ID param
 └── components/
     ├── atoms/                  UI primitives
     ├── molecules/              Small compositions of atoms
@@ -24,6 +25,9 @@ app/
     └── templates/              Page layouts composed from organisms
 lib/
 └── prisma.ts                   Shared Prisma Client and MariaDB adapter
+utils/
+├── workspace-id.ts             AES-256-GCM opaque workspace identifiers
+└── workspace-background.ts     Board background presentation helper
 prisma/
 └── schema.prisma               MySQL data model
 ```
@@ -52,6 +56,24 @@ flowchart TD
 ```
 
 The current-user provider awaits `connection()` before its request-time database lookup and is rendered beneath a root-layout `Suspense` boundary. The provider serializes a small user projection into the client context. Workspace records are requested by the client-side feature orchestrator through a server action; only mapped, serializable workspace data is passed to the UI.
+
+### Workspace detail and board ordering
+
+```mermaid
+flowchart TD
+    Card["WorkspaceCard link"] --> Encrypt["encryptWorkspaceId (AES-256-GCM)"]
+    Encrypt --> Url["/workspaces/{opaque-token}"]
+    Url --> Detail["WorkspaceDetailPageContent"]
+    Detail --> Decrypt["decrypt token on server"]
+    Decrypt --> Access["Verify mock user owns or belongs to workspace"]
+    Access --> Boards["Read active boards ordered by position"]
+    Boards --> Dnd["WorkspaceBoardView using @dnd-kit"]
+    Dnd --> Save["saveWorkspaceBoardOrder server action"]
+    Save --> Verify["Re-verify token, membership and exact active board ID set"]
+    Verify --> Transaction["Persist positions in a database transaction"]
+```
+
+The encryption key is `WORKSPACE_ID_ENCRYPTION_KEY` (64 hexadecimal characters). The same secret must be configured across all instances and deployments. AES-GCM tokens are randomized, authenticated opaque identifiers; they do not authorize access. Current authorization uses the server-side mock user ID `1`.
 
 ## Error and loading states
 

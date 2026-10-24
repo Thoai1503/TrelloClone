@@ -18,3 +18,5 @@ applyTo: "app/**/*.tsx"
 - Keep user-visible copy in Vietnamese unless the feature already establishes another language.
 - Show loading, empty, not-found, and error states distinctly. Log unexpected failures and provide a user-visible recovery path where appropriate.
 - Do not invent navigation or actions for controls that are not implemented; make unavailable behavior explicit.
+- For sortable board lanes/lists, use the installed `@dnd-kit` packages with keyboard support and a horizontal scroll container where the layout calls for it. Persist reordered identifiers through a server action and restore the prior order if persistence fails.
+- Keep pure reusable transformation helpers in the root `utils/` directory. Keep event handlers and feature-specific UI behavior with their owning feature/component.

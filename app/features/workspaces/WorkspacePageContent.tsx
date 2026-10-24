@@ -33,7 +33,7 @@ export default function WorkspacePageContent() {
 
     let isCurrentRequest = true;
 
-    findWorkspacesByUserId(user.id)
+    findWorkspacesByUserId()
       .then((result) => {
         if (isCurrentRequest) {
           setWorkspaces(result);

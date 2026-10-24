@@ -1,3 +1,4 @@
+export { default as SortableBoardCard } from "./SortableBoardCard";
 export { default as WorkspaceCard } from "./WorkspaceCard";
 export { default as WorkspaceCounter } from "./WorkspaceCounter";
 export { default as WorkspaceEmptyState } from "./WorkspaceEmptyState";
