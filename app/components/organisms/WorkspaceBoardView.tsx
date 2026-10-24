@@ -27,7 +27,7 @@ import { useUser } from "@/app/providers/UserProvider";
 import { getWorkspaceBoardBackground } from "@/utils/workspace-background";
 
 import { Avatar, Button, Icon } from "../atoms";
-import { AddBoardCard, SortableBoardCard } from "../molecules";
+import { AddBoardCard, SignOutButton, SortableBoardCard } from "../molecules";
 
 type WorkspaceBoardViewProps = {
   workspace: WorkspaceDetail;
@@ -96,7 +96,7 @@ export default function WorkspaceBoardView({
           <Link
             aria-label="Quay lại danh sách workspace"
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-white/90 transition hover:bg-white/15"
-            href="/"
+            href={user ? `/u/${encodeURIComponent(user.username)}/board` : "/"}
           >
             <Icon className="h-5 w-5 rotate-180" name="arrow" />
           </Link>
@@ -113,6 +113,7 @@ export default function WorkspaceBoardView({
             {displayName}
           </span>
           <Avatar label={displayName} userId={user?.id} />
+          <SignOutButton className="rounded-md px-3 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/15" />
         </div>
       </header>
 

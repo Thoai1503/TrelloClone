@@ -1,5 +1,8 @@
-import LandingPageContent from "./features/landing/LandingPageContent";
+import { LandingPage } from "./components/templates";
+import { redirectAuthenticatedUser } from "@/utils/redirect-authenticated-user";
 
-export default function Home() {
-  return <LandingPageContent />;
+export default async function Home() {
+  await redirectAuthenticatedUser();
+
+  return <LandingPage />;
 }

@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { CurrentUser } from "@/app/types/user";
 
 import { Avatar } from "../atoms";
-import { WorkspaceSearch } from "../molecules";
+import { SignOutButton, WorkspaceSearch } from "../molecules";
 
 type WorkspaceHeaderProps = {
   user: CurrentUser;
@@ -41,6 +41,7 @@ export default function WorkspaceHeader({
           {displayName}
         </span>
         <Avatar label={displayName} userId={user.id} />
+        <SignOutButton className="rounded-md px-3 py-2 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 hover:text-gray-900" />
       </div>
     </header>
   );

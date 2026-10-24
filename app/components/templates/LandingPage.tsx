@@ -1,9 +1,5 @@
 import Link from "next/link";
 
-type LandingPageProps = {
-  workspaceHref: string;
-};
-
 const features = [
   {
     number: "01",
@@ -22,7 +18,7 @@ const features = [
   },
 ];
 
-export default function LandingPage({ workspaceHref }: LandingPageProps) {
+export default function LandingPage() {
   return (
     <main className="min-h-screen overflow-hidden bg-white text-slate-950">
       <header className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-5 sm:px-8">
@@ -42,7 +38,7 @@ export default function LandingPage({ workspaceHref }: LandingPageProps) {
           </a>
           <Link
             className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 sm:px-5"
-            href={workspaceHref}
+            href="/login"
           >
             Đăng nhập
           </Link>
@@ -68,7 +64,7 @@ export default function LandingPage({ workspaceHref }: LandingPageProps) {
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
                 className="rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700"
-                href={workspaceHref}
+                href="/login"
               >
                 Bắt đầu với workspace
               </Link>
@@ -194,7 +190,7 @@ export default function LandingPage({ workspaceHref }: LandingPageProps) {
 
       <footer className="border-t border-slate-100 bg-white">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-          <span>© {new Date().getFullYear()} Trello</span>
+          <span>© Trello</span>
           <span>Đưa công việc tiến về phía trước, cùng nhau.</span>
         </div>
       </footer>

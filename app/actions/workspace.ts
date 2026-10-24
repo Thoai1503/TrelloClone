@@ -1,19 +1,24 @@
 "use server";
 
 import { decryptWorkspaceId, encryptWorkspaceId } from "@/utils/workspace-id";
+import { getCurrentUser } from "@/utils/auth-session";
 import { prisma } from "@/lib/prisma";
 import type { WorkspaceBoard, WorkspaceItem } from "@/app/types/workspace";
 
-const MOCK_USER_ID = 1;
-
 export async function findWorkspacesByUserId(): Promise<WorkspaceItem[]> {
-  const createdById = BigInt(MOCK_USER_ID);
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    throw new Error("Authentication is required to load workspaces.");
+  }
+
+  const userId = currentUser.id;
+  const createdById = BigInt(userId);
   const workspaces = await prisma.workspace.findMany({
     where: {
       archived_at: null,
       OR: [
         { created_by: createdById },
-        { members: { some: { user_id: MOCK_USER_ID } } },
+        { members: { some: { user_id: userId } } },
       ],
     },
     select: {
@@ -22,7 +27,7 @@ export async function findWorkspacesByUserId(): Promise<WorkspaceItem[]> {
       description: true,
       created_by: true,
       members: {
-        where: { user_id: MOCK_USER_ID },
+        where: { user_id: userId },
         select: { role: true },
         take: 1,
       },
@@ -60,14 +65,20 @@ export async function findWorkspaceByEncryptedId(token: string) {
     return null;
   }
 
-  const mockUserId = BigInt(MOCK_USER_ID);
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    return null;
+  }
+
+  const userId = currentUser.id;
+  const currentUserId = BigInt(userId);
   const workspace = await prisma.workspace.findFirst({
     where: {
       id: workspaceId,
       archived_at: null,
       OR: [
-        { created_by: mockUserId },
-        { members: { some: { user_id: MOCK_USER_ID } } },
+        { created_by: currentUserId },
+        { members: { some: { user_id: userId } } },
       ],
     },
     select: {
@@ -128,14 +139,20 @@ export async function saveWorkspaceBoardOrder(
     return false;
   }
 
-  const mockUserId = BigInt(MOCK_USER_ID);
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    return false;
+  }
+
+  const userId = currentUser.id;
+  const currentUserId = BigInt(userId);
   const workspace = await prisma.workspace.findFirst({
     where: {
       id: workspaceId,
       archived_at: null,
       OR: [
-        { created_by: mockUserId },
-        { members: { some: { user_id: MOCK_USER_ID } } },
+        { created_by: currentUserId },
+        { members: { some: { user_id: userId } } },
       ],
     },
     select: {
@@ -193,7 +210,13 @@ export async function createWorkspaceBoard(
     return null;
   }
 
-  const mockUserId = BigInt(MOCK_USER_ID);
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    return null;
+  }
+
+  const userId = currentUser.id;
+  const currentUserId = BigInt(userId);
 
   return prisma.$transaction(async (transaction) => {
     const workspace = await transaction.workspace.findFirst({
@@ -201,8 +224,8 @@ export async function createWorkspaceBoard(
         id: workspaceId,
         archived_at: null,
         OR: [
-          { created_by: mockUserId },
-          { members: { some: { user_id: MOCK_USER_ID } } },
+          { created_by: currentUserId },
+          { members: { some: { user_id: userId } } },
         ],
       },
       select: { id: true },
@@ -222,7 +245,7 @@ export async function createWorkspaceBoard(
     const board = await transaction.board.create({
       data: {
         workspace_id: workspace.id,
-        created_by: mockUserId,
+        created_by: currentUserId,
         name: trimmedName,
         position,
       },
