@@ -11,7 +11,9 @@ import { prisma } from "@/lib/prisma";
 import type { BoardDetail, BoardSummary } from "@/app/types/board";
 import { isWorkspaceColor } from "@/utils/workspace-colors";
 
-export async function getBoardByToken(token: string): Promise<BoardDetail | null> {
+export async function getBoardByToken(
+  token: string,
+): Promise<BoardDetail | null> {
   if (typeof token !== "string") return null;
 
   const boardId = decryptBoardId(token);
@@ -64,7 +66,15 @@ export async function getBoardByToken(token: string): Promise<BoardDetail | null
       },
       lists: {
         where: { archived_at: null },
-        select: { id: true, name: true },
+        select: {
+          id: true,
+          name: true,
+          cards: {
+            where: { archived_at: null },
+            select: { id: true, title: true },
+            orderBy: [{ position: "asc" }, { id: "asc" }],
+          },
+        },
         orderBy: [{ position: "asc" }, { id: "asc" }],
       },
     },
@@ -88,6 +98,10 @@ export async function getBoardByToken(token: string): Promise<BoardDetail | null
     lists: board.lists.map((list) => ({
       id: list.id.toString(),
       name: list.name,
+      cards: list.cards.map((card) => ({
+        id: card.id.toString(),
+        title: card.title,
+      })),
     })),
   };
 }
@@ -132,20 +146,13 @@ export async function createBoard(
 
     if (!workspace) return null;
 
-    const lastBoard = await transaction.board.findFirst({
-      where: { workspace_id: workspace.id, archived_at: null },
-      select: { position: true },
-      orderBy: [{ position: "desc" }, { id: "desc" }],
-    });
-    const position = lastBoard ? lastBoard.position.plus(1000) : 1000;
-
     const board = await transaction.board.create({
       data: {
         workspace_id: workspace.id,
         created_by: currentUserId,
         backgroundColor,
         name: trimmedName,
-        position,
+
         board_members: {
           create: {
             user_id: userId,

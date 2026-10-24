@@ -25,3 +25,13 @@ export const BoardRole = {
 } as const
 
 export type BoardRole = (typeof BoardRole)[keyof typeof BoardRole]
+
+
+export const CardPriority = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT'
+} as const
+
+export type CardPriority = (typeof CardPriority)[keyof typeof CardPriority]

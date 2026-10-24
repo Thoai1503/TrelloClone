@@ -10,6 +10,12 @@ export type BoardSummary = {
 export type BoardList = {
   id: string;
   name: string;
+  cards: BoardTask[];
+};
+
+export type BoardTask = {
+  id: string;
+  title: string;
 };
 
 export type BoardDetail = {

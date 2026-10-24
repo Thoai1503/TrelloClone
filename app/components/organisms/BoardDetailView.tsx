@@ -18,8 +18,13 @@ import {
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
 
-import { createBoardList, reorderBoardLists } from "@/app/actions/lists";
-import type { BoardDetail, BoardList } from "@/app/types/board";
+import {
+  createBoardList,
+  createListCard,
+  reorderBoardLists,
+  reorderListCards,
+} from "@/app/actions/lists";
+import type { BoardDetail, BoardList, BoardTask } from "@/app/types/board";
 import { useUser } from "@/app/providers/UserProvider";
 
 import { Button, Icon } from "../atoms";
@@ -35,6 +40,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingOrder, setIsSavingOrder] = useState(false);
+  const [isSavingCardOrder, setIsSavingCardOrder] = useState(false);
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const sensors = useSensors(
@@ -104,6 +110,52 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
     }
   }
 
+  async function handleAddCard(listId: string, title: string): Promise<BoardTask> {
+    const card = await createListCard(board.encryptedId, listId, title);
+    if (!card) {
+      throw new Error("List or card title is invalid, or access was denied.");
+    }
+    setLists((currentLists) =>
+      currentLists.map((list) =>
+        list.id === listId
+          ? { ...list, cards: [...list.cards, card] }
+          : list,
+      ),
+    );
+    return card;
+  }
+
+  async function handleReorderCards(
+    listId: string,
+    reorderedCards: BoardTask[],
+  ): Promise<void> {
+    if (isSavingCardOrder) return;
+
+    const previousLists = lists;
+    setLists((currentLists) =>
+      currentLists.map((list) =>
+        list.id === listId ? { ...list, cards: reorderedCards } : list,
+      ),
+    );
+    setIsSavingCardOrder(true);
+    setError(null);
+
+    try {
+      const saved = await reorderListCards(
+        board.encryptedId,
+        listId,
+        reorderedCards.map((card) => card.id),
+      );
+      if (!saved) throw new Error("List card order was rejected.");
+    } catch (cause: unknown) {
+      console.error("Failed to save list card order.", cause);
+      setLists(previousLists);
+      setError("Không thể lưu thứ tự thẻ. Vui lòng thử lại.");
+    } finally {
+      setIsSavingCardOrder(false);
+    }
+  }
+
   return (
     <main
       className="flex h-[calc(100vh-68px)] flex-col overflow-hidden text-white"
@@ -169,9 +221,17 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
             >
               {lists.map((list: BoardList) => (
                 <SortableBoardList
-                  disabled={isSavingOrder || isAdding || !board.canManageLists}
+                  disabled={
+                    isSavingOrder ||
+                    isSavingCardOrder ||
+                    isAdding ||
+                    !board.canManageLists
+                  }
+                  canAddCards={board.canManageLists}
                   key={list.id}
                   list={list}
+                  onAddCard={handleAddCard}
+                  onReorderCards={handleReorderCards}
                 />
               ))}
             </SortableContext>

@@ -71,3 +71,13 @@ export type board_member = Prisma.board_memberModel
  * 
  */
 export type list = Prisma.listModel
+/**
+ * Model card
+ * 
+ */
+export type card = Prisma.cardModel
+/**
+ * Model card_member
+ * 
+ */
+export type card_member = Prisma.card_memberModel

@@ -1,21 +1,86 @@
 "use client";
 
+import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useId, useState, type FormEvent } from "react";
 
-import type { BoardList } from "@/app/types/board";
+import type { BoardList, BoardTask } from "@/app/types/board";
+
+import SortableTaskCard from "./SortableTaskCard";
 
 type SortableBoardListProps = {
   list: BoardList;
   disabled: boolean;
+  canAddCards: boolean;
+  onAddCard: (listId: string, title: string) => Promise<BoardTask>;
+  onReorderCards: (listId: string, cards: BoardTask[]) => Promise<void>;
 };
 
 export default function SortableBoardList({
   list,
   disabled,
+  canAddCards,
+  onAddCard,
+  onReorderCards,
 }: SortableBoardListProps) {
   const { attributes, isDragging, listeners, setNodeRef, transform, transition } =
     useSortable({ id: list.id, disabled });
+  const inputId = useId();
+  const [isAdding, setIsAdding] = useState(false);
+  const [title, setTitle] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const cardSensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  function handleCardDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (disabled || !over || active.id === over.id) return;
+
+    const oldIndex = list.cards.findIndex((card) => card.id === active.id);
+    const newIndex = list.cards.findIndex((card) => card.id === over.id);
+    if (oldIndex < 0 || newIndex < 0) return;
+
+    void onReorderCards(list.id, arrayMove(list.cards, oldIndex, newIndex));
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      await onAddCard(list.id, trimmedTitle);
+      setTitle("");
+      setIsAdding(false);
+    } catch (cause: unknown) {
+      console.error("Failed to create list card.", cause);
+      setError("Không thể tạo thẻ. Vui lòng thử lại.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   return (
     <article
@@ -48,9 +113,92 @@ export default function SortableBoardList({
           </svg>
         </button>
       </div>
-      <p className="rounded-lg bg-white/70 p-3 text-xs text-gray-500">
-        Chưa có thẻ nào trong danh sách.
-      </p>
+      <div className="min-h-0 space-y-2 overflow-y-auto">
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragEnd={handleCardDragEnd}
+          sensors={cardSensors}
+        >
+          <SortableContext
+            items={list.cards.map((card) => card.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="space-y-2">
+              {list.cards.map((card) => (
+                <SortableTaskCard
+                  card={card}
+                  disabled={disabled || !canAddCards}
+                  key={card.id}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+        {list.cards.length === 0 && !canAddCards && (
+          <p className="rounded-lg bg-white/70 p-3 text-xs text-gray-500">
+            Chưa có thẻ nào trong danh sách.
+          </p>
+        )}
+      </div>
+      {canAddCards && (
+        <div className="mt-2 shrink-0">
+          {isAdding ? (
+            <form className="space-y-2" onSubmit={handleSubmit}>
+              <label className="sr-only" htmlFor={inputId}>
+                Tên thẻ
+              </label>
+              <input
+                autoFocus
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                disabled={isSubmitting}
+                id={inputId}
+                maxLength={255}
+                onChange={(event) => {
+                  setTitle(event.target.value);
+                  setError(null);
+                }}
+                placeholder="Nhập tên thẻ..."
+                value={title}
+              />
+              {error && (
+                <p className="text-xs text-red-600" role="alert">
+                  {error}
+                </p>
+              )}
+              <div className="flex items-center gap-2">
+                <button
+                  className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={!title.trim() || isSubmitting}
+                  type="submit"
+                >
+                  {isSubmitting ? "Đang thêm..." : "Thêm thẻ"}
+                </button>
+                <button
+                  className="rounded-md px-2 py-1.5 text-sm text-gray-600 hover:bg-gray-200 disabled:opacity-50"
+                  disabled={isSubmitting}
+                  onClick={() => {
+                    setIsAdding(false);
+                    setTitle("");
+                    setError(null);
+                  }}
+                  type="button"
+                >
+                  Hủy
+                </button>
+              </div>
+            </form>
+          ) : (
+            <button
+              className="w-full rounded-md px-2 py-2 text-left text-sm text-gray-600 transition hover:bg-gray-200 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={disabled}
+              onClick={() => setIsAdding(true)}
+              type="button"
+            >
+              + Thêm thẻ
+            </button>
+          )}
+        </div>
+      )}
     </article>
   );
 }

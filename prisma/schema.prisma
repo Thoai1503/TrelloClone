@@ -19,6 +19,13 @@ enum BoardRole {
   VIEWER
 }
 
+enum CardPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
 model user {
   id            Int       @id @default(autoincrement()) @db.UnsignedInt
   email         String?   @db.VarChar(255)
@@ -30,6 +37,8 @@ model user {
 
   workspace_members workspace_member[]
   board_members     board_member[]
+  created_cards     card[]             @relation("CardCreator")
+  card_members      card_member[]
 }
 
 model workspace {
@@ -71,6 +80,7 @@ model board {
   backgroundColor String    @default("#0c66e4") @map("background_color") @db.Char(7)
   name            String    @db.VarChar(150)
   description     String?   @db.Text
+
   created_at      DateTime  @default(now()) @map("created_at") @db.DateTime(3)
   updated_at      DateTime? @updatedAt @map("updated_at") @db.DateTime(3)
   archived_at     DateTime? @map("archived_at") @db.DateTime(3)
@@ -80,6 +90,7 @@ model board {
   lists         list[]
 
   @@index([workspace_id, archived_at])
+
   @@index([created_by])
   @@map("board")
 }
@@ -110,8 +121,54 @@ model list {
   updated_at  DateTime? @updatedAt @map("updated_at") @db.DateTime(3)
   archived_at DateTime? @map("archived_at") @db.DateTime(3)
 
-  board board @relation(fields: [board_id], references: [id], onDelete: Cascade)
+  board board  @relation(fields: [board_id], references: [id], onDelete: Cascade)
+  cards card[]
 
   @@index([board_id, position])
   @@map("lists")
+}
+
+// ==========================================
+// CARD / TASK
+// ==========================================
+
+model card {
+  id         BigInt @id @default(autoincrement())
+  list_id    BigInt @map("list_id")
+  created_by Int    @map("created_by") @db.UnsignedInt
+
+  title       String       @db.VarChar(255)
+  description String?      @db.Text
+  position    Decimal      @default(1000) @db.Decimal(20, 6)
+  priority    CardPriority @default(MEDIUM)
+
+  due_date     DateTime? @map("due_date") @db.DateTime(3)
+  completed_at DateTime? @map("completed_at") @db.DateTime(3)
+  created_at   DateTime  @default(now()) @map("created_at") @db.DateTime(3)
+  updated_at   DateTime? @updatedAt @map("updated_at") @db.DateTime(3)
+  archived_at  DateTime? @map("archived_at") @db.DateTime(3)
+
+  list    list          @relation(fields: [list_id], references: [id], onDelete: Cascade)
+  creator user          @relation("CardCreator", fields: [created_by], references: [id], onDelete: Restrict)
+  members card_member[]
+
+  @@index([list_id, position])
+  @@index([created_by])
+  @@index([due_date])
+  @@index([updated_at])
+  @@map("cards")
+}
+
+model card_member {
+  card_id BigInt @map("card_id")
+  user_id Int    @map("user_id") @db.UnsignedInt
+
+  assigned_at DateTime @default(now()) @map("assigned_at") @db.DateTime(3)
+
+  card card @relation(fields: [card_id], references: [id], onDelete: Cascade)
+  user user @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@id([card_id, user_id])
+  @@index([user_id])
+  @@map("card_members")
 }

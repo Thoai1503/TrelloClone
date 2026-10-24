@@ -206,6 +206,23 @@ export type EnumWorkspaceRoleWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumWorkspaceRoleFilter<$PrismaModel>
 }
 
+export type EnumBoardRoleFilter<$PrismaModel = never> = {
+  equals?: $Enums.BoardRole | Prisma.EnumBoardRoleFieldRefInput<$PrismaModel>
+  in?: $Enums.BoardRole[]
+  notIn?: $Enums.BoardRole[]
+  not?: Prisma.NestedEnumBoardRoleFilter<$PrismaModel> | $Enums.BoardRole
+}
+
+export type EnumBoardRoleWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BoardRole | Prisma.EnumBoardRoleFieldRefInput<$PrismaModel>
+  in?: $Enums.BoardRole[]
+  notIn?: $Enums.BoardRole[]
+  not?: Prisma.NestedEnumBoardRoleWithAggregatesFilter<$PrismaModel> | $Enums.BoardRole
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBoardRoleFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBoardRoleFilter<$PrismaModel>
+}
+
 export type DecimalFilter<$PrismaModel = never> = {
   equals?: runtime.Decimal | runtime.DecimalJsLike | number | string | Prisma.DecimalFieldRefInput<$PrismaModel>
   in?: runtime.Decimal[] | runtime.DecimalJsLike[] | number[] | string[]
@@ -233,21 +250,21 @@ export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDecimalFilter<$PrismaModel>
 }
 
-export type EnumBoardRoleFilter<$PrismaModel = never> = {
-  equals?: $Enums.BoardRole | Prisma.EnumBoardRoleFieldRefInput<$PrismaModel>
-  in?: $Enums.BoardRole[]
-  notIn?: $Enums.BoardRole[]
-  not?: Prisma.NestedEnumBoardRoleFilter<$PrismaModel> | $Enums.BoardRole
+export type EnumCardPriorityFilter<$PrismaModel = never> = {
+  equals?: $Enums.CardPriority | Prisma.EnumCardPriorityFieldRefInput<$PrismaModel>
+  in?: $Enums.CardPriority[]
+  notIn?: $Enums.CardPriority[]
+  not?: Prisma.NestedEnumCardPriorityFilter<$PrismaModel> | $Enums.CardPriority
 }
 
-export type EnumBoardRoleWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.BoardRole | Prisma.EnumBoardRoleFieldRefInput<$PrismaModel>
-  in?: $Enums.BoardRole[]
-  notIn?: $Enums.BoardRole[]
-  not?: Prisma.NestedEnumBoardRoleWithAggregatesFilter<$PrismaModel> | $Enums.BoardRole
+export type EnumCardPriorityWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CardPriority | Prisma.EnumCardPriorityFieldRefInput<$PrismaModel>
+  in?: $Enums.CardPriority[]
+  notIn?: $Enums.CardPriority[]
+  not?: Prisma.NestedEnumCardPriorityWithAggregatesFilter<$PrismaModel> | $Enums.CardPriority
   _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumBoardRoleFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumBoardRoleFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCardPriorityFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCardPriorityFilter<$PrismaModel>
 }
 
 export type NestedIntFilter<$PrismaModel = never> = {
@@ -459,6 +476,23 @@ export type NestedEnumWorkspaceRoleWithAggregatesFilter<$PrismaModel = never> = 
   _max?: Prisma.NestedEnumWorkspaceRoleFilter<$PrismaModel>
 }
 
+export type NestedEnumBoardRoleFilter<$PrismaModel = never> = {
+  equals?: $Enums.BoardRole | Prisma.EnumBoardRoleFieldRefInput<$PrismaModel>
+  in?: $Enums.BoardRole[]
+  notIn?: $Enums.BoardRole[]
+  not?: Prisma.NestedEnumBoardRoleFilter<$PrismaModel> | $Enums.BoardRole
+}
+
+export type NestedEnumBoardRoleWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BoardRole | Prisma.EnumBoardRoleFieldRefInput<$PrismaModel>
+  in?: $Enums.BoardRole[]
+  notIn?: $Enums.BoardRole[]
+  not?: Prisma.NestedEnumBoardRoleWithAggregatesFilter<$PrismaModel> | $Enums.BoardRole
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBoardRoleFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBoardRoleFilter<$PrismaModel>
+}
+
 export type NestedDecimalFilter<$PrismaModel = never> = {
   equals?: runtime.Decimal | runtime.DecimalJsLike | number | string | Prisma.DecimalFieldRefInput<$PrismaModel>
   in?: runtime.Decimal[] | runtime.DecimalJsLike[] | number[] | string[]
@@ -486,21 +520,21 @@ export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDecimalFilter<$PrismaModel>
 }
 
-export type NestedEnumBoardRoleFilter<$PrismaModel = never> = {
-  equals?: $Enums.BoardRole | Prisma.EnumBoardRoleFieldRefInput<$PrismaModel>
-  in?: $Enums.BoardRole[]
-  notIn?: $Enums.BoardRole[]
-  not?: Prisma.NestedEnumBoardRoleFilter<$PrismaModel> | $Enums.BoardRole
+export type NestedEnumCardPriorityFilter<$PrismaModel = never> = {
+  equals?: $Enums.CardPriority | Prisma.EnumCardPriorityFieldRefInput<$PrismaModel>
+  in?: $Enums.CardPriority[]
+  notIn?: $Enums.CardPriority[]
+  not?: Prisma.NestedEnumCardPriorityFilter<$PrismaModel> | $Enums.CardPriority
 }
 
-export type NestedEnumBoardRoleWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.BoardRole | Prisma.EnumBoardRoleFieldRefInput<$PrismaModel>
-  in?: $Enums.BoardRole[]
-  notIn?: $Enums.BoardRole[]
-  not?: Prisma.NestedEnumBoardRoleWithAggregatesFilter<$PrismaModel> | $Enums.BoardRole
+export type NestedEnumCardPriorityWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CardPriority | Prisma.EnumCardPriorityFieldRefInput<$PrismaModel>
+  in?: $Enums.CardPriority[]
+  notIn?: $Enums.CardPriority[]
+  not?: Prisma.NestedEnumCardPriorityWithAggregatesFilter<$PrismaModel> | $Enums.CardPriority
   _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumBoardRoleFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumBoardRoleFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCardPriorityFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCardPriorityFilter<$PrismaModel>
 }
 
 

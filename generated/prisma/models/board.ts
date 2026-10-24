@@ -30,14 +30,12 @@ export type BoardAvgAggregateOutputType = {
   id: number | null
   workspace_id: number | null
   created_by: number | null
-  position: runtime.Decimal | null
 }
 
 export type BoardSumAggregateOutputType = {
   id: bigint | null
   workspace_id: bigint | null
   created_by: bigint | null
-  position: runtime.Decimal | null
 }
 
 export type BoardMinAggregateOutputType = {
@@ -47,7 +45,6 @@ export type BoardMinAggregateOutputType = {
   backgroundColor: string | null
   name: string | null
   description: string | null
-  position: runtime.Decimal | null
   created_at: Date | null
   updated_at: Date | null
   archived_at: Date | null
@@ -60,7 +57,6 @@ export type BoardMaxAggregateOutputType = {
   backgroundColor: string | null
   name: string | null
   description: string | null
-  position: runtime.Decimal | null
   created_at: Date | null
   updated_at: Date | null
   archived_at: Date | null
@@ -73,7 +69,6 @@ export type BoardCountAggregateOutputType = {
   backgroundColor: number
   name: number
   description: number
-  position: number
   created_at: number
   updated_at: number
   archived_at: number
@@ -85,14 +80,12 @@ export type BoardAvgAggregateInputType = {
   id?: true
   workspace_id?: true
   created_by?: true
-  position?: true
 }
 
 export type BoardSumAggregateInputType = {
   id?: true
   workspace_id?: true
   created_by?: true
-  position?: true
 }
 
 export type BoardMinAggregateInputType = {
@@ -102,7 +95,6 @@ export type BoardMinAggregateInputType = {
   backgroundColor?: true
   name?: true
   description?: true
-  position?: true
   created_at?: true
   updated_at?: true
   archived_at?: true
@@ -115,7 +107,6 @@ export type BoardMaxAggregateInputType = {
   backgroundColor?: true
   name?: true
   description?: true
-  position?: true
   created_at?: true
   updated_at?: true
   archived_at?: true
@@ -128,7 +119,6 @@ export type BoardCountAggregateInputType = {
   backgroundColor?: true
   name?: true
   description?: true
-  position?: true
   created_at?: true
   updated_at?: true
   archived_at?: true
@@ -228,7 +218,6 @@ export type BoardGroupByOutputType = {
   backgroundColor: string
   name: string
   description: string | null
-  position: runtime.Decimal
   created_at: Date
   updated_at: Date | null
   archived_at: Date | null
@@ -264,7 +253,6 @@ export type boardWhereInput = {
   backgroundColor?: Prisma.StringFilter<"board"> | string
   name?: Prisma.StringFilter<"board"> | string
   description?: Prisma.StringNullableFilter<"board"> | string | null
-  position?: Prisma.DecimalFilter<"board"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFilter<"board"> | Date | string
   updated_at?: Prisma.DateTimeNullableFilter<"board"> | Date | string | null
   archived_at?: Prisma.DateTimeNullableFilter<"board"> | Date | string | null
@@ -280,7 +268,6 @@ export type boardOrderByWithRelationInput = {
   backgroundColor?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  position?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrderInput | Prisma.SortOrder
   archived_at?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -300,7 +287,6 @@ export type boardWhereUniqueInput = Prisma.AtLeast<{
   backgroundColor?: Prisma.StringFilter<"board"> | string
   name?: Prisma.StringFilter<"board"> | string
   description?: Prisma.StringNullableFilter<"board"> | string | null
-  position?: Prisma.DecimalFilter<"board"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFilter<"board"> | Date | string
   updated_at?: Prisma.DateTimeNullableFilter<"board"> | Date | string | null
   archived_at?: Prisma.DateTimeNullableFilter<"board"> | Date | string | null
@@ -316,7 +302,6 @@ export type boardOrderByWithAggregationInput = {
   backgroundColor?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  position?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrderInput | Prisma.SortOrder
   archived_at?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -337,7 +322,6 @@ export type boardScalarWhereWithAggregatesInput = {
   backgroundColor?: Prisma.StringWithAggregatesFilter<"board"> | string
   name?: Prisma.StringWithAggregatesFilter<"board"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"board"> | string | null
-  position?: Prisma.DecimalWithAggregatesFilter<"board"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeWithAggregatesFilter<"board"> | Date | string
   updated_at?: Prisma.DateTimeNullableWithAggregatesFilter<"board"> | Date | string | null
   archived_at?: Prisma.DateTimeNullableWithAggregatesFilter<"board"> | Date | string | null
@@ -349,7 +333,6 @@ export type boardCreateInput = {
   backgroundColor?: string
   name: string
   description?: string | null
-  position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
   updated_at?: Date | string | null
   archived_at?: Date | string | null
@@ -365,7 +348,6 @@ export type boardUncheckedCreateInput = {
   backgroundColor?: string
   name: string
   description?: string | null
-  position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
   updated_at?: Date | string | null
   archived_at?: Date | string | null
@@ -379,7 +361,6 @@ export type boardUpdateInput = {
   backgroundColor?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -395,7 +376,6 @@ export type boardUncheckedUpdateInput = {
   backgroundColor?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -410,7 +390,6 @@ export type boardCreateManyInput = {
   backgroundColor?: string
   name: string
   description?: string | null
-  position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
   updated_at?: Date | string | null
   archived_at?: Date | string | null
@@ -422,7 +401,6 @@ export type boardUpdateManyMutationInput = {
   backgroundColor?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -435,7 +413,6 @@ export type boardUncheckedUpdateManyInput = {
   backgroundColor?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -464,7 +441,6 @@ export type boardCountOrderByAggregateInput = {
   backgroundColor?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  position?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   archived_at?: Prisma.SortOrder
@@ -474,7 +450,6 @@ export type boardAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   workspace_id?: Prisma.SortOrder
   created_by?: Prisma.SortOrder
-  position?: Prisma.SortOrder
 }
 
 export type boardMaxOrderByAggregateInput = {
@@ -484,7 +459,6 @@ export type boardMaxOrderByAggregateInput = {
   backgroundColor?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  position?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   archived_at?: Prisma.SortOrder
@@ -497,7 +471,6 @@ export type boardMinOrderByAggregateInput = {
   backgroundColor?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  position?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   archived_at?: Prisma.SortOrder
@@ -507,7 +480,6 @@ export type boardSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   workspace_id?: Prisma.SortOrder
   created_by?: Prisma.SortOrder
-  position?: Prisma.SortOrder
 }
 
 export type BoardScalarRelationFilter = {
@@ -557,14 +529,6 @@ export type boardUncheckedUpdateManyWithoutWorkspaceNestedInput = {
   deleteMany?: Prisma.boardScalarWhereInput | Prisma.boardScalarWhereInput[]
 }
 
-export type DecimalFieldUpdateOperationsInput = {
-  set?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
-}
-
 export type boardCreateNestedOneWithoutBoard_membersInput = {
   create?: Prisma.XOR<Prisma.boardCreateWithoutBoard_membersInput, Prisma.boardUncheckedCreateWithoutBoard_membersInput>
   connectOrCreate?: Prisma.boardCreateOrConnectWithoutBoard_membersInput
@@ -599,7 +563,6 @@ export type boardCreateWithoutWorkspaceInput = {
   backgroundColor?: string
   name: string
   description?: string | null
-  position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
   updated_at?: Date | string | null
   archived_at?: Date | string | null
@@ -613,7 +576,6 @@ export type boardUncheckedCreateWithoutWorkspaceInput = {
   backgroundColor?: string
   name: string
   description?: string | null
-  position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
   updated_at?: Date | string | null
   archived_at?: Date | string | null
@@ -657,7 +619,6 @@ export type boardScalarWhereInput = {
   backgroundColor?: Prisma.StringFilter<"board"> | string
   name?: Prisma.StringFilter<"board"> | string
   description?: Prisma.StringNullableFilter<"board"> | string | null
-  position?: Prisma.DecimalFilter<"board"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFilter<"board"> | Date | string
   updated_at?: Prisma.DateTimeNullableFilter<"board"> | Date | string | null
   archived_at?: Prisma.DateTimeNullableFilter<"board"> | Date | string | null
@@ -669,7 +630,6 @@ export type boardCreateWithoutBoard_membersInput = {
   backgroundColor?: string
   name: string
   description?: string | null
-  position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
   updated_at?: Date | string | null
   archived_at?: Date | string | null
@@ -684,7 +644,6 @@ export type boardUncheckedCreateWithoutBoard_membersInput = {
   backgroundColor?: string
   name: string
   description?: string | null
-  position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
   updated_at?: Date | string | null
   archived_at?: Date | string | null
@@ -713,7 +672,6 @@ export type boardUpdateWithoutBoard_membersInput = {
   backgroundColor?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -728,7 +686,6 @@ export type boardUncheckedUpdateWithoutBoard_membersInput = {
   backgroundColor?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -741,7 +698,6 @@ export type boardCreateWithoutListsInput = {
   backgroundColor?: string
   name: string
   description?: string | null
-  position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
   updated_at?: Date | string | null
   archived_at?: Date | string | null
@@ -756,7 +712,6 @@ export type boardUncheckedCreateWithoutListsInput = {
   backgroundColor?: string
   name: string
   description?: string | null
-  position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
   updated_at?: Date | string | null
   archived_at?: Date | string | null
@@ -785,7 +740,6 @@ export type boardUpdateWithoutListsInput = {
   backgroundColor?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -800,7 +754,6 @@ export type boardUncheckedUpdateWithoutListsInput = {
   backgroundColor?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -813,7 +766,6 @@ export type boardCreateManyWorkspaceInput = {
   backgroundColor?: string
   name: string
   description?: string | null
-  position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
   updated_at?: Date | string | null
   archived_at?: Date | string | null
@@ -825,7 +777,6 @@ export type boardUpdateWithoutWorkspaceInput = {
   backgroundColor?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -839,7 +790,6 @@ export type boardUncheckedUpdateWithoutWorkspaceInput = {
   backgroundColor?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -853,7 +803,6 @@ export type boardUncheckedUpdateManyWithoutWorkspaceInput = {
   backgroundColor?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -906,7 +855,6 @@ export type boardSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   backgroundColor?: boolean
   name?: boolean
   description?: boolean
-  position?: boolean
   created_at?: boolean
   updated_at?: boolean
   archived_at?: boolean
@@ -925,13 +873,12 @@ export type boardSelectScalar = {
   backgroundColor?: boolean
   name?: boolean
   description?: boolean
-  position?: boolean
   created_at?: boolean
   updated_at?: boolean
   archived_at?: boolean
 }
 
-export type boardOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspace_id" | "created_by" | "backgroundColor" | "name" | "description" | "position" | "created_at" | "updated_at" | "archived_at", ExtArgs["result"]["board"]>
+export type boardOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspace_id" | "created_by" | "backgroundColor" | "name" | "description" | "created_at" | "updated_at" | "archived_at", ExtArgs["result"]["board"]>
 export type boardInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.workspaceDefaultArgs<ExtArgs>
   board_members?: boolean | Prisma.board$board_membersArgs<ExtArgs>
@@ -953,7 +900,6 @@ export type $boardPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     backgroundColor: string
     name: string
     description: string | null
-    position: runtime.Decimal
     created_at: Date
     updated_at: Date | null
     archived_at: Date | null
@@ -1335,7 +1281,6 @@ export interface boardFieldRefs {
   readonly backgroundColor: Prisma.FieldRef<"board", 'String'>
   readonly name: Prisma.FieldRef<"board", 'String'>
   readonly description: Prisma.FieldRef<"board", 'String'>
-  readonly position: Prisma.FieldRef<"board", 'Decimal'>
   readonly created_at: Prisma.FieldRef<"board", 'DateTime'>
   readonly updated_at: Prisma.FieldRef<"board", 'DateTime'>
   readonly archived_at: Prisma.FieldRef<"board", 'DateTime'>
