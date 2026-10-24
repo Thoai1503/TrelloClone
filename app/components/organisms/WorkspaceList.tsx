@@ -9,15 +9,6 @@ type WorkspaceListProps = {
   onSearchChange: (value: string) => void;
 };
 
-const workspaceColors = [
-  "from-blue-500 to-indigo-600",
-  "from-cyan-500 to-blue-600",
-  "from-violet-500 to-purple-700",
-  "from-emerald-500 to-teal-700",
-  "from-orange-400 to-rose-500",
-  "from-sky-500 to-cyan-700",
-];
-
 export default function WorkspaceList({
   workspaces,
   filteredWorkspaces,
@@ -34,7 +25,7 @@ export default function WorkspaceList({
           </p>
         </div>
         <WorkspaceSearch
-          className="md:hidden"
+          className="w-full sm:w-auto sm:min-w-[280px] md:hidden"
           onChange={onSearchChange}
           value={search}
         />
@@ -42,9 +33,8 @@ export default function WorkspaceList({
 
       {filteredWorkspaces.length > 0 ? (
         <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {filteredWorkspaces.map((workspace, index) => (
+          {filteredWorkspaces.map((workspace) => (
             <WorkspaceCard
-              color={workspaceColors[index % workspaceColors.length]}
               key={workspace.encryptedId}
               workspace={workspace}
             />

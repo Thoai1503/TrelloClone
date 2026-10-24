@@ -2,6 +2,7 @@ export type WorkspaceItem = {
   encryptedId: string;
   name: string;
   description: string | null;
+  backgroundColor: string;
   memberCount: number;
   boardCount: number;
   role: "ADMIN" | "MEMBER";
@@ -18,5 +19,6 @@ export type WorkspaceDetail = {
   id: string;
   name: string;
   description: string | null;
+  backgroundColor: string;
   boards: WorkspaceBoard[];
 };

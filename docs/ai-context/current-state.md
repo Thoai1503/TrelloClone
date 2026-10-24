@@ -12,7 +12,9 @@ Last verified: 2026-10-24.
 - `/login` contains a Formik email/password form that authenticates against the stored bcrypt password hash. Google sign-in remains UI-only.
 - Workspace loading, empty, missing-user, and query-error states are separate.
 - The home UI follows Atomic Design under `app/components/atoms`, `molecules`, `organisms`, and `templates`. Route-level workspace data and state are in `app/features/workspaces`.
+- The `app/(user)/layout.tsx` route-group layout renders the shared account header for both the workspace list and workspace detail pages; page-specific controls remain within their feature content.
 - Workspace cards link to an AES-256-GCM encrypted workspace identifier. The detail screen displays active boards in a horizontally scrollable, sortable `@dnd-kit` list and persists reordered positions.
+- Workspace records store a preset hex background in `background_color`; create-workspace UI writes it with an ADMIN membership and navigates using the encrypted workspace ID.
 - The workspace detail view provides an "add another list" form. New boards are appended using the last active board's position plus `1000`, inside a transaction.
 
 ## Verified constraints

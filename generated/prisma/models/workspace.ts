@@ -40,6 +40,7 @@ export type WorkspaceMinAggregateOutputType = {
   id: bigint | null
   name: string | null
   description: string | null
+  backgroundColor: string | null
   created_by: bigint | null
   created_at: Date | null
   updated_at: Date | null
@@ -50,6 +51,7 @@ export type WorkspaceMaxAggregateOutputType = {
   id: bigint | null
   name: string | null
   description: string | null
+  backgroundColor: string | null
   created_by: bigint | null
   created_at: Date | null
   updated_at: Date | null
@@ -60,6 +62,7 @@ export type WorkspaceCountAggregateOutputType = {
   id: number
   name: number
   description: number
+  backgroundColor: number
   created_by: number
   created_at: number
   updated_at: number
@@ -82,6 +85,7 @@ export type WorkspaceMinAggregateInputType = {
   id?: true
   name?: true
   description?: true
+  backgroundColor?: true
   created_by?: true
   created_at?: true
   updated_at?: true
@@ -92,6 +96,7 @@ export type WorkspaceMaxAggregateInputType = {
   id?: true
   name?: true
   description?: true
+  backgroundColor?: true
   created_by?: true
   created_at?: true
   updated_at?: true
@@ -102,6 +107,7 @@ export type WorkspaceCountAggregateInputType = {
   id?: true
   name?: true
   description?: true
+  backgroundColor?: true
   created_by?: true
   created_at?: true
   updated_at?: true
@@ -199,6 +205,7 @@ export type WorkspaceGroupByOutputType = {
   id: bigint
   name: string
   description: string | null
+  backgroundColor: string
   created_by: bigint
   created_at: Date
   updated_at: Date | null
@@ -232,6 +239,7 @@ export type workspaceWhereInput = {
   id?: Prisma.BigIntFilter<"workspace"> | bigint | number
   name?: Prisma.StringFilter<"workspace"> | string
   description?: Prisma.StringNullableFilter<"workspace"> | string | null
+  backgroundColor?: Prisma.StringFilter<"workspace"> | string
   created_by?: Prisma.BigIntFilter<"workspace"> | bigint | number
   created_at?: Prisma.DateTimeFilter<"workspace"> | Date | string
   updated_at?: Prisma.DateTimeNullableFilter<"workspace"> | Date | string | null
@@ -244,6 +252,7 @@ export type workspaceOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  backgroundColor?: Prisma.SortOrder
   created_by?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -260,6 +269,7 @@ export type workspaceWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.workspaceWhereInput | Prisma.workspaceWhereInput[]
   name?: Prisma.StringFilter<"workspace"> | string
   description?: Prisma.StringNullableFilter<"workspace"> | string | null
+  backgroundColor?: Prisma.StringFilter<"workspace"> | string
   created_by?: Prisma.BigIntFilter<"workspace"> | bigint | number
   created_at?: Prisma.DateTimeFilter<"workspace"> | Date | string
   updated_at?: Prisma.DateTimeNullableFilter<"workspace"> | Date | string | null
@@ -272,6 +282,7 @@ export type workspaceOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  backgroundColor?: Prisma.SortOrder
   created_by?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -290,6 +301,7 @@ export type workspaceScalarWhereWithAggregatesInput = {
   id?: Prisma.BigIntWithAggregatesFilter<"workspace"> | bigint | number
   name?: Prisma.StringWithAggregatesFilter<"workspace"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"workspace"> | string | null
+  backgroundColor?: Prisma.StringWithAggregatesFilter<"workspace"> | string
   created_by?: Prisma.BigIntWithAggregatesFilter<"workspace"> | bigint | number
   created_at?: Prisma.DateTimeWithAggregatesFilter<"workspace"> | Date | string
   updated_at?: Prisma.DateTimeNullableWithAggregatesFilter<"workspace"> | Date | string | null
@@ -300,6 +312,7 @@ export type workspaceCreateInput = {
   id?: bigint | number
   name: string
   description?: string | null
+  backgroundColor?: string
   created_by: bigint | number
   created_at?: Date | string
   updated_at?: Date | string | null
@@ -312,6 +325,7 @@ export type workspaceUncheckedCreateInput = {
   id?: bigint | number
   name: string
   description?: string | null
+  backgroundColor?: string
   created_by: bigint | number
   created_at?: Date | string
   updated_at?: Date | string | null
@@ -324,6 +338,7 @@ export type workspaceUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  backgroundColor?: Prisma.StringFieldUpdateOperationsInput | string
   created_by?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -336,6 +351,7 @@ export type workspaceUncheckedUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  backgroundColor?: Prisma.StringFieldUpdateOperationsInput | string
   created_by?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -348,6 +364,7 @@ export type workspaceCreateManyInput = {
   id?: bigint | number
   name: string
   description?: string | null
+  backgroundColor?: string
   created_by: bigint | number
   created_at?: Date | string
   updated_at?: Date | string | null
@@ -358,6 +375,7 @@ export type workspaceUpdateManyMutationInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  backgroundColor?: Prisma.StringFieldUpdateOperationsInput | string
   created_by?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -368,6 +386,7 @@ export type workspaceUncheckedUpdateManyInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  backgroundColor?: Prisma.StringFieldUpdateOperationsInput | string
   created_by?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -384,6 +403,7 @@ export type workspaceCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  backgroundColor?: Prisma.SortOrder
   created_by?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
@@ -399,6 +419,7 @@ export type workspaceMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  backgroundColor?: Prisma.SortOrder
   created_by?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
@@ -409,6 +430,7 @@ export type workspaceMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  backgroundColor?: Prisma.SortOrder
   created_by?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
@@ -469,6 +491,7 @@ export type workspaceCreateWithoutMembersInput = {
   id?: bigint | number
   name: string
   description?: string | null
+  backgroundColor?: string
   created_by: bigint | number
   created_at?: Date | string
   updated_at?: Date | string | null
@@ -480,6 +503,7 @@ export type workspaceUncheckedCreateWithoutMembersInput = {
   id?: bigint | number
   name: string
   description?: string | null
+  backgroundColor?: string
   created_by: bigint | number
   created_at?: Date | string
   updated_at?: Date | string | null
@@ -507,6 +531,7 @@ export type workspaceUpdateWithoutMembersInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  backgroundColor?: Prisma.StringFieldUpdateOperationsInput | string
   created_by?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -518,6 +543,7 @@ export type workspaceUncheckedUpdateWithoutMembersInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  backgroundColor?: Prisma.StringFieldUpdateOperationsInput | string
   created_by?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -529,6 +555,7 @@ export type workspaceCreateWithoutBoardsInput = {
   id?: bigint | number
   name: string
   description?: string | null
+  backgroundColor?: string
   created_by: bigint | number
   created_at?: Date | string
   updated_at?: Date | string | null
@@ -540,6 +567,7 @@ export type workspaceUncheckedCreateWithoutBoardsInput = {
   id?: bigint | number
   name: string
   description?: string | null
+  backgroundColor?: string
   created_by: bigint | number
   created_at?: Date | string
   updated_at?: Date | string | null
@@ -567,6 +595,7 @@ export type workspaceUpdateWithoutBoardsInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  backgroundColor?: Prisma.StringFieldUpdateOperationsInput | string
   created_by?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -578,6 +607,7 @@ export type workspaceUncheckedUpdateWithoutBoardsInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  backgroundColor?: Prisma.StringFieldUpdateOperationsInput | string
   created_by?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -629,6 +659,7 @@ export type workspaceSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   id?: boolean
   name?: boolean
   description?: boolean
+  backgroundColor?: boolean
   created_by?: boolean
   created_at?: boolean
   updated_at?: boolean
@@ -644,13 +675,14 @@ export type workspaceSelectScalar = {
   id?: boolean
   name?: boolean
   description?: boolean
+  backgroundColor?: boolean
   created_by?: boolean
   created_at?: boolean
   updated_at?: boolean
   archived_at?: boolean
 }
 
-export type workspaceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "created_by" | "created_at" | "updated_at" | "archived_at", ExtArgs["result"]["workspace"]>
+export type workspaceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "backgroundColor" | "created_by" | "created_at" | "updated_at" | "archived_at", ExtArgs["result"]["workspace"]>
 export type workspaceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   members?: boolean | Prisma.workspace$membersArgs<ExtArgs>
   boards?: boolean | Prisma.workspace$boardsArgs<ExtArgs>
@@ -667,6 +699,7 @@ export type $workspacePayload<ExtArgs extends runtime.Types.Extensions.InternalA
     id: bigint
     name: string
     description: string | null
+    backgroundColor: string
     created_by: bigint
     created_at: Date
     updated_at: Date | null
@@ -1045,6 +1078,7 @@ export interface workspaceFieldRefs {
   readonly id: Prisma.FieldRef<"workspace", 'BigInt'>
   readonly name: Prisma.FieldRef<"workspace", 'String'>
   readonly description: Prisma.FieldRef<"workspace", 'String'>
+  readonly backgroundColor: Prisma.FieldRef<"workspace", 'String'>
   readonly created_by: Prisma.FieldRef<"workspace", 'BigInt'>
   readonly created_at: Prisma.FieldRef<"workspace", 'DateTime'>
   readonly updated_at: Prisma.FieldRef<"workspace", 'DateTime'>

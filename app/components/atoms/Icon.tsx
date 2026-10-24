@@ -1,6 +1,6 @@
 import type { ComponentProps, ReactNode } from "react";
 
-export type IconName = "arrow" | "home" | "members" | "search" | "workspace";
+export type IconName = "arrow" | "check" | "home" | "members" | "search" | "workspace";
 
 type IconProps = Omit<ComponentProps<"svg">, "children"> & {
   name: IconName;
@@ -14,6 +14,15 @@ const iconPaths: Record<IconName, ReactNode> = {
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth="1.8"
+    />
+  ),
+  check: (
+    <path
+      d="m5 12 4 4L19 6"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
     />
   ),
   home: (

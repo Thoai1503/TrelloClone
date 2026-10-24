@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { findWorkspacesByUserId } from "@/app/actions/workspace";
 import { useUser } from "@/app/providers/UserProvider";
+import { useWorkspaceSearch } from "@/app/providers/WorkspaceSearchProvider";
 import type { WorkspaceItem } from "@/app/types/workspace";
 import {
   WorkspaceErrorState,
@@ -18,8 +19,8 @@ type WorkspacePageContentProps = {
 
 export default function WorkspacePageContent({ username }: WorkspacePageContentProps) {
   const user = useUser();
+  const { search, setSearch, setWorkspaces: setSearchWorkspaces } = useWorkspaceSearch();
   const [workspaces, setWorkspaces] = useState<WorkspaceItem[]>([]);
-  const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(user !== null);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
@@ -41,6 +42,7 @@ export default function WorkspacePageContent({ username }: WorkspacePageContentP
       .then((result) => {
         if (isCurrentRequest) {
           setWorkspaces(result);
+          setSearchWorkspaces(result);
         }
       })
       .catch((cause: unknown) => {
@@ -58,7 +60,7 @@ export default function WorkspacePageContent({ username }: WorkspacePageContentP
     return () => {
       isCurrentRequest = false;
     };
-  }, [retryCount, user]);
+  }, [retryCount, setSearchWorkspaces, user]);
 
   if (!user || user.username !== username) {
     return <WorkspaceNotFoundState />;

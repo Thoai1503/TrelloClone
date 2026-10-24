@@ -18,6 +18,7 @@ erDiagram
         bigint id PK
         string name
         string description
+        string background_color
         bigint created_by
         datetime archived_at
     }
@@ -53,3 +54,5 @@ erDiagram
 Workspace cards expose only a randomized encrypted URL token, not the database workspace ID. Detail reads and board-order updates decrypt the token on the server and independently require that the authenticated session user owns the workspace or has a membership row. Active boards are ordered by `position`, then `id`; reorder writes assign positions in increments of 1000 within one transaction.
 
 Creating a board also verifies workspace access and reads the last active board's position inside the same Prisma transaction. The new board receives the next position (`last position + 1000`, or `1000` for the first board), is assigned to the workspace, and is recorded as created by the authenticated user.
+
+New workspaces store a validated preset hex color in `workspace.background_color`. Creation runs in a transaction, writes an ADMIN membership for the authenticated user, and returns only an encrypted workspace URL identifier to the client.
