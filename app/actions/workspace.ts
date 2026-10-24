@@ -2,7 +2,7 @@
 
 import { decryptWorkspaceId, encryptWorkspaceId } from "@/utils/workspace-id";
 import { prisma } from "@/lib/prisma";
-import type { WorkspaceItem } from "@/app/types/workspace";
+import type { WorkspaceBoard, WorkspaceItem } from "@/app/types/workspace";
 
 const MOCK_USER_ID = 1;
 
@@ -173,4 +173,72 @@ export async function saveWorkspaceBoardOrder(
   );
 
   return true;
+}
+
+export async function createWorkspaceBoard(
+  token: string,
+  name: string,
+): Promise<WorkspaceBoard | null> {
+  if (typeof token !== "string" || typeof name !== "string") {
+    return null;
+  }
+
+  const trimmedName = name.trim();
+  if (!trimmedName || trimmedName.length > 150) {
+    return null;
+  }
+
+  const workspaceId = decryptWorkspaceId(token);
+  if (workspaceId === null) {
+    return null;
+  }
+
+  const mockUserId = BigInt(MOCK_USER_ID);
+
+  return prisma.$transaction(async (transaction) => {
+    const workspace = await transaction.workspace.findFirst({
+      where: {
+        id: workspaceId,
+        archived_at: null,
+        OR: [
+          { created_by: mockUserId },
+          { members: { some: { user_id: MOCK_USER_ID } } },
+        ],
+      },
+      select: { id: true },
+    });
+
+    if (!workspace) {
+      return null;
+    }
+
+    const lastBoard = await transaction.board.findFirst({
+      where: { workspace_id: workspace.id, archived_at: null },
+      select: { position: true },
+      orderBy: [{ position: "desc" }, { id: "desc" }],
+    });
+    const position = lastBoard ? lastBoard.position.plus(1000) : 1000;
+
+    const board = await transaction.board.create({
+      data: {
+        workspace_id: workspace.id,
+        created_by: mockUserId,
+        name: trimmedName,
+        position,
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        background: true,
+      },
+    });
+
+    return {
+      id: board.id.toString(),
+      name: board.name,
+      description: board.description,
+      background: board.background,
+    };
+  });
 }

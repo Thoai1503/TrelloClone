@@ -20,4 +20,5 @@ applyTo:
 - Never accept a user ID from a client as proof of identity. Until authentication exists, use the explicit server-side mock identity; replace it with the authenticated session when auth is implemented.
 - Keep encryption keys in environment variables, never in source control. Use authenticated encryption for identifiers placed in URLs, and validate/decrypt them only on the server.
 - Validate complete reorder submissions against the current workspace's active board IDs before persisting order changes transactionally.
+- When appending ordered records, calculate the next position from the last active record inside the same database transaction that creates the new record; preserve the existing ordering convention.
 - When changing provider or server-action behavior, document verified data flow in `docs/architecture/` and relevant decisions in `docs/ai-context/`.

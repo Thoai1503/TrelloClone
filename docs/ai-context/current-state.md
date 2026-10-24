@@ -11,6 +11,7 @@ Last verified: 2026-10-24.
 - Workspace loading, empty, missing-user, and query-error states are separate.
 - The home UI follows Atomic Design under `app/components/atoms`, `molecules`, `organisms`, and `templates`. Route-level workspace data and state are in `app/features/workspaces`.
 - Workspace cards link to an AES-256-GCM encrypted workspace identifier. The detail screen displays active boards in a horizontally scrollable, sortable `@dnd-kit` list and persists reordered positions.
+- The workspace detail view provides an "add another list" form. New boards are appended using the last active board's position plus `1000`, inside a transaction.
 
 ## Verified constraints
 

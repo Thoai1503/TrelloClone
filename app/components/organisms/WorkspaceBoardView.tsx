@@ -18,13 +18,16 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 
-import { saveWorkspaceBoardOrder } from "@/app/actions/workspace";
+import {
+  createWorkspaceBoard,
+  saveWorkspaceBoardOrder,
+} from "@/app/actions/workspace";
 import type { WorkspaceBoard, WorkspaceDetail } from "@/app/types/workspace";
 import { useUser } from "@/app/providers/UserProvider";
 import { getWorkspaceBoardBackground } from "@/utils/workspace-background";
 
 import { Avatar, Button, Icon } from "../atoms";
-import { SortableBoardCard } from "../molecules";
+import { AddBoardCard, SortableBoardCard } from "../molecules";
 
 type WorkspaceBoardViewProps = {
   workspace: WorkspaceDetail;
@@ -59,10 +62,6 @@ export default function WorkspaceBoardView({
     setBoards(reorderedBoards);
     setError(null);
     setIsSaving(true);
-    console.log(
-      "Saving new board order:",
-      reorderedBoards.map((board) => board.id),
-    );
     try {
       const saved = await saveWorkspaceBoardOrder(
         workspace.id,
@@ -79,6 +78,15 @@ export default function WorkspaceBoardView({
     } finally {
       setIsSaving(false);
     }
+  }
+
+  async function handleAddBoard(name: string) {
+    const board = await createWorkspaceBoard(workspace.id, name);
+    if (!board) {
+      throw new Error("Workspace or board name is invalid, or access was denied.");
+    }
+
+    setBoards((currentBoards) => [...currentBoards, board]);
   }
 
   return (
@@ -140,45 +148,38 @@ export default function WorkspaceBoardView({
             </div>
           )}
 
-          {boards.length > 0 ? (
-            <DndContext
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-              sensors={sensors}
+          <DndContext
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+            sensors={sensors}
+          >
+            <SortableContext
+              items={boards.map((board) => board.id)}
+              strategy={horizontalListSortingStrategy}
             >
-              <SortableContext
-                items={boards.map((board) => board.id)}
-                strategy={horizontalListSortingStrategy}
+              <div
+                aria-label="Danh sách bảng; kéo để sắp xếp"
+                className="flex min-h-0 flex-1 items-start gap-4 overflow-x-auto overflow-y-hidden pb-5"
               >
-                <div
-                  aria-label="Danh sách bảng; kéo để sắp xếp"
-                  className="flex min-h-0 flex-1 items-start gap-4 overflow-x-auto overflow-y-hidden pb-5"
-                >
-                  {boards.map((board: WorkspaceBoard) => (
-                    <SortableBoardCard
-                      board={{
-                        ...board,
-                        background: getWorkspaceBoardBackground(
-                          board.background,
-                        ),
-                      }}
-                      disabled={isSaving}
-                      key={board.id}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-            </DndContext>
-          ) : (
-            <div className="flex min-h-48 flex-1 items-center justify-center rounded-xl border border-dashed border-white/35 bg-white/10 p-8 text-center">
-              <div>
-                <h3 className="font-semibold">Workspace này chưa có bảng</h3>
-                <p className="mt-2 text-sm text-white/75">
-                  Các bảng sẽ xuất hiện tại đây khi được tạo.
-                </p>
+                {boards.map((board: WorkspaceBoard) => (
+                  <SortableBoardCard
+                    board={{
+                      ...board,
+                      background: getWorkspaceBoardBackground(
+                        board.background,
+                      ),
+                    }}
+                    disabled={isSaving}
+                    key={board.id}
+                  />
+                ))}
+                <AddBoardCard
+                  disabled={isSaving}
+                  onAdd={handleAddBoard}
+                />
               </div>
-            </div>
-          )}
+            </SortableContext>
+          </DndContext>
 
           {isSaving && (
             <p
