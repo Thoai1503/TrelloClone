@@ -2,12 +2,16 @@
 
 import {
   DndContext,
+  DragOverlay,
   KeyboardSensor,
   PointerSensor,
   closestCenter,
+  pointerWithin,
   useSensor,
   useSensors,
+  type CollisionDetection,
   type DragEndEvent,
+  type DragStartEvent,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -21,14 +25,31 @@ import { useState, type FormEvent } from "react";
 import {
   createBoardList,
   createListCard,
+  reorderBoardCards,
   reorderBoardLists,
-  reorderListCards,
 } from "@/app/actions/lists";
 import type { BoardDetail, BoardList, BoardTask } from "@/app/types/board";
 import { useUser } from "@/app/providers/UserProvider";
 
 import { Button, Icon } from "../atoms";
 import { SortableBoardList } from "../molecules";
+
+const boardCollisionDetection: CollisionDetection = (args) => {
+  const activeType = String(args.active.id).split(":")[0];
+  const validTypes = activeType === "card" ? ["card", "list"] : ["list"];
+  const pointerCollisions = pointerWithin(args).filter((collision) =>
+    validTypes.includes(String(collision.id).split(":")[0]),
+  );
+  const cardCollisions = pointerCollisions.filter(
+    (collision) => String(collision.id).split(":")[0] === "card",
+  );
+  if (cardCollisions.length > 0) return cardCollisions;
+  if (pointerCollisions.length > 0) return pointerCollisions;
+
+  return closestCenter(args).filter((collision) =>
+    validTypes.includes(String(collision.id).split(":")[0]),
+  );
+};
 
 type BoardDetailViewProps = {
   board: BoardDetail;
@@ -43,6 +64,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
   const [isSavingCardOrder, setIsSavingCardOrder] = useState(false);
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [activeCard, setActiveCard] = useState<BoardTask | null>(null);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, {
@@ -50,7 +72,22 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
     }),
   );
 
+  function handleDragStart(event: DragStartEvent) {
+    const activeId = String(event.active.id);
+    if (!activeId.startsWith("card:")) {
+      setActiveCard(null);
+      return;
+    }
+
+    const cardId = activeId.slice("card:".length);
+    const card = lists
+      .flatMap((list) => list.cards)
+      .find((item) => item.id === cardId);
+    setActiveCard(card ?? null);
+  }
+
   async function handleDragEnd(event: DragEndEvent) {
+    setActiveCard(null);
     const { active, over } = event;
     if (
       !board.canManageLists ||
@@ -62,29 +99,99 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
       return;
     }
 
-    const previousLists = lists;
-    const oldIndex = lists.findIndex((list) => list.id === active.id);
-    const newIndex = lists.findIndex((list) => list.id === over.id);
-    if (oldIndex < 0 || newIndex < 0) return;
-
-    const reorderedLists = arrayMove(lists, oldIndex, newIndex);
-    setLists(reorderedLists);
-    setIsSavingOrder(true);
-    setError(null);
-
-    try {
-      const saved = await reorderBoardLists(
-        board.encryptedId,
-        reorderedLists.map((list) => list.id),
+    const activeId = String(active.id);
+    const overId = String(over.id);
+    if (activeId.startsWith("list:")) {
+      const overListId = overId.startsWith("list:")
+        ? overId.slice("list:".length)
+        : null;
+      const oldIndex = lists.findIndex(
+        (list) => `list:${list.id}` === activeId,
       );
-      if (!saved) throw new Error("Board list order was rejected.");
-    } catch (cause: unknown) {
-      console.error("Failed to save board list order.", cause);
-      setLists(previousLists);
-      setError("Không thể lưu thứ tự danh sách. Vui lòng thử lại.");
-    } finally {
-      setIsSavingOrder(false);
+      const newIndex = overListId
+        ? lists.findIndex((list) => list.id === overListId)
+        : -1;
+      if (oldIndex < 0 || newIndex < 0) return;
+
+      const previousLists = lists;
+      const reorderedLists = arrayMove(lists, oldIndex, newIndex);
+      setLists(reorderedLists);
+      setIsSavingOrder(true);
+      setError(null);
+
+      try {
+        const saved = await reorderBoardLists(
+          board.encryptedId,
+          reorderedLists.map((list) => list.id),
+        );
+        if (!saved) throw new Error("Board list order was rejected.");
+      } catch (cause: unknown) {
+        console.error("Failed to save board list order.", cause);
+        setLists(previousLists);
+        setError("Không thể lưu thứ tự danh sách. Vui lòng thử lại.");
+      } finally {
+        setIsSavingOrder(false);
+      }
+      return;
     }
+
+    if (!activeId.startsWith("card:")) return;
+    const activeCardId = activeId.slice("card:".length);
+    const sourceList = lists.find((list) =>
+      list.cards.some((card) => card.id === activeCardId),
+    );
+    const destinationListId = overId.startsWith("card:")
+      ? lists.find((list) =>
+          list.cards.some(
+            (card) => card.id === overId.slice("card:".length),
+          ),
+        )?.id
+      : overId.startsWith("list:")
+        ? overId.slice("list:".length)
+        : undefined;
+    const destinationList = lists.find(
+      (list) => list.id === destinationListId,
+    );
+    if (!sourceList || !destinationList) return;
+
+    const sourceIndex = sourceList.cards.findIndex(
+      (card) => card.id === activeCardId,
+    );
+    const targetIndex = overId.startsWith("card:")
+      ? destinationList.cards.findIndex(
+          (card) => card.id === overId.slice("card:".length),
+        )
+      : destinationList.cards.length;
+    if (sourceIndex < 0 || targetIndex < 0) return;
+
+    if (sourceList.id === destinationList.id) {
+      const reorderedCards = arrayMove(
+        sourceList.cards,
+        sourceIndex,
+        targetIndex,
+      );
+      if (
+        reorderedCards.every(
+          (card, index) => card.id === sourceList.cards[index]?.id,
+        )
+      ) {
+        return;
+      }
+      await handleReorderCards(sourceList.id, reorderedCards);
+      return;
+    }
+
+    const sourceCards = sourceList.cards.filter(
+      (card) => card.id !== activeCardId,
+    );
+    const destinationCards = [...destinationList.cards];
+    destinationCards.splice(targetIndex, 0, sourceList.cards[sourceIndex]);
+    await handleReorderCards(
+      sourceList.id,
+      sourceCards,
+      destinationList.id,
+      destinationCards,
+    );
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -126,31 +233,46 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
   }
 
   async function handleReorderCards(
-    listId: string,
-    reorderedCards: BoardTask[],
+    sourceListId: string,
+    sourceCards: BoardTask[],
+    destinationListId = sourceListId,
+    destinationCards = sourceCards,
   ): Promise<void> {
     if (isSavingCardOrder) return;
 
     const previousLists = lists;
     setLists((currentLists) =>
       currentLists.map((list) =>
-        list.id === listId ? { ...list, cards: reorderedCards } : list,
+        list.id === sourceListId
+          ? { ...list, cards: sourceCards }
+          : list.id === destinationListId
+            ? { ...list, cards: destinationCards }
+            : list,
       ),
     );
     setIsSavingCardOrder(true);
     setError(null);
 
     try {
-      const saved = await reorderListCards(
+      const orderedLists =
+        sourceListId === destinationListId
+          ? [{ listId: sourceListId, cardIds: sourceCards.map((card) => card.id) }]
+          : [
+              { listId: sourceListId, cardIds: sourceCards.map((card) => card.id) },
+              {
+                listId: destinationListId,
+                cardIds: destinationCards.map((card) => card.id),
+              },
+            ];
+      const saved = await reorderBoardCards(
         board.encryptedId,
-        listId,
-        reorderedCards.map((card) => card.id),
+        orderedLists,
       );
-      if (!saved) throw new Error("List card order was rejected.");
+      if (!saved) throw new Error("Board card order was rejected.");
     } catch (cause: unknown) {
-      console.error("Failed to save list card order.", cause);
+      console.error("Failed to save board card order.", cause);
       setLists(previousLists);
-      setError("Không thể lưu thứ tự thẻ. Vui lòng thử lại.");
+      setError("Không thể lưu thay đổi thẻ. Vui lòng thử lại.");
     } finally {
       setIsSavingCardOrder(false);
     }
@@ -207,8 +329,10 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
         )}
 
         <DndContext
-          collisionDetection={closestCenter}
+          collisionDetection={boardCollisionDetection}
+          onDragCancel={() => setActiveCard(null)}
           onDragEnd={handleDragEnd}
+          onDragStart={handleDragStart}
           sensors={sensors}
         >
           <div
@@ -216,7 +340,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
             className="flex min-h-0 flex-1 items-start gap-3 overflow-x-auto overflow-y-hidden pb-4"
           >
             <SortableContext
-              items={lists.map((list) => list.id)}
+              items={lists.map((list) => `list:${list.id}`)}
               strategy={horizontalListSortingStrategy}
             >
               {lists.map((list: BoardList) => (
@@ -231,7 +355,6 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
                   key={list.id}
                   list={list}
                   onAddCard={handleAddCard}
-                  onReorderCards={handleReorderCards}
                 />
               ))}
             </SortableContext>
@@ -282,6 +405,28 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
               </button>
             ) : null}
           </div>
+          <DragOverlay dropAnimation={null} zIndex={1000}>
+            {activeCard ? (
+              <article className="flex w-60 items-start justify-between gap-2 rounded-lg bg-white p-3 text-sm text-gray-900 shadow-xl ring-1 ring-black/10">
+                <span className="min-w-0 flex-1 break-words">
+                  {activeCard.title}
+                </span>
+                <svg
+                  aria-hidden="true"
+                  className="h-4 w-4 shrink-0 text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                >
+                  <circle cx="5" cy="3" r="1.2" />
+                  <circle cx="11" cy="3" r="1.2" />
+                  <circle cx="5" cy="8" r="1.2" />
+                  <circle cx="11" cy="8" r="1.2" />
+                  <circle cx="5" cy="13" r="1.2" />
+                  <circle cx="11" cy="13" r="1.2" />
+                </svg>
+              </article>
+            ) : null}
+          </DragOverlay>
         </DndContext>
         {isSavingOrder && (
           <p aria-live="polite" className="shrink-0 text-sm text-white/75">

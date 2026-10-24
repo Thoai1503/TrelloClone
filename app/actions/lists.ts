@@ -286,19 +286,27 @@ export async function createListCard(
   });
 }
 
-export async function reorderListCards(
+export async function reorderBoardCards(
   boardToken: string,
-  listId: string,
-  orderedCardIds: string[],
+  orderedLists: { listId: string; cardIds: string[] }[],
 ): Promise<boolean> {
   if (
     typeof boardToken !== "string" ||
-    typeof listId !== "string" ||
-    listId.length > 19 ||
-    !/^\d+$/.test(listId) ||
-    !Array.isArray(orderedCardIds) ||
-    !orderedCardIds.every(
-      (id) => typeof id === "string" && id.length <= 19 && /^\d+$/.test(id),
+    !Array.isArray(orderedLists) ||
+    orderedLists.length < 1 ||
+    orderedLists.length > 2 ||
+    !orderedLists.every(
+      (list) =>
+        typeof list === "object" &&
+        list !== null &&
+        !Array.isArray(list) &&
+        typeof list.listId === "string" &&
+        list.listId.length <= 19 &&
+        /^\d+$/.test(list.listId) &&
+        Array.isArray(list.cardIds) &&
+        list.cardIds.every(
+          (id) => typeof id === "string" && id.length <= 19 && /^\d+$/.test(id),
+        ),
     )
   ) {
     return false;
@@ -307,9 +315,20 @@ export async function reorderListCards(
   const boardId = decryptBoardId(boardToken);
   if (boardId === null) return false;
 
-  const parsedListId = BigInt(listId);
-  const cardIds = orderedCardIds.map((id) => BigInt(id));
-  if (new Set(cardIds.map(String)).size !== cardIds.length) return false;
+  const parsedLists = orderedLists.map(({ listId, cardIds }) => ({
+    id: BigInt(listId),
+    cardIds: cardIds.map((id) => BigInt(id)),
+  }));
+  const allListIds = parsedLists.map((list) => list.id.toString());
+  const allCardIds = parsedLists.flatMap((list) =>
+    list.cardIds.map((id) => id.toString()),
+  );
+  if (
+    new Set(allListIds).size !== parsedLists.length ||
+    new Set(allCardIds).size !== allCardIds.length
+  ) {
+    return false;
+  }
 
   const currentUser = await getCurrentUser();
   if (!currentUser) return false;
@@ -365,8 +384,12 @@ export async function reorderListCards(
       board.board_members.some((member) => member.role !== "VIEWER");
     if (!canManageCards) return false;
 
-    const list = await transaction.list.findFirst({
-      where: { id: parsedListId, board_id: board.id, archived_at: null },
+    const lists = await transaction.list.findMany({
+      where: {
+        id: { in: parsedLists.map((list) => list.id) },
+        board_id: board.id,
+        archived_at: null,
+      },
       select: {
         id: true,
         cards: {
@@ -375,20 +398,32 @@ export async function reorderListCards(
         },
       },
     });
-    if (!list || list.cards.length !== cardIds.length) return false;
+    if (lists.length !== parsedLists.length) return false;
 
-    const activeCardIds = new Set(list.cards.map((card) => card.id.toString()));
-    if (!cardIds.every((id) => activeCardIds.has(id.toString()))) return false;
+    const activeCardIds = new Set(
+      lists.flatMap((list) => list.cards.map((card) => card.id.toString())),
+    );
+    if (
+      activeCardIds.size !== allCardIds.length ||
+      !allCardIds.every((id) => activeCardIds.has(id))
+    ) {
+      return false;
+    }
 
-    for (const [index, cardId] of cardIds.entries()) {
-      await transaction.card.updateMany({
-        where: {
-          id: cardId,
-          list_id: list.id,
-          archived_at: null,
-        },
-        data: { position: index * 1000 },
-      });
+    for (const orderedList of parsedLists) {
+      for (const [index, cardId] of orderedList.cardIds.entries()) {
+        await transaction.card.updateMany({
+          where: {
+            id: cardId,
+            list_id: { in: parsedLists.map((list) => list.id) },
+            archived_at: null,
+          },
+          data: {
+            list_id: orderedList.id,
+            position: index * 1000,
+          },
+        });
+      }
     }
 
     return true;

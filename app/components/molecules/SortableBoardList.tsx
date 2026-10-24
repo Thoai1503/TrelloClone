@@ -1,19 +1,8 @@
 "use client";
 
-import {
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import {
   SortableContext,
-  arrayMove,
-  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -28,7 +17,6 @@ type SortableBoardListProps = {
   disabled: boolean;
   canAddCards: boolean;
   onAddCard: (listId: string, title: string) => Promise<BoardTask>;
-  onReorderCards: (listId: string, cards: BoardTask[]) => Promise<void>;
 };
 
 export default function SortableBoardList({
@@ -36,33 +24,14 @@ export default function SortableBoardList({
   disabled,
   canAddCards,
   onAddCard,
-  onReorderCards,
 }: SortableBoardListProps) {
   const { attributes, isDragging, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: list.id, disabled });
+    useSortable({ id: `list:${list.id}`, disabled });
   const inputId = useId();
   const [isAdding, setIsAdding] = useState(false);
   const [title, setTitle] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const cardSensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
-
-  function handleCardDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
-    if (disabled || !over || active.id === over.id) return;
-
-    const oldIndex = list.cards.findIndex((card) => card.id === active.id);
-    const newIndex = list.cards.findIndex((card) => card.id === over.id);
-    if (oldIndex < 0 || newIndex < 0) return;
-
-    void onReorderCards(list.id, arrayMove(list.cards, oldIndex, newIndex));
-  }
-
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmedTitle = title.trim();
@@ -114,26 +83,20 @@ export default function SortableBoardList({
         </button>
       </div>
       <div className="min-h-0 space-y-2 overflow-y-auto">
-        <DndContext
-          collisionDetection={closestCenter}
-          onDragEnd={handleCardDragEnd}
-          sensors={cardSensors}
+        <SortableContext
+          items={list.cards.map((card) => `card:${card.id}`)}
+          strategy={verticalListSortingStrategy}
         >
-          <SortableContext
-            items={list.cards.map((card) => card.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <div className="space-y-2">
-              {list.cards.map((card) => (
-                <SortableTaskCard
-                  card={card}
-                  disabled={disabled || !canAddCards}
-                  key={card.id}
-                />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
+          <div className="min-h-4 space-y-2">
+            {list.cards.map((card) => (
+              <SortableTaskCard
+                card={card}
+                disabled={disabled || !canAddCards}
+                key={card.id}
+              />
+            ))}
+          </div>
+        </SortableContext>
         {list.cards.length === 0 && !canAddCards && (
           <p className="rounded-lg bg-white/70 p-3 text-xs text-gray-500">
             Chưa có thẻ nào trong danh sách.

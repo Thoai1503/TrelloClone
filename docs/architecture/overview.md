@@ -101,9 +101,9 @@ flowchart TD
     Detail --> DragLists["Drag/drop lists with @dnd-kit"]
     DragLists --> ReorderLists["reorderBoardLists validates access and active list IDs"]
     ReorderLists --> Persist["Persist list.position transactionally"]
-    ReadCards --> DragCards["Drag/drop cards within each list"]
-    DragCards --> ReorderCards["reorderListCards validates access and active card IDs"]
-    ReorderCards --> PersistCards["Persist card.position transactionally"]
+    ReadCards --> DragCards["Drag/drop cards within and between lists"]
+    DragCards --> ReorderCards["reorderBoardCards validates access and affected card IDs"]
+    ReorderCards --> PersistCards["Persist card.list_id and card.position transactionally"]
 ```
 
 The shared AES-256-GCM ID utility encrypts both workspace and board identifiers. The workspace encryption key is `WORKSPACE_ID_ENCRYPTION_KEY` (64 hexadecimal characters); session encryption uses NextAuth's separate `NEXTAUTH_SECRET` (at least 32 characters). Both secrets must be configured consistently across instances. AES-GCM tokens are randomized, authenticated opaque identifiers; authorization is always checked against the authenticated session user.
