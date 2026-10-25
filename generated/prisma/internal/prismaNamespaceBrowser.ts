@@ -161,6 +161,7 @@ export const CardScalarFieldEnum = {
   position: 'position',
   priority: 'priority',
   is_completed: 'is_completed',
+  start_date: 'start_date',
   due_date: 'due_date',
   completed_at: 'completed_at',
   created_at: 'created_at',

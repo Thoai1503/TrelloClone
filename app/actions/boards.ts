@@ -155,7 +155,27 @@ export async function getBoardByToken(
           name: true,
           cards: {
             where: { archived_at: null },
-            select: { id: true, title: true, is_completed: true },
+            select: {
+              id: true,
+              title: true,
+              is_completed: true,
+              description: true,
+              start_date: true,
+              due_date: true,
+              members: {
+                select: {
+                  user: {
+                    select: {
+                      id: true,
+                      email: true,
+                      full_name: true,
+                      avatar_url: true,
+                    },
+                  },
+                },
+                orderBy: [{ assigned_at: "asc" }, { user_id: "asc" }],
+              },
+            },
             orderBy: [{ position: "asc" }, { id: "asc" }],
           },
         },
@@ -203,6 +223,10 @@ export async function getBoardByToken(
         id: card.id.toString(),
         title: card.title,
         is_completed: card.is_completed,
+        description: card.description,
+        start_date: card.start_date?.toISOString() ?? null,
+        due_date: card.due_date?.toISOString() ?? null,
+        members: card.members.map(({ user: member }) => member),
       })),
     })),
   };

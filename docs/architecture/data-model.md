@@ -61,8 +61,12 @@ erDiagram
         bigint list_id FK
         int created_by FK
         string title
+        string description
         enum priority
         boolean is_completed
+        datetime start_date
+        datetime start_date
+        datetime due_date
         decimal position
         datetime archived_at
     }

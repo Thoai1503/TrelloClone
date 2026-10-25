@@ -17,6 +17,17 @@ export type BoardTask = {
   id: string;
   title: string;
   is_completed: boolean;
+  description: string | null;
+  start_date: string | null;
+  due_date: string | null;
+  members: CardMemberSummary[];
+};
+
+export type CardMemberSummary = {
+  id: number;
+  email: string | null;
+  full_name: string | null;
+  avatar_url: string | null;
 };
 
 export type BoardMemberRole = "ADMIN" | "EDITOR" | "VIEWER";

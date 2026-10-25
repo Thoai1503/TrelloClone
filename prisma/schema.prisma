@@ -143,6 +143,7 @@ model card {
   priority    CardPriority @default(MEDIUM)
   is_completed Boolean     @default(false) @map("is_completed")
 
+  start_date   DateTime? @map("start_date") @db.DateTime(3)
   due_date     DateTime? @map("due_date") @db.DateTime(3)
   completed_at DateTime? @map("completed_at") @db.DateTime(3)
   created_at   DateTime  @default(now()) @map("created_at") @db.DateTime(3)

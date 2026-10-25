@@ -19,15 +19,15 @@ export default function UserHeader() {
   return (
     <header className="sticky top-0 z-20 flex h-[68px] items-center justify-between border-b border-gray-200 bg-white px-4 text-gray-900 sm:px-6">
       <Link
-        aria-label="Trello - Trang chủ"
+        aria-label="Tifo - Trang chủ"
         className="flex items-center gap-2.5"
         href={user ? `/u/${encodeURIComponent(user.username)}/board` : "/"}
       >
         <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-lg font-black text-white shadow-sm">
-          t
+          T
         </span>
         <span className="text-[21px] font-bold tracking-tight text-gray-800">
-          trello
+          Tifo
         </span>
       </Link>
 

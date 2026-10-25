@@ -3,7 +3,94 @@
 import { decryptBoardId } from "@/utils/resource-id";
 import { getCurrentUser } from "@/utils/auth-session";
 import { prisma } from "@/lib/prisma";
-import type { BoardList, BoardTask } from "@/app/types/board";
+import type {
+  BoardList,
+  BoardTask,
+  CardMemberSummary,
+} from "@/app/types/board";
+import type { Prisma } from "@/generated/prisma/client";
+
+async function findEditableCardBoard(
+  transaction: Prisma.TransactionClient,
+  boardId: bigint,
+  userId: number,
+) {
+  const currentUserId = BigInt(userId);
+  const board = await transaction.board.findFirst({
+    where: {
+      id: boardId,
+      archived_at: null,
+      workspace: { archived_at: null },
+    },
+    select: {
+      id: true,
+      created_by: true,
+      workspace: {
+        select: {
+          created_by: true,
+          members: {
+            where: { user_id: userId },
+            select: { role: true },
+            take: 1,
+          },
+        },
+      },
+      board_members: {
+        where: { user_id: userId },
+        select: { role: true },
+        take: 1,
+      },
+    },
+  });
+
+  if (!board) return null;
+  const canManageCards =
+    board.created_by === currentUserId ||
+    board.workspace.created_by === currentUserId ||
+    board.workspace.members.length > 0 ||
+    board.board_members.some((member) => member.role !== "VIEWER");
+
+  return canManageCards ? board : null;
+}
+
+function parseOptionalDate(value: string | null): Date | null | undefined {
+  if (value === null) return null;
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return undefined;
+  }
+
+  const date = new Date(`${value}T00:00:00.000Z`);
+  return date.toISOString().slice(0, 10) === value ? date : undefined;
+}
+
+function serializeCard(
+  card: {
+    id: bigint;
+    title: string;
+    is_completed: boolean;
+    description: string | null;
+    start_date: Date | null;
+    due_date: Date | null;
+    members: {
+      user: {
+        id: number;
+        email: string | null;
+        full_name: string | null;
+        avatar_url: string | null;
+      };
+    }[];
+  },
+): BoardTask {
+  return {
+    id: card.id.toString(),
+    title: card.title,
+    is_completed: card.is_completed,
+    description: card.description,
+    start_date: card.start_date?.toISOString() ?? null,
+    due_date: card.due_date?.toISOString() ?? null,
+    members: card.members.map(({ user }) => user),
+  };
+}
 
 export async function createBoardList(
   boardToken: string,
@@ -279,13 +366,24 @@ export async function createListCard(
         title: trimmedTitle,
         position,
       },
-      select: { id: true, title: true, is_completed: true },
+      select: {
+        id: true,
+        title: true,
+        is_completed: true,
+        description: true,
+        start_date: true,
+        due_date: true,
+      },
     });
 
     return {
       id: card.id.toString(),
       title: card.title,
       is_completed: card.is_completed,
+      description: card.description,
+      start_date: card.start_date?.toISOString() ?? null,
+      due_date: card.due_date?.toISOString() ?? null,
+      members: [],
     };
   });
 }
@@ -378,7 +476,27 @@ export async function updateListCardTitle(
 
     const updatedCard = await transaction.card.findUnique({
       where: { id: parsedCardId },
-      select: { id: true, title: true, is_completed: true },
+      select: {
+        id: true,
+        title: true,
+        is_completed: true,
+        description: true,
+        start_date: true,
+        due_date: true,
+        members: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                full_name: true,
+                avatar_url: true,
+              },
+            },
+          },
+          orderBy: [{ assigned_at: "asc" }, { user_id: "asc" }],
+        },
+      },
     });
     if (!updatedCard) return null;
 
@@ -386,6 +504,10 @@ export async function updateListCardTitle(
       id: updatedCard.id.toString(),
       title: updatedCard.title,
       is_completed: updatedCard.is_completed,
+      description: updatedCard.description,
+      start_date: updatedCard.start_date?.toISOString() ?? null,
+      due_date: updatedCard.due_date?.toISOString() ?? null,
+      members: updatedCard.members.map(({ user }) => user),
     };
   });
 }
@@ -478,7 +600,27 @@ export async function setListCardCompleted(
 
     const updatedCard = await transaction.card.findUnique({
       where: { id: parsedCardId },
-      select: { id: true, title: true, is_completed: true },
+      select: {
+        id: true,
+        title: true,
+        is_completed: true,
+        description: true,
+        start_date: true,
+        due_date: true,
+        members: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                full_name: true,
+                avatar_url: true,
+              },
+            },
+          },
+          orderBy: [{ assigned_at: "asc" }, { user_id: "asc" }],
+        },
+      },
     });
     if (!updatedCard) return null;
 
@@ -486,7 +628,223 @@ export async function setListCardCompleted(
       id: updatedCard.id.toString(),
       title: updatedCard.title,
       is_completed: updatedCard.is_completed,
+      description: updatedCard.description,
+      start_date: updatedCard.start_date?.toISOString() ?? null,
+      due_date: updatedCard.due_date?.toISOString() ?? null,
+      members: updatedCard.members.map(({ user }) => user),
     };
+  });
+}
+
+export async function updateCardDetails(
+  boardToken: string,
+  cardId: string,
+  description: string,
+  startDate: string | null,
+  endDate: string | null,
+): Promise<BoardTask | null> {
+  if (
+    typeof boardToken !== "string" ||
+    typeof cardId !== "string" ||
+    cardId.length > 19 ||
+    !/^\d+$/.test(cardId) ||
+    typeof description !== "string" ||
+    description.length > 20000 ||
+    (startDate !== null && typeof startDate !== "string") ||
+    (endDate !== null && typeof endDate !== "string")
+  ) {
+    return null;
+  }
+
+  const parsedStartDate = parseOptionalDate(startDate);
+  const parsedEndDate = parseOptionalDate(endDate);
+  if (parsedStartDate === undefined || parsedEndDate === undefined) return null;
+  if (
+    parsedStartDate &&
+    parsedEndDate &&
+    parsedStartDate.getTime() > parsedEndDate.getTime()
+  ) {
+    return null;
+  }
+
+  const boardId = decryptBoardId(boardToken);
+  if (boardId === null) return null;
+
+  const currentUser = await getCurrentUser();
+  if (!currentUser) return null;
+
+  const parsedCardId = BigInt(cardId);
+  return prisma.$transaction(async (transaction) => {
+    const board = await findEditableCardBoard(
+      transaction,
+      boardId,
+      currentUser.id,
+    );
+    if (!board) return null;
+
+    const updatedCount = await transaction.card.updateMany({
+      where: {
+        id: parsedCardId,
+        archived_at: null,
+        list: { board_id: board.id, archived_at: null },
+      },
+      data: {
+        description: description.trim() || null,
+        start_date: parsedStartDate,
+        due_date: parsedEndDate,
+      },
+    });
+    if (updatedCount.count !== 1) return null;
+
+    const card = await transaction.card.findUnique({
+      where: { id: parsedCardId },
+      select: {
+        id: true,
+        title: true,
+        is_completed: true,
+        description: true,
+        start_date: true,
+        due_date: true,
+        members: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                full_name: true,
+                avatar_url: true,
+              },
+            },
+          },
+          orderBy: [{ assigned_at: "asc" }, { user_id: "asc" }],
+        },
+      },
+    });
+
+    return card ? serializeCard(card) : null;
+  });
+}
+
+export async function findCardMemberCandidate(
+  boardToken: string,
+  cardId: string,
+  emailInput: string,
+): Promise<CardMemberSummary | null> {
+  if (
+    typeof boardToken !== "string" ||
+    typeof cardId !== "string" ||
+    cardId.length > 19 ||
+    !/^\d+$/.test(cardId) ||
+    typeof emailInput !== "string" ||
+    emailInput.length > 255
+  ) {
+    return null;
+  }
+
+  const email = emailInput.trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return null;
+
+  const boardId = decryptBoardId(boardToken);
+  if (boardId === null) return null;
+
+  const currentUser = await getCurrentUser();
+  if (!currentUser) return null;
+
+  return prisma.$transaction(async (transaction) => {
+    const board = await findEditableCardBoard(
+      transaction,
+      boardId,
+      currentUser.id,
+    );
+    if (!board) return null;
+
+    const candidate = await transaction.user.findFirst({
+      where: {
+        email,
+        card_members: {
+          none: { card_id: BigInt(cardId) },
+        },
+      },
+      select: {
+        id: true,
+        email: true,
+        full_name: true,
+        avatar_url: true,
+      },
+    });
+    if (!candidate) return null;
+
+    const card = await transaction.card.findFirst({
+      where: {
+        id: BigInt(cardId),
+        list: { board_id: board.id, archived_at: null },
+        archived_at: null,
+      },
+      select: { id: true },
+    });
+    return card ? candidate : null;
+  });
+}
+
+export async function addCardMember(
+  boardToken: string,
+  cardId: string,
+  memberId: number,
+): Promise<CardMemberSummary | null> {
+  if (
+    typeof boardToken !== "string" ||
+    typeof cardId !== "string" ||
+    cardId.length > 19 ||
+    !/^\d+$/.test(cardId) ||
+    !Number.isSafeInteger(memberId) ||
+    memberId < 1
+  ) {
+    return null;
+  }
+
+  const boardId = decryptBoardId(boardToken);
+  if (boardId === null) return null;
+
+  const currentUser = await getCurrentUser();
+  if (!currentUser) return null;
+
+  return prisma.$transaction(async (transaction) => {
+    const board = await findEditableCardBoard(
+      transaction,
+      boardId,
+      currentUser.id,
+    );
+    if (!board) return null;
+
+    const card = await transaction.card.findFirst({
+      where: {
+        id: BigInt(cardId),
+        list: { board_id: board.id, archived_at: null },
+        archived_at: null,
+      },
+      select: { id: true },
+    });
+    if (!card) return null;
+
+    const member = await transaction.user.findUnique({
+      where: { id: memberId },
+      select: {
+        id: true,
+        email: true,
+        full_name: true,
+        avatar_url: true,
+      },
+    });
+    if (!member) return null;
+
+    await transaction.card_member.upsert({
+      where: {
+        card_id_user_id: { card_id: card.id, user_id: memberId },
+      },
+      create: { card_id: card.id, user_id: memberId },
+      update: {},
+    });
+    return member;
   });
 }
 

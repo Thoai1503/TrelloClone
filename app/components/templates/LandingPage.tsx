@@ -22,11 +22,11 @@ export default function LandingPage() {
   return (
     <main className="min-h-screen overflow-hidden bg-white text-slate-950">
       <header className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-5 sm:px-8">
-        <Link aria-label="Trello - Trang chủ" className="flex items-center gap-2.5" href="/">
+        <Link aria-label="Tifo - Trang chủ" className="flex items-center gap-2.5" href="/">
           <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-lg font-black text-white shadow-sm">
-            t
+            T
           </span>
-          <span className="text-[22px] font-bold tracking-tight text-slate-800">trello</span>
+          <span className="text-[22px] font-bold tracking-tight text-slate-800">Tifo</span>
         </Link>
 
         <nav aria-label="Điều hướng chính" className="flex items-center gap-5 sm:gap-9">
