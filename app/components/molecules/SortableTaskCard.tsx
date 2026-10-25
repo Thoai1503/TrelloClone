@@ -11,6 +11,7 @@ import {
 } from "react";
 
 import type { BoardTask, CardMemberSummary } from "@/app/types/board";
+import { Avatar } from "@/app/components/atoms";
 import CardDetailsDialog from "./CardDetailsDialog";
 
 type SortableTaskCardProps = {
@@ -65,7 +66,10 @@ export default function SortableTaskCard({
   function handlePointerMoveCapture(event: PointerEvent<HTMLElement>) {
     const start = pointerStart.current;
     if (!start) return;
-    const distance = Math.hypot(event.clientX - start.x, event.clientY - start.y);
+    const distance = Math.hypot(
+      event.clientX - start.x,
+      event.clientY - start.y,
+    );
     if (distance > 6) suppressNextClick.current = true;
   }
 
@@ -119,8 +123,8 @@ export default function SortableTaskCard({
       {...attributes}
       ref={setNodeRef}
       className={`group relative flex items-start justify-between gap-2 rounded-lg bg-white p-3 text-sm shadow-sm ${
-        disabled || isEditing ? "" : "cursor-grab active:cursor-grabbing"
-      }`}
+        card.members.length > 0 || card.description?.trim() ? "pb-11" : ""
+      } ${disabled || isEditing ? "" : "cursor-grab active:cursor-grabbing"}`}
       onClick={(event) => {
         if (suppressNextClick.current) {
           suppressNextClick.current = false;
@@ -264,7 +268,7 @@ export default function SortableTaskCard({
               >
                 <svg
                   aria-hidden="true"
-                  className="h-4 w-4"
+                  className="h-6 w-6"
                   fill="none"
                   viewBox="0 0 20 20"
                 >
@@ -280,6 +284,57 @@ export default function SortableTaskCard({
             </div>
           )}
         </>
+      )}
+      {card.members.length > 0 && (
+        <div
+          aria-label="Thành viên của thẻ"
+          className="absolute bottom-2 right-2 flex -space-x-2"
+        >
+          {card.members.map((member) => {
+            const label =
+              member.full_name?.trim() ||
+              member.email ||
+              `Thành viên ${member.id}`;
+            return (
+              <span className="rounded-full ring-2 ring-white" key={member.id}>
+                <Avatar
+                  imageUrl={member.avatar_url}
+                  label={label}
+                  size="small"
+                  title={member.email || label}
+                  userId={member.id}
+                />
+              </span>
+            );
+          })}
+        </div>
+      )}
+      {card.description?.trim() && (
+        <div
+          aria-label="Có mô tả"
+          className="absolute bottom-2 left-3 inline-flex items-center text-gray-500"
+          title="Có mô tả"
+        >
+          <svg
+            aria-hidden="true"
+            className="h-4 w-4"
+            fill="none"
+            viewBox="0 0 20 20"
+          >
+            <path
+              d="M5 3.5h7l3 3v10H5a1.5 1.5 0 0 1-1.5-1.5V5A1.5 1.5 0 0 1 5 3.5Z"
+              stroke="currentColor"
+              strokeLinejoin="round"
+              strokeWidth="1.4"
+            />
+            <path
+              d="M7 9h6m-6 3h6m-6 3h4"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeWidth="1.4"
+            />
+          </svg>
+        </div>
       )}
       {isDetailsOpen && (
         <CardDetailsDialog

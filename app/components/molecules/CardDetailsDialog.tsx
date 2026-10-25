@@ -528,6 +528,7 @@ export default function CardDetailsDialog({
                 disabled={isSavingDescription}
                 maxLength={20000}
                 onChange={(event) => setDescription(event.target.value)}
+                onKeyDown={(event) => event.stopPropagation()}
                 placeholder="Thêm mô tả chi tiết cho thẻ..."
                 value={description}
               />
