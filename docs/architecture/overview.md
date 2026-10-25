@@ -119,4 +119,4 @@ The shared AES-256-GCM ID utility encrypts both workspace and board identifiers.
 
 ## Infrastructure
 
-`lib/prisma.ts` creates one shared Prisma Client using the MariaDB adapter and `DATABASE_URL`. Keep database credentials and client imports server-side. See [data-model.md](./data-model.md) for the verified schema relationships.
+`lib/prisma.ts` creates one shared Prisma Client using the MariaDB adapter and `DATABASE_URL`. Interactive transactions use a 10-second connection-acquisition wait and a 20-second execution timeout; the adapter connection pool remains at five connections. Keep database credentials and client imports server-side. See [data-model.md](./data-model.md) for the verified schema relationships.

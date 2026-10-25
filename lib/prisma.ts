@@ -33,7 +33,14 @@ const globalForPrisma = globalThis as typeof globalThis & {
 };
 
 export const prisma =
-  globalForPrisma.prisma ?? new PrismaClient({ adapter });
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    adapter,
+    transactionOptions: {
+      maxWait: 20_000,
+      timeout: 30_000,
+    },
+  });
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
