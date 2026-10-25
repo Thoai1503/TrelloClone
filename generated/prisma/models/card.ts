@@ -48,6 +48,7 @@ export type CardMinAggregateOutputType = {
   description: string | null
   position: runtime.Decimal | null
   priority: $Enums.CardPriority | null
+  is_completed: boolean | null
   due_date: Date | null
   completed_at: Date | null
   created_at: Date | null
@@ -63,6 +64,7 @@ export type CardMaxAggregateOutputType = {
   description: string | null
   position: runtime.Decimal | null
   priority: $Enums.CardPriority | null
+  is_completed: boolean | null
   due_date: Date | null
   completed_at: Date | null
   created_at: Date | null
@@ -78,6 +80,7 @@ export type CardCountAggregateOutputType = {
   description: number
   position: number
   priority: number
+  is_completed: number
   due_date: number
   completed_at: number
   created_at: number
@@ -109,6 +112,7 @@ export type CardMinAggregateInputType = {
   description?: true
   position?: true
   priority?: true
+  is_completed?: true
   due_date?: true
   completed_at?: true
   created_at?: true
@@ -124,6 +128,7 @@ export type CardMaxAggregateInputType = {
   description?: true
   position?: true
   priority?: true
+  is_completed?: true
   due_date?: true
   completed_at?: true
   created_at?: true
@@ -139,6 +144,7 @@ export type CardCountAggregateInputType = {
   description?: true
   position?: true
   priority?: true
+  is_completed?: true
   due_date?: true
   completed_at?: true
   created_at?: true
@@ -241,6 +247,7 @@ export type CardGroupByOutputType = {
   description: string | null
   position: runtime.Decimal
   priority: $Enums.CardPriority
+  is_completed: boolean
   due_date: Date | null
   completed_at: Date | null
   created_at: Date
@@ -279,6 +286,7 @@ export type cardWhereInput = {
   description?: Prisma.StringNullableFilter<"card"> | string | null
   position?: Prisma.DecimalFilter<"card"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: Prisma.EnumCardPriorityFilter<"card"> | $Enums.CardPriority
+  is_completed?: Prisma.BoolFilter<"card"> | boolean
   due_date?: Prisma.DateTimeNullableFilter<"card"> | Date | string | null
   completed_at?: Prisma.DateTimeNullableFilter<"card"> | Date | string | null
   created_at?: Prisma.DateTimeFilter<"card"> | Date | string
@@ -297,6 +305,7 @@ export type cardOrderByWithRelationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   position?: Prisma.SortOrder
   priority?: Prisma.SortOrder
+  is_completed?: Prisma.SortOrder
   due_date?: Prisma.SortOrderInput | Prisma.SortOrder
   completed_at?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -319,6 +328,7 @@ export type cardWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringNullableFilter<"card"> | string | null
   position?: Prisma.DecimalFilter<"card"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: Prisma.EnumCardPriorityFilter<"card"> | $Enums.CardPriority
+  is_completed?: Prisma.BoolFilter<"card"> | boolean
   due_date?: Prisma.DateTimeNullableFilter<"card"> | Date | string | null
   completed_at?: Prisma.DateTimeNullableFilter<"card"> | Date | string | null
   created_at?: Prisma.DateTimeFilter<"card"> | Date | string
@@ -337,6 +347,7 @@ export type cardOrderByWithAggregationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   position?: Prisma.SortOrder
   priority?: Prisma.SortOrder
+  is_completed?: Prisma.SortOrder
   due_date?: Prisma.SortOrderInput | Prisma.SortOrder
   completed_at?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -360,6 +371,7 @@ export type cardScalarWhereWithAggregatesInput = {
   description?: Prisma.StringNullableWithAggregatesFilter<"card"> | string | null
   position?: Prisma.DecimalWithAggregatesFilter<"card"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: Prisma.EnumCardPriorityWithAggregatesFilter<"card"> | $Enums.CardPriority
+  is_completed?: Prisma.BoolWithAggregatesFilter<"card"> | boolean
   due_date?: Prisma.DateTimeNullableWithAggregatesFilter<"card"> | Date | string | null
   completed_at?: Prisma.DateTimeNullableWithAggregatesFilter<"card"> | Date | string | null
   created_at?: Prisma.DateTimeWithAggregatesFilter<"card"> | Date | string
@@ -373,6 +385,7 @@ export type cardCreateInput = {
   description?: string | null
   position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: $Enums.CardPriority
+  is_completed?: boolean
   due_date?: Date | string | null
   completed_at?: Date | string | null
   created_at?: Date | string
@@ -391,6 +404,7 @@ export type cardUncheckedCreateInput = {
   description?: string | null
   position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: $Enums.CardPriority
+  is_completed?: boolean
   due_date?: Date | string | null
   completed_at?: Date | string | null
   created_at?: Date | string
@@ -405,6 +419,7 @@ export type cardUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: Prisma.EnumCardPriorityFieldUpdateOperationsInput | $Enums.CardPriority
+  is_completed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   due_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -423,6 +438,7 @@ export type cardUncheckedUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: Prisma.EnumCardPriorityFieldUpdateOperationsInput | $Enums.CardPriority
+  is_completed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   due_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -439,6 +455,7 @@ export type cardCreateManyInput = {
   description?: string | null
   position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: $Enums.CardPriority
+  is_completed?: boolean
   due_date?: Date | string | null
   completed_at?: Date | string | null
   created_at?: Date | string
@@ -452,6 +469,7 @@ export type cardUpdateManyMutationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: Prisma.EnumCardPriorityFieldUpdateOperationsInput | $Enums.CardPriority
+  is_completed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   due_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -467,6 +485,7 @@ export type cardUncheckedUpdateManyInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: Prisma.EnumCardPriorityFieldUpdateOperationsInput | $Enums.CardPriority
+  is_completed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   due_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -498,6 +517,7 @@ export type cardCountOrderByAggregateInput = {
   description?: Prisma.SortOrder
   position?: Prisma.SortOrder
   priority?: Prisma.SortOrder
+  is_completed?: Prisma.SortOrder
   due_date?: Prisma.SortOrder
   completed_at?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -520,6 +540,7 @@ export type cardMaxOrderByAggregateInput = {
   description?: Prisma.SortOrder
   position?: Prisma.SortOrder
   priority?: Prisma.SortOrder
+  is_completed?: Prisma.SortOrder
   due_date?: Prisma.SortOrder
   completed_at?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -535,6 +556,7 @@ export type cardMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   position?: Prisma.SortOrder
   priority?: Prisma.SortOrder
+  is_completed?: Prisma.SortOrder
   due_date?: Prisma.SortOrder
   completed_at?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -642,6 +664,10 @@ export type EnumCardPriorityFieldUpdateOperationsInput = {
   set?: $Enums.CardPriority
 }
 
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
 export type cardCreateNestedOneWithoutMembersInput = {
   create?: Prisma.XOR<Prisma.cardCreateWithoutMembersInput, Prisma.cardUncheckedCreateWithoutMembersInput>
   connectOrCreate?: Prisma.cardCreateOrConnectWithoutMembersInput
@@ -662,6 +688,7 @@ export type cardCreateWithoutCreatorInput = {
   description?: string | null
   position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: $Enums.CardPriority
+  is_completed?: boolean
   due_date?: Date | string | null
   completed_at?: Date | string | null
   created_at?: Date | string
@@ -678,6 +705,7 @@ export type cardUncheckedCreateWithoutCreatorInput = {
   description?: string | null
   position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: $Enums.CardPriority
+  is_completed?: boolean
   due_date?: Date | string | null
   completed_at?: Date | string | null
   created_at?: Date | string
@@ -723,6 +751,7 @@ export type cardScalarWhereInput = {
   description?: Prisma.StringNullableFilter<"card"> | string | null
   position?: Prisma.DecimalFilter<"card"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: Prisma.EnumCardPriorityFilter<"card"> | $Enums.CardPriority
+  is_completed?: Prisma.BoolFilter<"card"> | boolean
   due_date?: Prisma.DateTimeNullableFilter<"card"> | Date | string | null
   completed_at?: Prisma.DateTimeNullableFilter<"card"> | Date | string | null
   created_at?: Prisma.DateTimeFilter<"card"> | Date | string
@@ -736,6 +765,7 @@ export type cardCreateWithoutListInput = {
   description?: string | null
   position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: $Enums.CardPriority
+  is_completed?: boolean
   due_date?: Date | string | null
   completed_at?: Date | string | null
   created_at?: Date | string
@@ -752,6 +782,7 @@ export type cardUncheckedCreateWithoutListInput = {
   description?: string | null
   position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: $Enums.CardPriority
+  is_completed?: boolean
   due_date?: Date | string | null
   completed_at?: Date | string | null
   created_at?: Date | string
@@ -792,6 +823,7 @@ export type cardCreateWithoutMembersInput = {
   description?: string | null
   position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: $Enums.CardPriority
+  is_completed?: boolean
   due_date?: Date | string | null
   completed_at?: Date | string | null
   created_at?: Date | string
@@ -809,6 +841,7 @@ export type cardUncheckedCreateWithoutMembersInput = {
   description?: string | null
   position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: $Enums.CardPriority
+  is_completed?: boolean
   due_date?: Date | string | null
   completed_at?: Date | string | null
   created_at?: Date | string
@@ -838,6 +871,7 @@ export type cardUpdateWithoutMembersInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: Prisma.EnumCardPriorityFieldUpdateOperationsInput | $Enums.CardPriority
+  is_completed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   due_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -855,6 +889,7 @@ export type cardUncheckedUpdateWithoutMembersInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: Prisma.EnumCardPriorityFieldUpdateOperationsInput | $Enums.CardPriority
+  is_completed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   due_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -869,6 +904,7 @@ export type cardCreateManyCreatorInput = {
   description?: string | null
   position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: $Enums.CardPriority
+  is_completed?: boolean
   due_date?: Date | string | null
   completed_at?: Date | string | null
   created_at?: Date | string
@@ -882,6 +918,7 @@ export type cardUpdateWithoutCreatorInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: Prisma.EnumCardPriorityFieldUpdateOperationsInput | $Enums.CardPriority
+  is_completed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   due_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -898,6 +935,7 @@ export type cardUncheckedUpdateWithoutCreatorInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: Prisma.EnumCardPriorityFieldUpdateOperationsInput | $Enums.CardPriority
+  is_completed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   due_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -913,6 +951,7 @@ export type cardUncheckedUpdateManyWithoutCreatorInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: Prisma.EnumCardPriorityFieldUpdateOperationsInput | $Enums.CardPriority
+  is_completed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   due_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -927,6 +966,7 @@ export type cardCreateManyListInput = {
   description?: string | null
   position?: runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: $Enums.CardPriority
+  is_completed?: boolean
   due_date?: Date | string | null
   completed_at?: Date | string | null
   created_at?: Date | string
@@ -940,6 +980,7 @@ export type cardUpdateWithoutListInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: Prisma.EnumCardPriorityFieldUpdateOperationsInput | $Enums.CardPriority
+  is_completed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   due_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -956,6 +997,7 @@ export type cardUncheckedUpdateWithoutListInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: Prisma.EnumCardPriorityFieldUpdateOperationsInput | $Enums.CardPriority
+  is_completed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   due_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -971,6 +1013,7 @@ export type cardUncheckedUpdateManyWithoutListInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   priority?: Prisma.EnumCardPriorityFieldUpdateOperationsInput | $Enums.CardPriority
+  is_completed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   due_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1017,6 +1060,7 @@ export type cardSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   description?: boolean
   position?: boolean
   priority?: boolean
+  is_completed?: boolean
   due_date?: boolean
   completed_at?: boolean
   created_at?: boolean
@@ -1038,6 +1082,7 @@ export type cardSelectScalar = {
   description?: boolean
   position?: boolean
   priority?: boolean
+  is_completed?: boolean
   due_date?: boolean
   completed_at?: boolean
   created_at?: boolean
@@ -1045,7 +1090,7 @@ export type cardSelectScalar = {
   archived_at?: boolean
 }
 
-export type cardOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "list_id" | "created_by" | "title" | "description" | "position" | "priority" | "due_date" | "completed_at" | "created_at" | "updated_at" | "archived_at", ExtArgs["result"]["card"]>
+export type cardOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "list_id" | "created_by" | "title" | "description" | "position" | "priority" | "is_completed" | "due_date" | "completed_at" | "created_at" | "updated_at" | "archived_at", ExtArgs["result"]["card"]>
 export type cardInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   list?: boolean | Prisma.listDefaultArgs<ExtArgs>
   creator?: boolean | Prisma.userDefaultArgs<ExtArgs>
@@ -1068,6 +1113,7 @@ export type $cardPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     description: string | null
     position: runtime.Decimal
     priority: $Enums.CardPriority
+    is_completed: boolean
     due_date: Date | null
     completed_at: Date | null
     created_at: Date
@@ -1452,6 +1498,7 @@ export interface cardFieldRefs {
   readonly description: Prisma.FieldRef<"card", 'String'>
   readonly position: Prisma.FieldRef<"card", 'Decimal'>
   readonly priority: Prisma.FieldRef<"card", 'CardPriority'>
+  readonly is_completed: Prisma.FieldRef<"card", 'Boolean'>
   readonly due_date: Prisma.FieldRef<"card", 'DateTime'>
   readonly completed_at: Prisma.FieldRef<"card", 'DateTime'>
   readonly created_at: Prisma.FieldRef<"card", 'DateTime'>

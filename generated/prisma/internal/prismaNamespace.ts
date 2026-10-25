@@ -1074,6 +1074,7 @@ export const CardScalarFieldEnum = {
   description: 'description',
   position: 'position',
   priority: 'priority',
+  is_completed: 'is_completed',
   due_date: 'due_date',
   completed_at: 'completed_at',
   created_at: 'created_at',
@@ -1211,6 +1212,13 @@ export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
  * Reference to a field of type 'CardPriority'
  */
 export type EnumCardPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CardPriority'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 

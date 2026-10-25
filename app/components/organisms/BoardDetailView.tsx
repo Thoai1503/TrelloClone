@@ -27,6 +27,8 @@ import {
   createListCard,
   reorderBoardCards,
   reorderBoardLists,
+  setListCardCompleted,
+  updateListCardTitle,
 } from "@/app/actions/lists";
 import type {
   BoardDetail,
@@ -251,6 +253,54 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
     return card;
   }
 
+  async function handleUpdateCard(
+    cardId: string,
+    title: string,
+  ): Promise<BoardTask> {
+    const updatedCard = await updateListCardTitle(
+      board.encryptedId,
+      cardId,
+      title,
+    );
+    if (!updatedCard) {
+      throw new Error("Card title was rejected or access was denied.");
+    }
+
+    setLists((currentLists) =>
+      currentLists.map((list) => ({
+        ...list,
+        cards: list.cards.map((card) =>
+          card.id === updatedCard.id ? updatedCard : card,
+        ),
+      })),
+    );
+    return updatedCard;
+  }
+
+  async function handleToggleCardCompleted(
+    cardId: string,
+    isCompleted: boolean,
+  ): Promise<BoardTask> {
+    const updatedCard = await setListCardCompleted(
+      board.encryptedId,
+      cardId,
+      isCompleted,
+    );
+    if (!updatedCard) {
+      throw new Error("Card completion update was rejected or access was denied.");
+    }
+
+    setLists((currentLists) =>
+      currentLists.map((list) => ({
+        ...list,
+        cards: list.cards.map((card) =>
+          card.id === updatedCard.id ? updatedCard : card,
+        ),
+      })),
+    );
+    return updatedCard;
+  }
+
   async function handleReorderCards(
     sourceListId: string,
     sourceCards: BoardTask[],
@@ -429,6 +479,8 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
                   key={list.id}
                   list={list}
                   onAddCard={handleAddCard}
+                  onToggleCardCompleted={handleToggleCardCompleted}
+                  onUpdateCard={handleUpdateCard}
                 />
               ))}
             </SortableContext>

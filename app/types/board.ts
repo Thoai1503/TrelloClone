@@ -16,6 +16,7 @@ export type BoardList = {
 export type BoardTask = {
   id: string;
   title: string;
+  is_completed: boolean;
 };
 
 export type BoardMemberRole = "ADMIN" | "EDITOR" | "VIEWER";

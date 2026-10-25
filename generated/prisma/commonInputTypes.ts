@@ -257,6 +257,11 @@ export type EnumCardPriorityFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumCardPriorityFilter<$PrismaModel> | $Enums.CardPriority
 }
 
+export type BoolFilter<$PrismaModel = never> = {
+  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedBoolFilter<$PrismaModel> | boolean
+}
+
 export type EnumCardPriorityWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.CardPriority | Prisma.EnumCardPriorityFieldRefInput<$PrismaModel>
   in?: $Enums.CardPriority[]
@@ -265,6 +270,14 @@ export type EnumCardPriorityWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumCardPriorityFilter<$PrismaModel>
   _max?: Prisma.NestedEnumCardPriorityFilter<$PrismaModel>
+}
+
+export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedBoolFilter<$PrismaModel>
+  _max?: Prisma.NestedBoolFilter<$PrismaModel>
 }
 
 export type NestedIntFilter<$PrismaModel = never> = {
@@ -527,6 +540,11 @@ export type NestedEnumCardPriorityFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumCardPriorityFilter<$PrismaModel> | $Enums.CardPriority
 }
 
+export type NestedBoolFilter<$PrismaModel = never> = {
+  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedBoolFilter<$PrismaModel> | boolean
+}
+
 export type NestedEnumCardPriorityWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.CardPriority | Prisma.EnumCardPriorityFieldRefInput<$PrismaModel>
   in?: $Enums.CardPriority[]
@@ -535,6 +553,14 @@ export type NestedEnumCardPriorityWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumCardPriorityFilter<$PrismaModel>
   _max?: Prisma.NestedEnumCardPriorityFilter<$PrismaModel>
+}
+
+export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedBoolFilter<$PrismaModel>
+  _max?: Prisma.NestedBoolFilter<$PrismaModel>
 }
 
 

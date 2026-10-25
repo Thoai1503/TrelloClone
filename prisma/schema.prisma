@@ -141,6 +141,7 @@ model card {
   description String?      @db.Text
   position    Decimal      @default(1000) @db.Decimal(20, 6)
   priority    CardPriority @default(MEDIUM)
+  is_completed Boolean     @default(false) @map("is_completed")
 
   due_date     DateTime? @map("due_date") @db.DateTime(3)
   completed_at DateTime? @map("completed_at") @db.DateTime(3)

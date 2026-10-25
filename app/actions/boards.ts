@@ -155,7 +155,7 @@ export async function getBoardByToken(
           name: true,
           cards: {
             where: { archived_at: null },
-            select: { id: true, title: true },
+            select: { id: true, title: true, is_completed: true },
             orderBy: [{ position: "asc" }, { id: "asc" }],
           },
         },
@@ -202,6 +202,7 @@ export async function getBoardByToken(
       cards: list.cards.map((card) => ({
         id: card.id.toString(),
         title: card.title,
+        is_completed: card.is_completed,
       })),
     })),
   };

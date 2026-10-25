@@ -62,6 +62,7 @@ erDiagram
         int created_by FK
         string title
         enum priority
+        boolean is_completed
         decimal position
         datetime archived_at
     }

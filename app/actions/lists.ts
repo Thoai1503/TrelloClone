@@ -279,10 +279,214 @@ export async function createListCard(
         title: trimmedTitle,
         position,
       },
-      select: { id: true, title: true },
+      select: { id: true, title: true, is_completed: true },
     });
 
-    return { id: card.id.toString(), title: card.title };
+    return {
+      id: card.id.toString(),
+      title: card.title,
+      is_completed: card.is_completed,
+    };
+  });
+}
+
+export async function updateListCardTitle(
+  boardToken: string,
+  cardId: string,
+  title: string,
+): Promise<BoardTask | null> {
+  if (
+    typeof boardToken !== "string" ||
+    typeof cardId !== "string" ||
+    cardId.length > 19 ||
+    !/^\d+$/.test(cardId) ||
+    typeof title !== "string"
+  ) {
+    return null;
+  }
+
+  const trimmedTitle = title.trim();
+  if (!trimmedTitle || trimmedTitle.length > 255) return null;
+
+  const boardId = decryptBoardId(boardToken);
+  if (boardId === null) return null;
+
+  const currentUser = await getCurrentUser();
+  if (!currentUser) return null;
+
+  const userId = currentUser.id;
+  const currentUserId = BigInt(userId);
+  const parsedCardId = BigInt(cardId);
+
+  return prisma.$transaction(async (transaction) => {
+    const board = await transaction.board.findFirst({
+      where: {
+        id: boardId,
+        archived_at: null,
+        workspace: { archived_at: null },
+        OR: [
+          { created_by: currentUserId },
+          { board_members: { some: { user_id: userId } } },
+          {
+            workspace: {
+              OR: [
+                { created_by: currentUserId },
+                { members: { some: { user_id: userId } } },
+              ],
+            },
+          },
+        ],
+      },
+      select: {
+        id: true,
+        created_by: true,
+        workspace: {
+          select: {
+            created_by: true,
+            members: {
+              where: { user_id: userId },
+              select: { role: true },
+              take: 1,
+            },
+          },
+        },
+        board_members: {
+          where: { user_id: userId },
+          select: { role: true },
+          take: 1,
+        },
+      },
+    });
+    if (!board) return null;
+
+    const canManageCards =
+      board.created_by === currentUserId ||
+      board.workspace.created_by === currentUserId ||
+      board.workspace.members.length > 0 ||
+      board.board_members.some((member) => member.role !== "VIEWER");
+    if (!canManageCards) return null;
+
+    const card = await transaction.card.updateMany({
+      where: {
+        id: parsedCardId,
+        archived_at: null,
+        list: { board_id: board.id, archived_at: null },
+      },
+      data: { title: trimmedTitle },
+    });
+    if (card.count !== 1) return null;
+
+    const updatedCard = await transaction.card.findUnique({
+      where: { id: parsedCardId },
+      select: { id: true, title: true, is_completed: true },
+    });
+    if (!updatedCard) return null;
+
+    return {
+      id: updatedCard.id.toString(),
+      title: updatedCard.title,
+      is_completed: updatedCard.is_completed,
+    };
+  });
+}
+
+export async function setListCardCompleted(
+  boardToken: string,
+  cardId: string,
+  isCompleted: boolean,
+): Promise<BoardTask | null> {
+  if (
+    typeof boardToken !== "string" ||
+    typeof cardId !== "string" ||
+    cardId.length > 19 ||
+    !/^\d+$/.test(cardId) ||
+    typeof isCompleted !== "boolean"
+  ) {
+    return null;
+  }
+
+  const boardId = decryptBoardId(boardToken);
+  if (boardId === null) return null;
+
+  const currentUser = await getCurrentUser();
+  if (!currentUser) return null;
+
+  const userId = currentUser.id;
+  const currentUserId = BigInt(userId);
+  const parsedCardId = BigInt(cardId);
+
+  return prisma.$transaction(async (transaction) => {
+    const board = await transaction.board.findFirst({
+      where: {
+        id: boardId,
+        archived_at: null,
+        workspace: { archived_at: null },
+        OR: [
+          { created_by: currentUserId },
+          { board_members: { some: { user_id: userId } } },
+          {
+            workspace: {
+              OR: [
+                { created_by: currentUserId },
+                { members: { some: { user_id: userId } } },
+              ],
+            },
+          },
+        ],
+      },
+      select: {
+        id: true,
+        created_by: true,
+        workspace: {
+          select: {
+            created_by: true,
+            members: {
+              where: { user_id: userId },
+              select: { role: true },
+              take: 1,
+            },
+          },
+        },
+        board_members: {
+          where: { user_id: userId },
+          select: { role: true },
+          take: 1,
+        },
+      },
+    });
+    if (!board) return null;
+
+    const canManageCards =
+      board.created_by === currentUserId ||
+      board.workspace.created_by === currentUserId ||
+      board.workspace.members.length > 0 ||
+      board.board_members.some((member) => member.role !== "VIEWER");
+    if (!canManageCards) return null;
+
+    const card = await transaction.card.updateMany({
+      where: {
+        id: parsedCardId,
+        archived_at: null,
+        list: { board_id: board.id, archived_at: null },
+      },
+      data: {
+        is_completed: isCompleted,
+        completed_at: isCompleted ? new Date() : null,
+      },
+    });
+    if (card.count !== 1) return null;
+
+    const updatedCard = await transaction.card.findUnique({
+      where: { id: parsedCardId },
+      select: { id: true, title: true, is_completed: true },
+    });
+    if (!updatedCard) return null;
+
+    return {
+      id: updatedCard.id.toString(),
+      title: updatedCard.title,
+      is_completed: updatedCard.is_completed,
+    };
   });
 }
 
