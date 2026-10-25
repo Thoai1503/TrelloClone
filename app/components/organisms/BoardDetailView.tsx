@@ -480,12 +480,15 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
           {board.canManageMembers && (
             <BoardShareDialog
               boardToken={board.encryptedId}
+              members={members}
               onMemberAdded={(member) =>
                 setMembers((currentMembers) =>
                   currentMembers.some(
                     (currentMember) => currentMember.id === member.id,
                   )
-                    ? currentMembers
+                    ? currentMembers.map((currentMember) =>
+                        currentMember.id === member.id ? member : currentMember,
+                      )
                     : [...currentMembers, member],
                 )
               }

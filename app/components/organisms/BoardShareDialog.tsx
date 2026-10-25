@@ -6,7 +6,6 @@ import { createPortal } from "react-dom";
 import {
   addBoardMember,
   findBoardMemberCandidate,
-  getBoardMembers,
 } from "@/app/actions/boards";
 import type {
   BoardMemberCandidate,
@@ -17,6 +16,7 @@ import { Avatar, Button, Icon } from "../atoms";
 
 type BoardShareDialogProps = {
   boardToken: string;
+  members: BoardMemberSummary[];
   onMemberAdded: (member: BoardMemberSummary) => void;
 };
 
@@ -32,6 +32,7 @@ function getMemberName(member: {
 
 export default function BoardShareDialog({
   boardToken,
+  members,
   onMemberAdded,
 }: BoardShareDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -39,8 +40,6 @@ export default function BoardShareDialog({
   const [selectedMember, setSelectedMember] =
     useState<BoardMemberCandidate | null>(null);
   const [candidate, setCandidate] = useState<BoardMemberCandidate | null>(null);
-  const [members, setMembers] = useState<BoardMemberSummary[]>([]);
-  const [isLoadingMembers, setIsLoadingMembers] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,34 +65,6 @@ export default function BoardShareDialog({
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [closeDialog, isOpen, isSubmitting]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    let active = true;
-
-    void getBoardMembers(boardToken)
-      .then((loadedMembers) => {
-        if (!active) return;
-        if (!loadedMembers) {
-          setError("Bạn không có quyền xem thành viên của bảng này.");
-          return;
-        }
-        setMembers(loadedMembers);
-      })
-      .catch((cause: unknown) => {
-        if (!active) return;
-        console.error("Failed to load board members.", cause);
-        setError("Không thể tải danh sách thành viên. Vui lòng thử lại.");
-      })
-      .finally(() => {
-        if (active) setIsLoadingMembers(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [boardToken, isOpen]);
 
   useEffect(() => {
     if (!isOpen || selectedMember || !emailPattern.test(email.trim())) return;
@@ -133,16 +104,6 @@ export default function BoardShareDialog({
         return;
       }
 
-      setMembers((currentMembers) => {
-        const alreadyMember = currentMembers.some(
-          (currentMember) => currentMember.id === member.id,
-        );
-        return alreadyMember
-          ? currentMembers.map((currentMember) =>
-              currentMember.id === member.id ? member : currentMember,
-            )
-          : [...currentMembers, member];
-      });
       onMemberAdded(member);
       setSelectedMember(null);
       setCandidate(null);
@@ -297,9 +258,7 @@ export default function BoardShareDialog({
           <h3 className="text-sm font-semibold text-gray-900">
             Thành viên trong bảng
           </h3>
-          {isLoadingMembers ? (
-            <p className="mt-3 text-sm text-gray-500">Đang tải thành viên...</p>
-          ) : members.length > 0 ? (
+          {members.length > 0 ? (
             <ul className="mt-3 max-h-64 space-y-1 overflow-y-auto">
               {members.map((member) => (
                 <li
@@ -333,9 +292,7 @@ export default function BoardShareDialog({
             </ul>
           ) : (
             <p className="mt-3 text-sm text-gray-500">
-              {error
-                ? "Không thể tải danh sách thành viên."
-                : "Bảng chưa có thành viên."}
+              Bảng chưa có thành viên.
             </p>
           )}
         </div>
@@ -350,7 +307,6 @@ export default function BoardShareDialog({
         className="inline-flex h-9 shrink-0 items-center gap-2 border border-white/25 bg-white/10 px-3 text-white hover:bg-white/20"
         onClick={() => {
           setError(null);
-          setIsLoadingMembers(true);
           setIsOpen(true);
         }}
       >
