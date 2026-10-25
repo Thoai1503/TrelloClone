@@ -34,6 +34,7 @@ import type {
   BoardDetail,
   BoardList,
   BoardMemberSummary,
+  CardMemberSummary,
   BoardTask,
 } from "@/app/types/board";
 import { useUser } from "@/app/providers/UserProvider";
@@ -301,6 +302,34 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
     return updatedCard;
   }
 
+  function handleCardDetailsUpdated(updatedCard: BoardTask) {
+    setLists((currentLists) =>
+      currentLists.map((list) => ({
+        ...list,
+        cards: list.cards.map((card) =>
+          card.id === updatedCard.id ? updatedCard : card,
+        ),
+      })),
+    );
+  }
+
+  function handleCardMemberAdded(
+    cardId: string,
+    member: CardMemberSummary,
+  ) {
+    setLists((currentLists) =>
+      currentLists.map((list) => ({
+        ...list,
+        cards: list.cards.map((card) =>
+          card.id === cardId &&
+          !card.members.some((currentMember) => currentMember.id === member.id)
+            ? { ...card, members: [...card.members, member] }
+            : card,
+        ),
+      })),
+    );
+  }
+
   async function handleReorderCards(
     sourceListId: string,
     sourceCards: BoardTask[],
@@ -476,9 +505,12 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
                     !board.canManageLists
                   }
                   canAddCards={board.canManageLists}
+                  boardToken={board.encryptedId}
                   key={list.id}
                   list={list}
                   onAddCard={handleAddCard}
+                  onCardDetailsUpdated={handleCardDetailsUpdated}
+                  onCardMemberAdded={handleCardMemberAdded}
                   onToggleCardCompleted={handleToggleCardCompleted}
                   onUpdateCard={handleUpdateCard}
                 />
