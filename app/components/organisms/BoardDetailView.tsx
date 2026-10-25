@@ -20,7 +20,7 @@ import {
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import {
   createBoardList,
@@ -72,12 +72,25 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [activeCard, setActiveCard] = useState<BoardTask | null>(null);
+  const pendingDragDropActions = useRef(0);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
+
+  useEffect(() => {
+    function warnBeforeUnload(event: BeforeUnloadEvent) {
+      if (pendingDragDropActions.current === 0) return;
+
+      event.preventDefault();
+      event.returnValue = "";
+    }
+
+    window.addEventListener("beforeunload", warnBeforeUnload);
+    return () => window.removeEventListener("beforeunload", warnBeforeUnload);
+  }, []);
 
   function handleDragStart(event: DragStartEvent) {
     const activeId = String(event.active.id);
@@ -124,6 +137,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
       const reorderedLists = arrayMove(lists, oldIndex, newIndex);
       setLists(reorderedLists);
       setIsSavingOrder(true);
+      pendingDragDropActions.current += 1;
       setError(null);
 
       try {
@@ -137,6 +151,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
         setLists(previousLists);
         setError("Không thể lưu thứ tự danh sách. Vui lòng thử lại.");
       } finally {
+        pendingDragDropActions.current -= 1;
         setIsSavingOrder(false);
       }
       return;
@@ -255,6 +270,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
       ),
     );
     setIsSavingCardOrder(true);
+    pendingDragDropActions.current += 1;
     setError(null);
 
     try {
@@ -283,6 +299,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
       setLists(previousLists);
       setError("Không thể lưu thay đổi thẻ. Vui lòng thử lại.");
     } finally {
+      pendingDragDropActions.current -= 1;
       setIsSavingCardOrder(false);
     }
   }
