@@ -1,6 +1,19 @@
+type SerialQueueTaskInfo = {
+  name: string;
+  details?: Record<string, unknown>;
+};
+
+type SerialQueueItem = {
+  id: number;
+  task: () => Promise<void>;
+  info: SerialQueueTaskInfo;
+  queuedAt: number;
+};
+
 export function createSerialAsyncQueue() {
-  const items: Array<() => Promise<void>> = [];
+  const items: SerialQueueItem[] = [];
   let running = false;
+  let nextTaskId = 1;
 
   async function flush() {
     if (running) return;
@@ -8,9 +21,33 @@ export function createSerialAsyncQueue() {
     running = true;
     try {
       while (items.length > 0) {
-        const task = items.shift();
-        if (!task) continue;
-        await task();
+        const item = items.shift();
+        if (!item) continue;
+
+        const startedAt = Date.now();
+        console.info("[Board persist queue] Task started", {
+          taskId: item.id,
+          name: item.info.name,
+          details: item.info.details ?? {},
+          queueWaitMs: startedAt - item.queuedAt,
+          remainingQueueLength: items.length,
+        });
+
+        try {
+          await item.task();
+          console.info("[Board persist queue] Task completed", {
+            taskId: item.id,
+            name: item.info.name,
+            durationMs: Date.now() - startedAt,
+          });
+        } catch (error: unknown) {
+          console.error("[Board persist queue] Task failed", {
+            taskId: item.id,
+            name: item.info.name,
+            durationMs: Date.now() - startedAt,
+            error,
+          });
+        }
       }
     } finally {
       running = false;
@@ -21,8 +58,15 @@ export function createSerialAsyncQueue() {
   }
 
   return {
-    enqueue(task: () => Promise<void>) {
-      items.push(task);
+    enqueue(task: () => Promise<void>, info: SerialQueueTaskInfo) {
+      const item: SerialQueueItem = {
+        id: nextTaskId,
+        task,
+        info,
+        queuedAt: Date.now(),
+      };
+      nextTaskId += 1;
+      items.push(item);
       void flush();
     },
   };
