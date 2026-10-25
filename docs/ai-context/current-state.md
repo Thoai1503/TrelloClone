@@ -18,6 +18,7 @@ Last verified: 2026-10-24.
 - Workspace and board identifiers in client-facing routes are AES-256-GCM encrypted. The board collection groups workspace boards in horizontally scrollable cards; board cards do not have drag-and-drop controls. Board detail supports horizontal list ordering and card reordering within a list or moving cards between lists; card list and position changes persist transactionally through an access-checked server action.
 - Workspace records store a preset hex background in `background_color`; create-workspace UI writes it with an ADMIN membership and navigates using the encrypted workspace ID.
 - Workspace-level board creation appends a board using the last active board's position plus `1000`, inside a transaction. Board detail displays lists (columns), can append a list in position order, and persists drag-and-drop reordering to list positions.
+- Cards can be dragged from anywhere on the card, edited from a hover control, and marked completed with a hover checkbox. `card.is_completed` is persisted and synchronized with `completed_at`.
 
 ## Verified constraints
 
