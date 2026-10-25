@@ -116,7 +116,10 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
     setActiveCard(card ?? null);
   }
 
-  function enqueueBoardPersist(task: () => Promise<void>) {
+  function enqueueBoardPersist(
+    task: () => Promise<void>,
+    info: { name: string; details: Record<string, unknown> },
+  ) {
     pendingDragDropActions.current += 1;
     setPendingSaveCount((count) => count + 1);
     persistQueueRef.current.enqueue(async () => {
@@ -126,7 +129,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
         pendingDragDropActions.current -= 1;
         setPendingSaveCount((count) => Math.max(0, count - 1));
       }
-    });
+    }, info);
   }
 
   function persistListOrder(orderedListIds: string[]) {
@@ -140,7 +143,13 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
       } catch (cause: unknown) {
         console.error("Failed to save board list order.", cause);
         setError("Không thể lưu thứ tự danh sách. Vui lòng thử lại.");
+        throw cause;
       }
+    }, {
+      name: "reorderBoardLists",
+      details: {
+        orderedListIds,
+      },
     });
   }
 
@@ -154,7 +163,13 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
       } catch (cause: unknown) {
         console.error("Failed to save board card order.", cause);
         setError("Không thể lưu thay đổi thẻ. Vui lòng thử lại.");
+        throw cause;
       }
+    }, {
+      name: "reorderBoardCards",
+      details: {
+        orderedLists,
+      },
     });
   }
 
