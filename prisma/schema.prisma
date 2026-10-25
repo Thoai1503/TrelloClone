@@ -31,7 +31,7 @@ model user {
   email         String?   @db.VarChar(255)
   password_hash String?   @db.VarChar(255)
   full_name     String?   @db.VarChar(255)
-  avatar_url    String?   @db.VarChar(255)
+  avatar_url    String?   @db.Text
   createdAt     DateTime  @default(now()) @map("created_at")
   updated_at    DateTime? @db.DateTime(6)
 

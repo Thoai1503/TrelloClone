@@ -1,7 +1,7 @@
 "use client";
 
 import { Form, Formik, Field } from "formik";
-import { signIn } from "next-auth/react";
+import { getProviders, signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -15,7 +15,30 @@ type LoginValues = {
 
 export default function LoginForm() {
   const [notice, setNotice] = useState("");
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const router = useRouter();
+
+  async function handleGoogleSignIn() {
+    setNotice("");
+    setIsGoogleLoading(true);
+
+    try {
+      const providers = await getProviders();
+      if (!providers?.google) {
+        setNotice(
+          "Đăng nhập Google chưa khả dụng. Vui lòng cấu hình GOOGLE_CLIENT_ID và GOOGLE_CLIENT_SECRET.",
+        );
+        return;
+      }
+
+      await signIn("google", { callbackUrl: "/login" });
+    } catch (cause: unknown) {
+      console.error("Google sign-in request failed.", cause);
+      setNotice("Không thể đăng nhập bằng Google lúc này. Vui lòng thử lại sau.");
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  }
 
   function validate(values: LoginValues) {
     const errors: Partial<Record<keyof LoginValues, string>> = {};
@@ -137,12 +160,13 @@ export default function LoginForm() {
           </div>
 
           <button
-            className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-blue-500/10"
-            onClick={() => setNotice("Đăng nhập bằng Google chưa được cấu hình.")}
+            className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={isGoogleLoading || isSubmitting}
+            onClick={handleGoogleSignIn}
             type="button"
           >
             <GoogleIcon />
-            Tiếp tục với Google
+            {isGoogleLoading ? "Đang kết nối Google..." : "Tiếp tục với Google"}
           </button>
         </Form>
       )}

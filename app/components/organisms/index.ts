@@ -1,6 +1,7 @@
 export { default as WorkspaceErrorState } from "./WorkspaceErrorState";
 export { default as BoardDetailView } from "./BoardDetailView";
 export { default as BoardDetailSkeleton } from "./BoardDetailSkeleton";
+export { default as BoardShareDialog } from "./BoardShareDialog";
 export { default as BoardCollectionSkeleton } from "./BoardCollectionSkeleton";
 export { default as BoardCollection } from "./BoardCollection";
 export { default as WorkspaceNotFoundState } from "./WorkspaceNotFoundState";

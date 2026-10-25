@@ -19,7 +19,7 @@ erDiagram
         int id PK
         string email
         string full_name
-        string avatar_url
+        text avatar_url
     }
     workspace {
         bigint id PK

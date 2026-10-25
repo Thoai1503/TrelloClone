@@ -8,8 +8,83 @@ import {
 } from "@/utils/resource-id";
 import { getCurrentUser } from "@/utils/auth-session";
 import { prisma } from "@/lib/prisma";
-import type { BoardDetail, BoardSummary } from "@/app/types/board";
+import type {
+  BoardDetail,
+  BoardMemberCandidate,
+  BoardMemberSummary,
+  BoardSummary,
+} from "@/app/types/board";
 import { isWorkspaceColor } from "@/utils/workspace-colors";
+import { Prisma } from "@/generated/prisma/client";
+
+type BoardMemberAccess = {
+  id: bigint;
+  created_by: bigint;
+  workspace: {
+    created_by: bigint;
+    members: { role: "OWNER" | "ADMIN" | "MEMBER" }[];
+  };
+  board_members: { role: "ADMIN" | "EDITOR" | "VIEWER" }[];
+};
+
+type BoardDatabaseClient = typeof prisma | Prisma.TransactionClient;
+
+function canManageBoardMembers(
+  board: BoardMemberAccess,
+  currentUserId: bigint,
+): boolean {
+  return (
+    board.created_by === currentUserId ||
+    board.workspace.created_by === currentUserId ||
+    board.workspace.members.some(
+      (member) => member.role === "OWNER" || member.role === "ADMIN",
+    ) ||
+    board.board_members.some((member) => member.role === "ADMIN")
+  );
+}
+
+async function findBoardForMemberManagement(
+  database: BoardDatabaseClient,
+  boardId: bigint,
+  currentUserId: number,
+) {
+  const board = await database.board.findFirst({
+    where: {
+      id: boardId,
+      archived_at: null,
+      workspace: { archived_at: null },
+    },
+    select: {
+      id: true,
+      created_by: true,
+      workspace: {
+        select: {
+          created_by: true,
+          members: {
+            where: { user_id: currentUserId },
+            select: { role: true },
+            take: 1,
+          },
+        },
+      },
+      board_members: {
+        where: { user_id: currentUserId },
+        select: { role: true },
+        take: 1,
+      },
+    },
+  });
+
+  if (!board) return null;
+  const access: BoardMemberAccess = {
+    id: board.id,
+    created_by: board.created_by,
+    workspace: board.workspace,
+    board_members: board.board_members,
+  };
+
+  return canManageBoardMembers(access, BigInt(currentUserId)) ? board : null;
+}
 
 export async function getBoardByToken(
   token: string,
@@ -60,9 +135,18 @@ export async function getBoardByToken(
         },
       },
       board_members: {
-        where: { user_id: userId },
-        select: { role: true },
-        take: 1,
+        select: {
+          role: true,
+          user: {
+            select: {
+              id: true,
+              email: true,
+              full_name: true,
+              avatar_url: true,
+            },
+          },
+        },
+        orderBy: [{ joined_at: "asc" }, { user_id: "asc" }],
       },
       lists: {
         where: { archived_at: null },
@@ -82,11 +166,23 @@ export async function getBoardByToken(
 
   if (!board) return null;
 
+  const currentUserBoardMembership = board.board_members.filter(
+    (member) => member.user.id === userId,
+  );
   const canManageLists =
     board.created_by === currentUserId ||
     board.workspace.created_by === currentUserId ||
     board.workspace.members.length > 0 ||
-    board.board_members.some((member) => member.role !== "VIEWER");
+    currentUserBoardMembership.some((member) => member.role !== "VIEWER");
+  const canManageMembers = canManageBoardMembers(
+    {
+      id: board.id,
+      created_by: board.created_by,
+      workspace: board.workspace,
+      board_members: currentUserBoardMembership,
+    },
+    currentUserId,
+  );
 
   return {
     encryptedId: token,
@@ -95,6 +191,11 @@ export async function getBoardByToken(
     workspaceEncryptedId: encryptWorkspaceId(board.workspace.id),
     workspaceName: board.workspace.name,
     canManageLists,
+    canManageMembers,
+    members: board.board_members.map((member) => ({
+      ...member.user,
+      role: member.role,
+    })),
     lists: board.lists.map((list) => ({
       id: list.id.toString(),
       name: list.name,
@@ -104,6 +205,143 @@ export async function getBoardByToken(
       })),
     })),
   };
+}
+
+export async function getBoardMembers(
+  boardToken: string,
+): Promise<BoardMemberSummary[] | null> {
+  if (typeof boardToken !== "string") return null;
+  const boardId = decryptBoardId(boardToken);
+  if (boardId === null) return null;
+
+  const currentUser = await getCurrentUser();
+  if (!currentUser) return null;
+
+  const board = await findBoardForMemberManagement(
+    prisma,
+    boardId,
+    currentUser.id,
+  );
+  if (!board) return null;
+
+  const members = await prisma.board_member.findMany({
+    where: { board_id: board.id },
+    select: {
+      role: true,
+      user: {
+        select: {
+          id: true,
+          email: true,
+          full_name: true,
+          avatar_url: true,
+        },
+      },
+    },
+    orderBy: [{ joined_at: "asc" }, { user_id: "asc" }],
+  });
+
+  return members.map((member) => ({
+    ...member.user,
+    role: member.role,
+  }));
+}
+
+export async function findBoardMemberCandidate(
+  boardToken: string,
+  emailInput: string,
+): Promise<BoardMemberCandidate | null> {
+  if (
+    typeof boardToken !== "string" ||
+    typeof emailInput !== "string" ||
+    emailInput.length > 255
+  ) {
+    return null;
+  }
+
+  const email = emailInput.trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return null;
+
+  const boardId = decryptBoardId(boardToken);
+  if (boardId === null) return null;
+
+  const currentUser = await getCurrentUser();
+  if (!currentUser) return null;
+
+  const board = await findBoardForMemberManagement(
+    prisma,
+    boardId,
+    currentUser.id,
+  );
+  if (!board) return null;
+
+  const candidate = await prisma.user.findFirst({
+    where: {
+      email,
+      board_members: { none: { board_id: board.id } },
+    },
+    select: {
+      id: true,
+      email: true,
+      full_name: true,
+      avatar_url: true,
+    },
+  });
+
+  return candidate;
+}
+
+export async function addBoardMember(
+  boardToken: string,
+  memberId: number,
+): Promise<BoardMemberSummary | null> {
+  if (
+    typeof boardToken !== "string" ||
+    !Number.isSafeInteger(memberId) ||
+    memberId < 1
+  ) {
+    return null;
+  }
+
+  const boardId = decryptBoardId(boardToken);
+  if (boardId === null) return null;
+
+  const currentUser = await getCurrentUser();
+  if (!currentUser) return null;
+
+  return prisma.$transaction(async (transaction) => {
+    const board = await findBoardForMemberManagement(
+      transaction,
+      boardId,
+      currentUser.id,
+    );
+    if (!board) return null;
+
+    const user = await transaction.user.findUnique({
+      where: { id: memberId },
+      select: {
+        id: true,
+        email: true,
+        full_name: true,
+        avatar_url: true,
+      },
+    });
+    if (!user) return null;
+
+    const membership = await transaction.board_member.upsert({
+      where: {
+        board_id_user_id: { board_id: board.id, user_id: memberId },
+      },
+      create: {
+        board_id: board.id,
+        user_id: memberId,
+        role: "EDITOR",
+      },
+      update: {},
+      select: { role: true },
+    });
+
+    return { ...user, role: membership.role };
+  });
 }
 
 export async function createBoard(

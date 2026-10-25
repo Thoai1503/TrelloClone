@@ -28,11 +28,17 @@ import {
   reorderBoardCards,
   reorderBoardLists,
 } from "@/app/actions/lists";
-import type { BoardDetail, BoardList, BoardTask } from "@/app/types/board";
+import type {
+  BoardDetail,
+  BoardList,
+  BoardMemberSummary,
+  BoardTask,
+} from "@/app/types/board";
 import { useUser } from "@/app/providers/UserProvider";
 
-import { Button, Icon } from "../atoms";
+import { Avatar, Button, Icon } from "../atoms";
 import { SortableBoardList } from "../molecules";
+import BoardShareDialog from "./BoardShareDialog";
 
 const boardCollisionDetection: CollisionDetection = (args) => {
   const activeType = String(args.active.id).split(":")[0];
@@ -58,6 +64,7 @@ type BoardDetailViewProps = {
 export default function BoardDetailView({ board }: BoardDetailViewProps) {
   const user = useUser();
   const [lists, setLists] = useState(board.lists);
+  const [members, setMembers] = useState(board.members);
   const [isAdding, setIsAdding] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingOrder, setIsSavingOrder] = useState(false);
@@ -142,16 +149,12 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
     );
     const destinationListId = overId.startsWith("card:")
       ? lists.find((list) =>
-          list.cards.some(
-            (card) => card.id === overId.slice("card:".length),
-          ),
+          list.cards.some((card) => card.id === overId.slice("card:".length)),
         )?.id
       : overId.startsWith("list:")
         ? overId.slice("list:".length)
         : undefined;
-    const destinationList = lists.find(
-      (list) => list.id === destinationListId,
-    );
+    const destinationList = lists.find((list) => list.id === destinationListId);
     if (!sourceList || !destinationList) return;
 
     const sourceIndex = sourceList.cards.findIndex(
@@ -217,16 +220,17 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
     }
   }
 
-  async function handleAddCard(listId: string, title: string): Promise<BoardTask> {
+  async function handleAddCard(
+    listId: string,
+    title: string,
+  ): Promise<BoardTask> {
     const card = await createListCard(board.encryptedId, listId, title);
     if (!card) {
       throw new Error("List or card title is invalid, or access was denied.");
     }
     setLists((currentLists) =>
       currentLists.map((list) =>
-        list.id === listId
-          ? { ...list, cards: [...list.cards, card] }
-          : list,
+        list.id === listId ? { ...list, cards: [...list.cards, card] } : list,
       ),
     );
     return card;
@@ -256,18 +260,23 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
     try {
       const orderedLists =
         sourceListId === destinationListId
-          ? [{ listId: sourceListId, cardIds: sourceCards.map((card) => card.id) }]
+          ? [
+              {
+                listId: sourceListId,
+                cardIds: sourceCards.map((card) => card.id),
+              },
+            ]
           : [
-              { listId: sourceListId, cardIds: sourceCards.map((card) => card.id) },
+              {
+                listId: sourceListId,
+                cardIds: sourceCards.map((card) => card.id),
+              },
               {
                 listId: destinationListId,
                 cardIds: destinationCards.map((card) => card.id),
               },
             ];
-      const saved = await reorderBoardCards(
-        board.encryptedId,
-        orderedLists,
-      );
+      const saved = await reorderBoardCards(board.encryptedId, orderedLists);
       if (!saved) throw new Error("Board card order was rejected.");
     } catch (cause: unknown) {
       console.error("Failed to save board card order.", cause);
@@ -302,8 +311,56 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
         </Link>
         <span className="mx-3 h-7 w-px shrink-0 bg-white/25" />
         <div className="min-w-0">
-          <p className="truncate text-xs text-white/70">{board.workspaceName}</p>
-          <h1 className="truncate text-sm font-semibold sm:text-base">{board.name}</h1>
+          <p className="truncate text-xs text-white/70">
+            {board.workspaceName}
+          </p>
+          <h1 className="truncate text-sm font-semibold sm:text-base">
+            {board.name}
+          </h1>
+        </div>
+        <div className="ml-auto flex min-w-0 items-center gap-3">
+          {members.length > 0 && (
+            <div
+              aria-label="Thành viên trong bảng"
+              className="flex shrink-0 items-center -space-x-2"
+            >
+              {members.map((member: BoardMemberSummary) => {
+                const name =
+                  member.full_name?.trim() ||
+                  member.email ||
+                  `Thành viên ${member.id}`;
+                return (
+                  <span
+                    aria-label={member.email || name}
+                    className="rounded-full ring-2 ring-white"
+                    key={member.id}
+                    title={member.email || name}
+                  >
+                    <Avatar
+                      imageUrl={member.avatar_url}
+                      label={name}
+                      title={member.email || name}
+                      userId={member.id}
+                    />
+                  </span>
+                );
+              })}
+            </div>
+          )}
+          {board.canManageMembers && (
+            <BoardShareDialog
+              boardToken={board.encryptedId}
+              onMemberAdded={(member) =>
+                setMembers((currentMembers) =>
+                  currentMembers.some(
+                    (currentMember) => currentMember.id === member.id,
+                  )
+                    ? currentMembers
+                    : [...currentMembers, member],
+                )
+              }
+            />
+          )}
         </div>
       </header>
 
@@ -360,39 +417,39 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
             </SortableContext>
 
             {isAdding ? (
-            <form
-              className="flex w-72 shrink-0 flex-col gap-3 rounded-xl bg-gray-100 p-3 text-gray-900 shadow-sm"
-              onSubmit={handleSubmit}
-            >
-              <label className="sr-only" htmlFor="new-list-name">
-                Tên danh sách
-              </label>
-              <input
-                autoFocus
-                className="h-10 rounded-md border border-gray-300 bg-white px-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                id="new-list-name"
-                maxLength={150}
-                onChange={(event) => setName(event.target.value)}
-                placeholder="Nhập tên danh sách..."
-                value={name}
-              />
-              <div className="flex items-center gap-2">
-                <Button disabled={isSubmitting || !name.trim()} type="submit">
-                  {isSubmitting ? "Đang thêm..." : "Thêm danh sách"}
-                </Button>
-                <button
-                  className="rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-200"
-                  disabled={isSubmitting}
-                  onClick={() => {
-                    setIsAdding(false);
-                    setError(null);
-                  }}
-                  type="button"
-                >
-                  Hủy
-                </button>
-              </div>
-            </form>
+              <form
+                className="flex w-72 shrink-0 flex-col gap-3 rounded-xl bg-gray-100 p-3 text-gray-900 shadow-sm"
+                onSubmit={handleSubmit}
+              >
+                <label className="sr-only" htmlFor="new-list-name">
+                  Tên danh sách
+                </label>
+                <input
+                  autoFocus
+                  className="h-10 rounded-md border border-gray-300 bg-white px-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  id="new-list-name"
+                  maxLength={150}
+                  onChange={(event) => setName(event.target.value)}
+                  placeholder="Nhập tên danh sách..."
+                  value={name}
+                />
+                <div className="flex items-center gap-2">
+                  <Button disabled={isSubmitting || !name.trim()} type="submit">
+                    {isSubmitting ? "Đang thêm..." : "Thêm danh sách"}
+                  </Button>
+                  <button
+                    className="rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-200"
+                    disabled={isSubmitting}
+                    onClick={() => {
+                      setIsAdding(false);
+                      setError(null);
+                    }}
+                    type="button"
+                  >
+                    Hủy
+                  </button>
+                </div>
+              </form>
             ) : board.canManageLists ? (
               <button
                 className="flex h-12 w-72 shrink-0 items-center gap-2 rounded-xl bg-white/20 px-4 text-left text-sm font-semibold text-white transition hover:bg-white/30 disabled:cursor-not-allowed disabled:opacity-60"
@@ -400,7 +457,9 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
                 onClick={() => setIsAdding(true)}
                 type="button"
               >
-                <span aria-hidden="true" className="text-lg leading-none">+</span>
+                <span aria-hidden="true" className="text-lg leading-none">
+                  +
+                </span>
                 Thêm danh sách khác
               </button>
             ) : null}

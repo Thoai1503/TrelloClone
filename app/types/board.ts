@@ -18,6 +18,18 @@ export type BoardTask = {
   title: string;
 };
 
+export type BoardMemberRole = "ADMIN" | "EDITOR" | "VIEWER";
+
+export type BoardMemberSummary = {
+  id: number;
+  email: string | null;
+  full_name: string | null;
+  avatar_url: string | null;
+  role: BoardMemberRole;
+};
+
+export type BoardMemberCandidate = Omit<BoardMemberSummary, "role">;
+
 export type BoardDetail = {
   encryptedId: string;
   name: string;
@@ -25,5 +37,7 @@ export type BoardDetail = {
   workspaceEncryptedId: string;
   workspaceName: string;
   canManageLists: boolean;
+  canManageMembers: boolean;
+  members: BoardMemberSummary[];
   lists: BoardList[];
 };
