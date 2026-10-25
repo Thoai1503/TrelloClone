@@ -4,6 +4,7 @@ import { decryptBoardId } from "@/utils/resource-id";
 import { getCurrentUser } from "@/utils/auth-session";
 import { prisma } from "@/lib/prisma";
 import type {
+  CardCommentSummary,
   BoardList,
   BoardTask,
   CardMemberSummary,
@@ -51,6 +52,34 @@ async function findEditableCardBoard(
     board.board_members.some((member) => member.role !== "VIEWER");
 
   return canManageCards ? board : null;
+}
+
+async function findAccessibleCardBoard(
+  transaction: Prisma.TransactionClient,
+  boardId: bigint,
+  userId: number,
+) {
+  const currentUserId = BigInt(userId);
+  return transaction.board.findFirst({
+    where: {
+      id: boardId,
+      archived_at: null,
+      workspace: { archived_at: null },
+      OR: [
+        { created_by: currentUserId },
+        { board_members: { some: { user_id: userId } } },
+        {
+          workspace: {
+            OR: [
+              { created_by: currentUserId },
+              { members: { some: { user_id: userId } } },
+            ],
+          },
+        },
+      ],
+    },
+    select: { id: true },
+  });
 }
 
 function parseOptionalDate(value: string | null): Date | null | undefined {
@@ -845,6 +874,136 @@ export async function addCardMember(
       update: {},
     });
     return member;
+  });
+}
+
+export async function getCardComments(
+  boardToken: string,
+  cardId: string,
+): Promise<CardCommentSummary[] | null> {
+  if (
+    typeof boardToken !== "string" ||
+    typeof cardId !== "string" ||
+    cardId.length > 19 ||
+    !/^\d+$/.test(cardId)
+  ) {
+    return null;
+  }
+
+  const boardId = decryptBoardId(boardToken);
+  if (boardId === null) return null;
+
+  const currentUser = await getCurrentUser();
+  if (!currentUser) return null;
+
+  const board = await prisma.$transaction((transaction) =>
+    findAccessibleCardBoard(transaction, boardId, currentUser.id),
+  );
+  if (!board) return null;
+
+  const comments = await prisma.comment.findMany({
+    where: {
+      card_id: BigInt(cardId),
+      card: {
+        archived_at: null,
+        list: { board_id: board.id, archived_at: null },
+      },
+    },
+    select: {
+      id: true,
+      content: true,
+      created_at: true,
+      user: {
+        select: {
+          id: true,
+          email: true,
+          full_name: true,
+          avatar_url: true,
+        },
+      },
+    },
+    orderBy: [{ created_at: "asc" }, { id: "asc" }],
+  });
+
+  return comments.map((comment) => ({
+    id: comment.id.toString(),
+    content: comment.content,
+    created_at: comment.created_at.toISOString(),
+    author: comment.user,
+  }));
+}
+
+export async function createCardComment(
+  boardToken: string,
+  cardId: string,
+  content: string,
+): Promise<CardCommentSummary | null> {
+  if (
+    typeof boardToken !== "string" ||
+    typeof cardId !== "string" ||
+    cardId.length > 19 ||
+    !/^\d+$/.test(cardId) ||
+    typeof content !== "string" ||
+    content.length > 5000
+  ) {
+    return null;
+  }
+
+  const trimmedContent = content.trim();
+  if (!trimmedContent) return null;
+
+  const boardId = decryptBoardId(boardToken);
+  if (boardId === null) return null;
+
+  const currentUser = await getCurrentUser();
+  if (!currentUser) return null;
+
+  const parsedCardId = BigInt(cardId);
+  return prisma.$transaction(async (transaction) => {
+    const board = await findAccessibleCardBoard(
+      transaction,
+      boardId,
+      currentUser.id,
+    );
+    if (!board) return null;
+
+    const card = await transaction.card.findFirst({
+      where: {
+        id: parsedCardId,
+        archived_at: null,
+        list: { board_id: board.id, archived_at: null },
+      },
+      select: { id: true },
+    });
+    if (!card) return null;
+
+    const comment = await transaction.comment.create({
+      data: {
+        card_id: card.id,
+        user_id: currentUser.id,
+        content: trimmedContent,
+      },
+      select: {
+        id: true,
+        content: true,
+        created_at: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            full_name: true,
+            avatar_url: true,
+          },
+        },
+      },
+    });
+
+    return {
+      id: comment.id.toString(),
+      content: comment.content,
+      created_at: comment.created_at.toISOString(),
+      author: comment.user,
+    };
   });
 }
 

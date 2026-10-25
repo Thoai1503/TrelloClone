@@ -49,6 +49,8 @@ The login route uses a Formik client form and NextAuth's Credentials provider to
 
 Board sharing is available to the board creator, workspace owner/admin, or a board ADMIN. The board header displays circular avatars for current `board_member` users, with email tooltips. The share dialog searches for an exact email match, adds selected users as board EDITOR members, and lists current `board_member` records. Search and mutation actions independently verify board-management permission on the server. Cards can be dragged from any part of the card, their hover edit control updates the title, and their hover checkbox updates `is_completed` and `completed_at` through access-checked server actions. Clicking a card opens its detail dialog with editable description, card members, and optional start/end dates; card-member and detail mutations validate board access server-side.
 
+The card detail dialog displays comments in a right-hand panel. It loads comments for the selected active card after checking that the signed-in user can access its board; posting a comment validates board and card membership on the server and records the signed-in user as author. The `comments` table is created by the `20261025220500_add_card_comments` migration.
+
 The shared user-header board-creation dialog lets the user choose a manageable workspace. `createBoard` appends the board in that workspace and creates a `board_member` record for the current user with the `ADMIN` role in the same transaction.
 
 Set `NEXTAUTH_SECRET` to a private random value of at least 32 characters in every runtime environment. Do not reuse the workspace ID encryption key.

@@ -404,7 +404,8 @@ export const ModelName = {
   board_member: 'board_member',
   list: 'list',
   card: 'card',
-  card_member: 'card_member'
+  card_member: 'card_member',
+  comment: 'comment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -420,7 +421,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "workspace" | "workspace_member" | "board" | "board_member" | "list" | "card" | "card_member"
+    modelProps: "user" | "workspace" | "workspace_member" | "board" | "board_member" | "list" | "card" | "card_member" | "comment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -952,6 +953,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    comment: {
+      payload: Prisma.$commentPayload<ExtArgs>
+      fields: Prisma.commentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.commentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$commentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.commentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$commentPayload>
+        }
+        findFirst: {
+          args: Prisma.commentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$commentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.commentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$commentPayload>
+        }
+        findMany: {
+          args: Prisma.commentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$commentPayload>[]
+        }
+        create: {
+          args: Prisma.commentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$commentPayload>
+        }
+        createMany: {
+          args: Prisma.commentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.commentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$commentPayload>
+        }
+        update: {
+          args: Prisma.commentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$commentPayload>
+        }
+        deleteMany: {
+          args: Prisma.commentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.commentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.commentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$commentPayload>
+        }
+        aggregate: {
+          args: Prisma.CommentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateComment>
+        }
+        groupBy: {
+          args: Prisma.commentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CommentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.commentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CommentCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1095,6 +1162,18 @@ export const Card_memberScalarFieldEnum = {
 export type Card_memberScalarFieldEnum = (typeof Card_memberScalarFieldEnum)[keyof typeof Card_memberScalarFieldEnum]
 
 
+export const CommentScalarFieldEnum = {
+  id: 'id',
+  card_id: 'card_id',
+  user_id: 'user_id',
+  content: 'content',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeof CommentScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1152,6 +1231,13 @@ export const cardOrderByRelevanceFieldEnum = {
 } as const
 
 export type cardOrderByRelevanceFieldEnum = (typeof cardOrderByRelevanceFieldEnum)[keyof typeof cardOrderByRelevanceFieldEnum]
+
+
+export const commentOrderByRelevanceFieldEnum = {
+  content: 'content'
+} as const
+
+export type commentOrderByRelevanceFieldEnum = (typeof commentOrderByRelevanceFieldEnum)[keyof typeof commentOrderByRelevanceFieldEnum]
 
 
 
@@ -1388,6 +1474,7 @@ export type GlobalOmitConfig = {
   list?: Prisma.listOmit
   card?: Prisma.cardOmit
   card_member?: Prisma.card_memberOmit
+  comment?: Prisma.commentOmit
 }
 
 /* Types for Logging */

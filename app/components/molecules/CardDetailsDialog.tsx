@@ -5,11 +5,14 @@ import { createPortal } from "react-dom";
 
 import {
   addCardMember,
+  createCardComment,
   findCardMemberCandidate,
+  getCardComments,
   updateCardDetails,
 } from "@/app/actions/lists";
 import type {
   BoardTask,
+  CardCommentSummary,
   CardMemberSummary,
 } from "@/app/types/board";
 import { Avatar, Button, Icon } from "@/app/components/atoms";
@@ -42,6 +45,11 @@ export default function CardDetailsDialog({
   const [startDate, setStartDate] = useState(card.start_date?.slice(0, 10) ?? "");
   const [endDate, setEndDate] = useState(card.due_date?.slice(0, 10) ?? "");
   const [members, setMembers] = useState(card.members);
+  const [comments, setComments] = useState<CardCommentSummary[]>([]);
+  const [commentDraft, setCommentDraft] = useState("");
+  const [isLoadingComments, setIsLoadingComments] = useState(true);
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [commentError, setCommentError] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [candidate, setCandidate] = useState<CardMemberSummary | null>(null);
   const [isSearching, setIsSearching] = useState(false);
@@ -56,7 +64,37 @@ export default function CardDetailsDialog({
   const membersTriggerRef = useRef<HTMLDivElement>(null);
   const datesTriggerRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const isBusy = isSavingDescription || isSavingDates || isAddingMember;
+  const isBusy =
+    isSavingDescription ||
+    isSavingDates ||
+    isAddingMember ||
+    isSubmittingComment;
+
+  useEffect(() => {
+    let active = true;
+
+    void getCardComments(boardToken, card.id)
+      .then((loadedComments) => {
+        if (!active) return;
+        if (!loadedComments) {
+          setCommentError("Không thể tải bình luận cho thẻ này.");
+          return;
+        }
+        setComments(loadedComments);
+      })
+      .catch((cause: unknown) => {
+        if (!active) return;
+        console.error("Failed to load card comments.", cause);
+        setCommentError("Không thể tải bình luận. Vui lòng thử lại.");
+      })
+      .finally(() => {
+        if (active) setIsLoadingComments(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [boardToken, card.id]);
 
   useLayoutEffect(() => {
     if (!activePanel) return;
@@ -223,6 +261,31 @@ export default function CardDetailsDialog({
     }
   }
 
+  async function handleSubmitComment() {
+    const content = commentDraft.trim();
+    if (!content || isSubmittingComment) return;
+
+    setIsSubmittingComment(true);
+    setCommentError(null);
+    try {
+      const createdComment = await createCardComment(
+        boardToken,
+        card.id,
+        content,
+      );
+      if (!createdComment) {
+        throw new Error("Card comment was rejected or access was denied.");
+      }
+      setComments((currentComments) => [...currentComments, createdComment]);
+      setCommentDraft("");
+    } catch (cause: unknown) {
+      console.error("Failed to create card comment.", cause);
+      setCommentError("Không thể gửi bình luận. Vui lòng thử lại.");
+    } finally {
+      setIsSubmittingComment(false);
+    }
+  }
+
   const dialog = (
     <div
       className="fixed inset-0 z-[60] flex items-center justify-center p-4"
@@ -240,10 +303,10 @@ export default function CardDetailsDialog({
       <section
         aria-labelledby={`card-details-title-${card.id}`}
         aria-modal="true"
-        className="relative z-10 max-h-[min(90vh,48rem)] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-5 text-gray-900 shadow-2xl sm:p-7"
+        className="relative z-10 flex max-h-[min(90vh,52rem)] w-full max-w-6xl flex-col overflow-hidden rounded-xl bg-white text-gray-900 shadow-2xl"
         role="dialog"
       >
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex shrink-0 items-start justify-between gap-4 p-5 pb-0 sm:p-7 sm:pb-0">
           <div className="flex min-w-0 items-start gap-3">
             <Icon
               className={`mt-1 h-5 w-5 shrink-0 ${
@@ -272,7 +335,9 @@ export default function CardDetailsDialog({
           </button>
         </div>
 
-        <div className="mt-6 flex flex-wrap gap-2">
+        <div className="grid min-h-0 flex-1 grid-cols-1 overflow-y-auto lg:grid-cols-2 lg:overflow-hidden">
+          <div className="p-5 sm:p-7 lg:min-h-0 lg:overflow-y-auto">
+        <div className="flex flex-wrap gap-2">
           <div ref={membersTriggerRef}>
             <button
               className={`inline-flex items-center gap-2 rounded-md border px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
@@ -559,6 +624,130 @@ export default function CardDetailsDialog({
             </p>
           )}
         </section>
+          </div>
+
+          <section
+            aria-labelledby={`card-comments-title-${card.id}`}
+            className="flex min-h-[22rem] flex-col border-t border-gray-200 p-5 sm:p-7 lg:min-h-0 lg:border-l lg:border-t-0"
+          >
+            <div className="flex shrink-0 items-center justify-between gap-3">
+              <h3
+                className="text-base font-semibold text-gray-900"
+                id={`card-comments-title-${card.id}`}
+              >
+                Bình luận
+              </h3>
+              <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
+                {comments.length}
+              </span>
+            </div>
+
+            <div
+              aria-live="polite"
+              className="mt-4 min-h-0 flex-1 space-y-4 overflow-y-auto pr-1"
+            >
+              {isLoadingComments ? (
+                <p className="text-sm text-gray-500">Đang tải bình luận...</p>
+              ) : comments.length > 0 ? (
+                comments.map((comment) => {
+                  const authorName =
+                    comment.author.full_name?.trim() ||
+                    comment.author.email ||
+                    `Thành viên ${comment.author.id}`;
+                  return (
+                    <article className="flex items-start gap-3" key={comment.id}>
+                      <Avatar
+                        imageUrl={comment.author.avatar_url}
+                        label={authorName}
+                        size="small"
+                        title={comment.author.email || authorName}
+                        userId={comment.author.id}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                          <span className="text-sm font-semibold text-gray-800">
+                            {authorName}
+                          </span>
+                          <time
+                            className="text-xs text-gray-500"
+                            dateTime={comment.created_at}
+                          >
+                            {new Intl.DateTimeFormat("vi-VN", {
+                              dateStyle: "short",
+                              timeStyle: "short",
+                            }).format(new Date(comment.created_at))}
+                          </time>
+                        </div>
+                        <p className="mt-1 whitespace-pre-wrap break-words rounded-lg bg-gray-50 px-3 py-2 text-sm leading-6 text-gray-700">
+                          {comment.content}
+                        </p>
+                      </div>
+                    </article>
+                  );
+                })
+              ) : (
+                <p className="text-sm text-gray-500">
+                  Chưa có bình luận nào. Hãy bắt đầu cuộc trò chuyện.
+                </p>
+              )}
+            </div>
+
+            {commentError && (
+              <p className="mt-3 shrink-0 text-sm text-red-600" role="alert">
+                {commentError}
+              </p>
+            )}
+
+            <form
+              className="mt-4 shrink-0 border-t border-gray-100 pt-4"
+              onSubmit={(event) => {
+                event.preventDefault();
+                void handleSubmitComment();
+              }}
+            >
+              <label
+                className="sr-only"
+                htmlFor={`card-comment-input-${card.id}`}
+              >
+                Viết bình luận
+              </label>
+              <textarea
+                className="min-h-24 w-full resize-y rounded-md border border-gray-300 px-3 py-2 text-sm outline-none placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-gray-50"
+                disabled={isSubmittingComment}
+                id={`card-comment-input-${card.id}`}
+                maxLength={5000}
+                onChange={(event) => {
+                  setCommentDraft(event.target.value);
+                  setCommentError(null);
+                }}
+                onKeyDown={(event) => {
+                  event.stopPropagation();
+                  if (
+                    event.key === "Enter" &&
+                    (event.ctrlKey || event.metaKey)
+                  ) {
+                    event.preventDefault();
+                    void handleSubmitComment();
+                  }
+                }}
+                placeholder="Viết bình luận..."
+                value={commentDraft}
+              />
+              <div className="mt-2 flex items-center justify-between gap-3">
+                <span className="text-xs text-gray-400">
+                  Ctrl/⌘ + Enter để gửi
+                </span>
+                <Button
+                  className="bg-blue-700 text-white hover:bg-blue-800"
+                  disabled={!commentDraft.trim() || isSubmittingComment}
+                  type="submit"
+                >
+                  {isSubmittingComment ? "Đang gửi..." : "Gửi"}
+                </Button>
+              </div>
+            </form>
+          </section>
+        </div>
       </section>
     </div>
   );

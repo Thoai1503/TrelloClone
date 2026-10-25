@@ -27,6 +27,14 @@ type SortableTaskCardProps = {
   onMemberAdded: (cardId: string, member: CardMemberSummary) => void;
 };
 
+function formatCardDate(date: string): string {
+  const [year, month, day] = date.slice(0, 10).split("-").map(Number);
+  const formattedDate = `${day} thg ${month}`;
+  return year === new Date().getFullYear()
+    ? formattedDate
+    : `${formattedDate}, ${year}`;
+}
+
 export default function SortableTaskCard({
   card,
   disabled,
@@ -43,6 +51,11 @@ export default function SortableTaskCard({
   const [isSaving, setIsSaving] = useState(false);
   const [isUpdatingCompletion, setIsUpdatingCompletion] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const startDate = card.start_date?.slice(0, 10) ?? null;
+  const dueDate = card.due_date?.slice(0, 10) ?? null;
+  const hasCardFooter = Boolean(
+    card.members.length > 0 || card.description?.trim() || dueDate,
+  );
   const pointerStart = useRef<{ x: number; y: number } | null>(null);
   const suppressNextClick = useRef(false);
   const {
@@ -123,7 +136,7 @@ export default function SortableTaskCard({
       {...attributes}
       ref={setNodeRef}
       className={`group relative flex items-start justify-between gap-2 rounded-lg bg-white p-3 text-sm shadow-sm ${
-        card.members.length > 0 || card.description?.trim() ? "pb-11" : ""
+        hasCardFooter ? "pb-11" : ""
       } ${disabled || isEditing ? "" : "cursor-grab active:cursor-grabbing"}`}
       onClick={(event) => {
         if (suppressNextClick.current) {
@@ -309,31 +322,72 @@ export default function SortableTaskCard({
           })}
         </div>
       )}
-      {card.description?.trim() && (
-        <div
-          aria-label="Có mô tả"
-          className="absolute bottom-2 left-3 inline-flex items-center text-gray-500"
-          title="Có mô tả"
-        >
-          <svg
-            aria-hidden="true"
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 20 20"
-          >
-            <path
-              d="M5 3.5h7l3 3v10H5a1.5 1.5 0 0 1-1.5-1.5V5A1.5 1.5 0 0 1 5 3.5Z"
-              stroke="currentColor"
-              strokeLinejoin="round"
-              strokeWidth="1.4"
-            />
-            <path
-              d="M7 9h6m-6 3h6m-6 3h4"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeWidth="1.4"
-            />
-          </svg>
+      {(card.description?.trim() || dueDate) && (
+        <div className="absolute bottom-2 left-3 flex max-w-[calc(100%-5rem)] items-center gap-2 text-gray-500">
+          {dueDate && (
+            <span
+              aria-label={
+                startDate
+                  ? `Thời gian: ${formatCardDate(startDate)} - ${formatCardDate(dueDate)}`
+                  : `Hạn: ${formatCardDate(dueDate)}`
+              }
+              className="inline-flex min-w-0 items-center gap-1 text-xs"
+              title={
+                startDate
+                  ? `${formatCardDate(startDate)} - ${formatCardDate(dueDate)}`
+                  : formatCardDate(dueDate)
+              }
+            >
+              <svg
+                aria-hidden="true"
+                className="h-4 w-4 shrink-0"
+                fill="none"
+                viewBox="0 0 20 20"
+              >
+                <circle
+                  cx="10"
+                  cy="10"
+                  r="7.5"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M10 5.5V10l3 2"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeWidth="1.5"
+                />
+              </svg>
+              <span className="truncate">
+                {startDate
+                  ? `${formatCardDate(startDate)} - ${formatCardDate(dueDate)}`
+                  : formatCardDate(dueDate)}
+              </span>
+            </span>
+          )}
+          {card.description?.trim() && (
+            <span aria-label="Có mô tả" className="shrink-0" title="Có mô tả">
+              <svg
+                aria-hidden="true"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M5 3.5h7l3 3v10H5a1.5 1.5 0 0 1-1.5-1.5V5A1.5 1.5 0 0 1 5 3.5Z"
+                  stroke="currentColor"
+                  strokeLinejoin="round"
+                  strokeWidth="1.4"
+                />
+                <path
+                  d="M7 9h6m-6 3h6m-6 3h4"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeWidth="1.4"
+                />
+              </svg>
+            </span>
+          )}
         </div>
       )}
       {isDetailsOpen && (

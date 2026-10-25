@@ -58,7 +58,8 @@ export const ModelName = {
   board_member: 'board_member',
   list: 'list',
   card: 'card',
-  card_member: 'card_member'
+  card_member: 'card_member',
+  comment: 'comment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -181,6 +182,18 @@ export const Card_memberScalarFieldEnum = {
 export type Card_memberScalarFieldEnum = (typeof Card_memberScalarFieldEnum)[keyof typeof Card_memberScalarFieldEnum]
 
 
+export const CommentScalarFieldEnum = {
+  id: 'id',
+  card_id: 'card_id',
+  user_id: 'user_id',
+  content: 'content',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeof CommentScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -238,4 +251,11 @@ export const cardOrderByRelevanceFieldEnum = {
 } as const
 
 export type cardOrderByRelevanceFieldEnum = (typeof cardOrderByRelevanceFieldEnum)[keyof typeof cardOrderByRelevanceFieldEnum]
+
+
+export const commentOrderByRelevanceFieldEnum = {
+  content: 'content'
+} as const
+
+export type commentOrderByRelevanceFieldEnum = (typeof commentOrderByRelevanceFieldEnum)[keyof typeof commentOrderByRelevanceFieldEnum]
 

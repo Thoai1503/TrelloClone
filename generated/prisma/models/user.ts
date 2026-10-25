@@ -236,6 +236,7 @@ export type userWhereInput = {
   board_members?: Prisma.Board_memberListRelationFilter
   created_cards?: Prisma.CardListRelationFilter
   card_members?: Prisma.Card_memberListRelationFilter
+  comments?: Prisma.CommentListRelationFilter
 }
 
 export type userOrderByWithRelationInput = {
@@ -250,6 +251,7 @@ export type userOrderByWithRelationInput = {
   board_members?: Prisma.board_memberOrderByRelationAggregateInput
   created_cards?: Prisma.cardOrderByRelationAggregateInput
   card_members?: Prisma.card_memberOrderByRelationAggregateInput
+  comments?: Prisma.commentOrderByRelationAggregateInput
   _relevance?: Prisma.userOrderByRelevanceInput
 }
 
@@ -268,6 +270,7 @@ export type userWhereUniqueInput = Prisma.AtLeast<{
   board_members?: Prisma.Board_memberListRelationFilter
   created_cards?: Prisma.CardListRelationFilter
   card_members?: Prisma.Card_memberListRelationFilter
+  comments?: Prisma.CommentListRelationFilter
 }, "id">
 
 export type userOrderByWithAggregationInput = {
@@ -309,6 +312,7 @@ export type userCreateInput = {
   board_members?: Prisma.board_memberCreateNestedManyWithoutUserInput
   created_cards?: Prisma.cardCreateNestedManyWithoutCreatorInput
   card_members?: Prisma.card_memberCreateNestedManyWithoutUserInput
+  comments?: Prisma.commentCreateNestedManyWithoutUserInput
 }
 
 export type userUncheckedCreateInput = {
@@ -323,6 +327,7 @@ export type userUncheckedCreateInput = {
   board_members?: Prisma.board_memberUncheckedCreateNestedManyWithoutUserInput
   created_cards?: Prisma.cardUncheckedCreateNestedManyWithoutCreatorInput
   card_members?: Prisma.card_memberUncheckedCreateNestedManyWithoutUserInput
+  comments?: Prisma.commentUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type userUpdateInput = {
@@ -336,6 +341,7 @@ export type userUpdateInput = {
   board_members?: Prisma.board_memberUpdateManyWithoutUserNestedInput
   created_cards?: Prisma.cardUpdateManyWithoutCreatorNestedInput
   card_members?: Prisma.card_memberUpdateManyWithoutUserNestedInput
+  comments?: Prisma.commentUpdateManyWithoutUserNestedInput
 }
 
 export type userUncheckedUpdateInput = {
@@ -350,6 +356,7 @@ export type userUncheckedUpdateInput = {
   board_members?: Prisma.board_memberUncheckedUpdateManyWithoutUserNestedInput
   created_cards?: Prisma.cardUncheckedUpdateManyWithoutCreatorNestedInput
   card_members?: Prisma.card_memberUncheckedUpdateManyWithoutUserNestedInput
+  comments?: Prisma.commentUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type userCreateManyInput = {
@@ -506,6 +513,20 @@ export type userUpdateOneRequiredWithoutCard_membersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.userUpdateToOneWithWhereWithoutCard_membersInput, Prisma.userUpdateWithoutCard_membersInput>, Prisma.userUncheckedUpdateWithoutCard_membersInput>
 }
 
+export type userCreateNestedOneWithoutCommentsInput = {
+  create?: Prisma.XOR<Prisma.userCreateWithoutCommentsInput, Prisma.userUncheckedCreateWithoutCommentsInput>
+  connectOrCreate?: Prisma.userCreateOrConnectWithoutCommentsInput
+  connect?: Prisma.userWhereUniqueInput
+}
+
+export type userUpdateOneRequiredWithoutCommentsNestedInput = {
+  create?: Prisma.XOR<Prisma.userCreateWithoutCommentsInput, Prisma.userUncheckedCreateWithoutCommentsInput>
+  connectOrCreate?: Prisma.userCreateOrConnectWithoutCommentsInput
+  upsert?: Prisma.userUpsertWithoutCommentsInput
+  connect?: Prisma.userWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.userUpdateToOneWithWhereWithoutCommentsInput, Prisma.userUpdateWithoutCommentsInput>, Prisma.userUncheckedUpdateWithoutCommentsInput>
+}
+
 export type userCreateWithoutWorkspace_membersInput = {
   email?: string | null
   password_hash?: string | null
@@ -516,6 +537,7 @@ export type userCreateWithoutWorkspace_membersInput = {
   board_members?: Prisma.board_memberCreateNestedManyWithoutUserInput
   created_cards?: Prisma.cardCreateNestedManyWithoutCreatorInput
   card_members?: Prisma.card_memberCreateNestedManyWithoutUserInput
+  comments?: Prisma.commentCreateNestedManyWithoutUserInput
 }
 
 export type userUncheckedCreateWithoutWorkspace_membersInput = {
@@ -529,6 +551,7 @@ export type userUncheckedCreateWithoutWorkspace_membersInput = {
   board_members?: Prisma.board_memberUncheckedCreateNestedManyWithoutUserInput
   created_cards?: Prisma.cardUncheckedCreateNestedManyWithoutCreatorInput
   card_members?: Prisma.card_memberUncheckedCreateNestedManyWithoutUserInput
+  comments?: Prisma.commentUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type userCreateOrConnectWithoutWorkspace_membersInput = {
@@ -557,6 +580,7 @@ export type userUpdateWithoutWorkspace_membersInput = {
   board_members?: Prisma.board_memberUpdateManyWithoutUserNestedInput
   created_cards?: Prisma.cardUpdateManyWithoutCreatorNestedInput
   card_members?: Prisma.card_memberUpdateManyWithoutUserNestedInput
+  comments?: Prisma.commentUpdateManyWithoutUserNestedInput
 }
 
 export type userUncheckedUpdateWithoutWorkspace_membersInput = {
@@ -570,6 +594,7 @@ export type userUncheckedUpdateWithoutWorkspace_membersInput = {
   board_members?: Prisma.board_memberUncheckedUpdateManyWithoutUserNestedInput
   created_cards?: Prisma.cardUncheckedUpdateManyWithoutCreatorNestedInput
   card_members?: Prisma.card_memberUncheckedUpdateManyWithoutUserNestedInput
+  comments?: Prisma.commentUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type userCreateWithoutBoard_membersInput = {
@@ -582,6 +607,7 @@ export type userCreateWithoutBoard_membersInput = {
   workspace_members?: Prisma.workspace_memberCreateNestedManyWithoutUserInput
   created_cards?: Prisma.cardCreateNestedManyWithoutCreatorInput
   card_members?: Prisma.card_memberCreateNestedManyWithoutUserInput
+  comments?: Prisma.commentCreateNestedManyWithoutUserInput
 }
 
 export type userUncheckedCreateWithoutBoard_membersInput = {
@@ -595,6 +621,7 @@ export type userUncheckedCreateWithoutBoard_membersInput = {
   workspace_members?: Prisma.workspace_memberUncheckedCreateNestedManyWithoutUserInput
   created_cards?: Prisma.cardUncheckedCreateNestedManyWithoutCreatorInput
   card_members?: Prisma.card_memberUncheckedCreateNestedManyWithoutUserInput
+  comments?: Prisma.commentUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type userCreateOrConnectWithoutBoard_membersInput = {
@@ -623,6 +650,7 @@ export type userUpdateWithoutBoard_membersInput = {
   workspace_members?: Prisma.workspace_memberUpdateManyWithoutUserNestedInput
   created_cards?: Prisma.cardUpdateManyWithoutCreatorNestedInput
   card_members?: Prisma.card_memberUpdateManyWithoutUserNestedInput
+  comments?: Prisma.commentUpdateManyWithoutUserNestedInput
 }
 
 export type userUncheckedUpdateWithoutBoard_membersInput = {
@@ -636,6 +664,7 @@ export type userUncheckedUpdateWithoutBoard_membersInput = {
   workspace_members?: Prisma.workspace_memberUncheckedUpdateManyWithoutUserNestedInput
   created_cards?: Prisma.cardUncheckedUpdateManyWithoutCreatorNestedInput
   card_members?: Prisma.card_memberUncheckedUpdateManyWithoutUserNestedInput
+  comments?: Prisma.commentUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type userCreateWithoutCreated_cardsInput = {
@@ -648,6 +677,7 @@ export type userCreateWithoutCreated_cardsInput = {
   workspace_members?: Prisma.workspace_memberCreateNestedManyWithoutUserInput
   board_members?: Prisma.board_memberCreateNestedManyWithoutUserInput
   card_members?: Prisma.card_memberCreateNestedManyWithoutUserInput
+  comments?: Prisma.commentCreateNestedManyWithoutUserInput
 }
 
 export type userUncheckedCreateWithoutCreated_cardsInput = {
@@ -661,6 +691,7 @@ export type userUncheckedCreateWithoutCreated_cardsInput = {
   workspace_members?: Prisma.workspace_memberUncheckedCreateNestedManyWithoutUserInput
   board_members?: Prisma.board_memberUncheckedCreateNestedManyWithoutUserInput
   card_members?: Prisma.card_memberUncheckedCreateNestedManyWithoutUserInput
+  comments?: Prisma.commentUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type userCreateOrConnectWithoutCreated_cardsInput = {
@@ -689,6 +720,7 @@ export type userUpdateWithoutCreated_cardsInput = {
   workspace_members?: Prisma.workspace_memberUpdateManyWithoutUserNestedInput
   board_members?: Prisma.board_memberUpdateManyWithoutUserNestedInput
   card_members?: Prisma.card_memberUpdateManyWithoutUserNestedInput
+  comments?: Prisma.commentUpdateManyWithoutUserNestedInput
 }
 
 export type userUncheckedUpdateWithoutCreated_cardsInput = {
@@ -702,6 +734,7 @@ export type userUncheckedUpdateWithoutCreated_cardsInput = {
   workspace_members?: Prisma.workspace_memberUncheckedUpdateManyWithoutUserNestedInput
   board_members?: Prisma.board_memberUncheckedUpdateManyWithoutUserNestedInput
   card_members?: Prisma.card_memberUncheckedUpdateManyWithoutUserNestedInput
+  comments?: Prisma.commentUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type userCreateWithoutCard_membersInput = {
@@ -714,6 +747,7 @@ export type userCreateWithoutCard_membersInput = {
   workspace_members?: Prisma.workspace_memberCreateNestedManyWithoutUserInput
   board_members?: Prisma.board_memberCreateNestedManyWithoutUserInput
   created_cards?: Prisma.cardCreateNestedManyWithoutCreatorInput
+  comments?: Prisma.commentCreateNestedManyWithoutUserInput
 }
 
 export type userUncheckedCreateWithoutCard_membersInput = {
@@ -727,6 +761,7 @@ export type userUncheckedCreateWithoutCard_membersInput = {
   workspace_members?: Prisma.workspace_memberUncheckedCreateNestedManyWithoutUserInput
   board_members?: Prisma.board_memberUncheckedCreateNestedManyWithoutUserInput
   created_cards?: Prisma.cardUncheckedCreateNestedManyWithoutCreatorInput
+  comments?: Prisma.commentUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type userCreateOrConnectWithoutCard_membersInput = {
@@ -755,6 +790,7 @@ export type userUpdateWithoutCard_membersInput = {
   workspace_members?: Prisma.workspace_memberUpdateManyWithoutUserNestedInput
   board_members?: Prisma.board_memberUpdateManyWithoutUserNestedInput
   created_cards?: Prisma.cardUpdateManyWithoutCreatorNestedInput
+  comments?: Prisma.commentUpdateManyWithoutUserNestedInput
 }
 
 export type userUncheckedUpdateWithoutCard_membersInput = {
@@ -768,6 +804,77 @@ export type userUncheckedUpdateWithoutCard_membersInput = {
   workspace_members?: Prisma.workspace_memberUncheckedUpdateManyWithoutUserNestedInput
   board_members?: Prisma.board_memberUncheckedUpdateManyWithoutUserNestedInput
   created_cards?: Prisma.cardUncheckedUpdateManyWithoutCreatorNestedInput
+  comments?: Prisma.commentUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type userCreateWithoutCommentsInput = {
+  email?: string | null
+  password_hash?: string | null
+  full_name?: string | null
+  avatar_url?: string | null
+  createdAt?: Date | string
+  updated_at?: Date | string | null
+  workspace_members?: Prisma.workspace_memberCreateNestedManyWithoutUserInput
+  board_members?: Prisma.board_memberCreateNestedManyWithoutUserInput
+  created_cards?: Prisma.cardCreateNestedManyWithoutCreatorInput
+  card_members?: Prisma.card_memberCreateNestedManyWithoutUserInput
+}
+
+export type userUncheckedCreateWithoutCommentsInput = {
+  id?: number
+  email?: string | null
+  password_hash?: string | null
+  full_name?: string | null
+  avatar_url?: string | null
+  createdAt?: Date | string
+  updated_at?: Date | string | null
+  workspace_members?: Prisma.workspace_memberUncheckedCreateNestedManyWithoutUserInput
+  board_members?: Prisma.board_memberUncheckedCreateNestedManyWithoutUserInput
+  created_cards?: Prisma.cardUncheckedCreateNestedManyWithoutCreatorInput
+  card_members?: Prisma.card_memberUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type userCreateOrConnectWithoutCommentsInput = {
+  where: Prisma.userWhereUniqueInput
+  create: Prisma.XOR<Prisma.userCreateWithoutCommentsInput, Prisma.userUncheckedCreateWithoutCommentsInput>
+}
+
+export type userUpsertWithoutCommentsInput = {
+  update: Prisma.XOR<Prisma.userUpdateWithoutCommentsInput, Prisma.userUncheckedUpdateWithoutCommentsInput>
+  create: Prisma.XOR<Prisma.userCreateWithoutCommentsInput, Prisma.userUncheckedCreateWithoutCommentsInput>
+  where?: Prisma.userWhereInput
+}
+
+export type userUpdateToOneWithWhereWithoutCommentsInput = {
+  where?: Prisma.userWhereInput
+  data: Prisma.XOR<Prisma.userUpdateWithoutCommentsInput, Prisma.userUncheckedUpdateWithoutCommentsInput>
+}
+
+export type userUpdateWithoutCommentsInput = {
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatar_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace_members?: Prisma.workspace_memberUpdateManyWithoutUserNestedInput
+  board_members?: Prisma.board_memberUpdateManyWithoutUserNestedInput
+  created_cards?: Prisma.cardUpdateManyWithoutCreatorNestedInput
+  card_members?: Prisma.card_memberUpdateManyWithoutUserNestedInput
+}
+
+export type userUncheckedUpdateWithoutCommentsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatar_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace_members?: Prisma.workspace_memberUncheckedUpdateManyWithoutUserNestedInput
+  board_members?: Prisma.board_memberUncheckedUpdateManyWithoutUserNestedInput
+  created_cards?: Prisma.cardUncheckedUpdateManyWithoutCreatorNestedInput
+  card_members?: Prisma.card_memberUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -780,6 +887,7 @@ export type UserCountOutputType = {
   board_members: number
   created_cards: number
   card_members: number
+  comments: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -787,6 +895,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   board_members?: boolean | UserCountOutputTypeCountBoard_membersArgs
   created_cards?: boolean | UserCountOutputTypeCountCreated_cardsArgs
   card_members?: boolean | UserCountOutputTypeCountCard_membersArgs
+  comments?: boolean | UserCountOutputTypeCountCommentsArgs
 }
 
 /**
@@ -827,6 +936,13 @@ export type UserCountOutputTypeCountCard_membersArgs<ExtArgs extends runtime.Typ
   where?: Prisma.card_memberWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCommentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.commentWhereInput
+}
+
 
 export type userSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -840,6 +956,7 @@ export type userSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   board_members?: boolean | Prisma.user$board_membersArgs<ExtArgs>
   created_cards?: boolean | Prisma.user$created_cardsArgs<ExtArgs>
   card_members?: boolean | Prisma.user$card_membersArgs<ExtArgs>
+  comments?: boolean | Prisma.user$commentsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -861,6 +978,7 @@ export type userInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   board_members?: boolean | Prisma.user$board_membersArgs<ExtArgs>
   created_cards?: boolean | Prisma.user$created_cardsArgs<ExtArgs>
   card_members?: boolean | Prisma.user$card_membersArgs<ExtArgs>
+  comments?: boolean | Prisma.user$commentsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 
@@ -871,6 +989,7 @@ export type $userPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     board_members: Prisma.$board_memberPayload<ExtArgs>[]
     created_cards: Prisma.$cardPayload<ExtArgs>[]
     card_members: Prisma.$card_memberPayload<ExtArgs>[]
+    comments: Prisma.$commentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1224,6 +1343,7 @@ export interface Prisma__userClient<T, Null = never, ExtArgs extends runtime.Typ
   board_members<T extends Prisma.user$board_membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$board_membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$board_memberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   created_cards<T extends Prisma.user$created_cardsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$created_cardsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$cardPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   card_members<T extends Prisma.user$card_membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$card_membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$card_memberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  comments<T extends Prisma.user$commentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$commentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1701,6 +1821,30 @@ export type user$card_membersArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.Card_memberScalarFieldEnum | Prisma.Card_memberScalarFieldEnum[]
+}
+
+/**
+ * user.comments
+ */
+export type user$commentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the comment
+   */
+  select?: Prisma.commentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the comment
+   */
+  omit?: Prisma.commentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.commentInclude<ExtArgs> | null
+  where?: Prisma.commentWhereInput
+  orderBy?: Prisma.commentOrderByWithRelationInput | Prisma.commentOrderByWithRelationInput[]
+  cursor?: Prisma.commentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CommentScalarFieldEnum | Prisma.CommentScalarFieldEnum[]
 }
 
 /**

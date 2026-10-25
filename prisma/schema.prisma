@@ -39,6 +39,7 @@ model user {
   board_members     board_member[]
   created_cards     card[]             @relation("CardCreator")
   card_members      card_member[]
+  comments          comment[]
 }
 
 model workspace {
@@ -74,23 +75,22 @@ model workspace_member {
 }
 
 model board {
-  id              BigInt    @id @default(autoincrement())
-  workspace_id    BigInt    @map("workspace_id")
-  created_by      BigInt    @map("created_by")
-  backgroundColor String    @default("#0c66e4") @map("background_color") @db.Char(7)
-  name            String    @db.VarChar(150)
-  description     String?   @db.Text
+  id              BigInt  @id @default(autoincrement())
+  workspace_id    BigInt  @map("workspace_id")
+  created_by      BigInt  @map("created_by")
+  backgroundColor String  @default("#0c66e4") @map("background_color") @db.Char(7)
+  name            String  @db.VarChar(150)
+  description     String? @db.Text
 
-  created_at      DateTime  @default(now()) @map("created_at") @db.DateTime(3)
-  updated_at      DateTime? @updatedAt @map("updated_at") @db.DateTime(3)
-  archived_at     DateTime? @map("archived_at") @db.DateTime(3)
+  created_at  DateTime  @default(now()) @map("created_at") @db.DateTime(3)
+  updated_at  DateTime? @updatedAt @map("updated_at") @db.DateTime(3)
+  archived_at DateTime? @map("archived_at") @db.DateTime(3)
 
   workspace     workspace      @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
   board_members board_member[]
   lists         list[]
 
   @@index([workspace_id, archived_at])
-
   @@index([created_by])
   @@map("board")
 }
@@ -137,11 +137,11 @@ model card {
   list_id    BigInt @map("list_id")
   created_by Int    @map("created_by") @db.UnsignedInt
 
-  title       String       @db.VarChar(255)
-  description String?      @db.Text
-  position    Decimal      @default(1000) @db.Decimal(20, 6)
-  priority    CardPriority @default(MEDIUM)
-  is_completed Boolean     @default(false) @map("is_completed")
+  title        String       @db.VarChar(255)
+  description  String?      @db.Text
+  position     Decimal      @default(1000) @db.Decimal(20, 6)
+  priority     CardPriority @default(MEDIUM)
+  is_completed Boolean      @default(false) @map("is_completed")
 
   start_date   DateTime? @map("start_date") @db.DateTime(3)
   due_date     DateTime? @map("due_date") @db.DateTime(3)
@@ -150,9 +150,10 @@ model card {
   updated_at   DateTime? @updatedAt @map("updated_at") @db.DateTime(3)
   archived_at  DateTime? @map("archived_at") @db.DateTime(3)
 
-  list    list          @relation(fields: [list_id], references: [id], onDelete: Cascade)
-  creator user          @relation("CardCreator", fields: [created_by], references: [id], onDelete: Restrict)
-  members card_member[]
+  list     list          @relation(fields: [list_id], references: [id], onDelete: Cascade)
+  creator  user          @relation("CardCreator", fields: [created_by], references: [id], onDelete: Restrict)
+  members  card_member[]
+  comments comment[]
 
   @@index([list_id, position])
   @@index([created_by])
@@ -173,4 +174,22 @@ model card_member {
   @@id([card_id, user_id])
   @@index([user_id])
   @@map("card_members")
+}
+
+model comment {
+  id      BigInt @id @default(autoincrement())
+  card_id BigInt @map("card_id")
+  user_id Int    @map("user_id") @db.UnsignedInt
+
+  content String @db.Text
+
+  created_at DateTime  @default(now()) @map("created_at") @db.DateTime(3)
+  updated_at DateTime? @updatedAt @map("updated_at") @db.DateTime(3)
+
+  card card @relation(fields: [card_id], references: [id], onDelete: Cascade)
+  user user @relation(fields: [user_id], references: [id], onDelete: Restrict)
+
+  @@index([card_id, created_at])
+  @@index([user_id])
+  @@map("comments")
 }
