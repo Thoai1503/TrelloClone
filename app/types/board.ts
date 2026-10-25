@@ -30,6 +30,18 @@ export type CardMemberSummary = {
   avatar_url: string | null;
 };
 
+export type CardCommentSummary = {
+  id: string;
+  content: string;
+  created_at: string;
+  author: {
+    id: number;
+    email: string | null;
+    full_name: string | null;
+    avatar_url: string | null;
+  };
+};
+
 export type BoardMemberRole = "ADMIN" | "EDITOR" | "VIEWER";
 
 export type BoardMemberSummary = {

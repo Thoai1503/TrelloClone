@@ -57,3 +57,8 @@ export type card = Prisma.cardModel
  * 
  */
 export type card_member = Prisma.card_memberModel
+/**
+ * Model comment
+ * 
+ */
+export type comment = Prisma.commentModel
