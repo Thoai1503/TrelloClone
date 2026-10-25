@@ -41,6 +41,7 @@ import { useUser } from "@/app/providers/UserProvider";
 
 import { Avatar, Button, Icon } from "../atoms";
 import { SortableBoardList } from "../molecules";
+import BoardDueDateSidebar from "./BoardDueDateSidebar";
 import BoardShareDialog from "./BoardShareDialog";
 
 const boardCollisionDetection: CollisionDetection = (args) => {
@@ -384,10 +385,14 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
   }
 
   return (
-    <main
-      className="flex h-[calc(100vh-68px)] flex-col overflow-hidden text-white"
-      style={{ backgroundColor: board.backgroundColor }}
+    <div
+      className="flex h-[calc(100vh-68px)] gap-3 overflow-hidden bg-white p-3"
     >
+      <BoardDueDateSidebar lists={lists} />
+      <main
+        className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-xl text-white shadow-sm"
+        style={{ backgroundColor: board.backgroundColor }}
+      >
       <header
         className="flex h-14 shrink-0 items-center border-b border-white/15 px-4 sm:px-6"
         style={{
@@ -460,140 +465,129 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
         </div>
       </header>
 
-      <section className="flex min-h-0 flex-1 flex-col p-5 sm:p-7">
-        <div className="mb-5 flex shrink-0 items-end justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-bold tracking-tight sm:text-2xl">
-              Danh sách công việc
-            </h2>
-            <p className="mt-1 text-sm text-white/75">
-              Các danh sách (column) trong bảng này.
-            </p>
-          </div>
-          <span className="shrink-0 rounded-md bg-white/15 px-3 py-1.5 text-sm text-white">
-            {lists.length} danh sách
-          </span>
-        </div>
-
+      <section className="flex min-h-0 flex-1 flex-col p-3 sm:p-4">
         {error && (
-          <p className="mb-4 shrink-0 text-sm text-white" role="alert">
+          <p className="mb-4 shrink-0 text-sm text-red-700" role="alert">
             {error}
           </p>
         )}
 
-        <DndContext
-          collisionDetection={boardCollisionDetection}
-          onDragCancel={() => setActiveCard(null)}
-          onDragEnd={handleDragEnd}
-          onDragStart={handleDragStart}
-          sensors={sensors}
-        >
-          <div
-            aria-label="Các danh sách trong bảng"
-            className="flex min-h-0 flex-1 items-start gap-3 overflow-x-auto overflow-y-hidden pb-4"
+        <div className="flex min-h-0 flex-1 overflow-hidden">
+          <DndContext
+            collisionDetection={boardCollisionDetection}
+            onDragCancel={() => setActiveCard(null)}
+            onDragEnd={handleDragEnd}
+            onDragStart={handleDragStart}
+            sensors={sensors}
           >
-            <SortableContext
-              items={lists.map((list) => `list:${list.id}`)}
-              strategy={horizontalListSortingStrategy}
+            <div
+              aria-label="Các danh sách trong bảng"
+              className="flex min-h-0 min-w-0 flex-1 items-start gap-3 overflow-x-auto overflow-y-hidden pb-4"
             >
-              {lists.map((list: BoardList) => (
-                <SortableBoardList
-                  disabled={
-                    isSavingOrder ||
-                    isSavingCardOrder ||
-                    isAdding ||
-                    !board.canManageLists
-                  }
-                  canAddCards={board.canManageLists}
-                  boardToken={board.encryptedId}
-                  key={list.id}
-                  list={list}
-                  onAddCard={handleAddCard}
-                  onCardDetailsUpdated={handleCardDetailsUpdated}
-                  onCardMemberAdded={handleCardMemberAdded}
-                  onToggleCardCompleted={handleToggleCardCompleted}
-                  onUpdateCard={handleUpdateCard}
-                />
-              ))}
-            </SortableContext>
+              <SortableContext
+                items={lists.map((list) => `list:${list.id}`)}
+                strategy={horizontalListSortingStrategy}
+              >
+                {lists.map((list: BoardList) => (
+                  <SortableBoardList
+                    disabled={
+                      isSavingOrder ||
+                      isSavingCardOrder ||
+                      isAdding ||
+                      !board.canManageLists
+                    }
+                    canAddCards={board.canManageLists}
+                    boardToken={board.encryptedId}
+                    key={list.id}
+                    list={list}
+                    onAddCard={handleAddCard}
+                    onCardDetailsUpdated={handleCardDetailsUpdated}
+                    onCardMemberAdded={handleCardMemberAdded}
+                    onToggleCardCompleted={handleToggleCardCompleted}
+                    onUpdateCard={handleUpdateCard}
+                  />
+                ))}
+              </SortableContext>
 
-            {isAdding ? (
-              <form
-                className="flex w-72 shrink-0 flex-col gap-3 rounded-xl bg-gray-100 p-3 text-gray-900 shadow-sm"
-                onSubmit={handleSubmit}
-              >
-                <label className="sr-only" htmlFor="new-list-name">
-                  Tên danh sách
-                </label>
-                <input
-                  autoFocus
-                  className="h-10 rounded-md border border-gray-300 bg-white px-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                  id="new-list-name"
-                  maxLength={150}
-                  onChange={(event) => setName(event.target.value)}
-                  placeholder="Nhập tên danh sách..."
-                  value={name}
-                />
-                <div className="flex items-center gap-2">
-                  <Button disabled={isSubmitting || !name.trim()} type="submit">
-                    {isSubmitting ? "Đang thêm..." : "Thêm danh sách"}
-                  </Button>
-                  <button
-                    className="rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-200"
-                    disabled={isSubmitting}
-                    onClick={() => {
-                      setIsAdding(false);
-                      setError(null);
-                    }}
-                    type="button"
-                  >
-                    Hủy
-                  </button>
-                </div>
-              </form>
-            ) : board.canManageLists ? (
-              <button
-                className="flex h-12 w-72 shrink-0 items-center gap-2 rounded-xl bg-white/20 px-4 text-left text-sm font-semibold text-white transition hover:bg-white/30 disabled:cursor-not-allowed disabled:opacity-60"
-                disabled={isSavingOrder}
-                onClick={() => setIsAdding(true)}
-                type="button"
-              >
-                <span aria-hidden="true" className="text-lg leading-none">
-                  +
-                </span>
-                Thêm danh sách khác
-              </button>
-            ) : null}
-          </div>
-          <DragOverlay dropAnimation={null} zIndex={1000}>
-            {activeCard ? (
-              <article className="flex w-60 items-start justify-between gap-2 rounded-lg bg-white p-3 text-sm text-gray-900 shadow-xl ring-1 ring-black/10">
-                <span className="min-w-0 flex-1 break-words">
-                  {activeCard.title}
-                </span>
-                <svg
-                  aria-hidden="true"
-                  className="h-4 w-4 shrink-0 text-gray-400"
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
+              {isAdding ? (
+                <form
+                  className="flex w-72 shrink-0 flex-col gap-3 rounded-xl bg-gray-100 p-3 text-gray-900 shadow-sm"
+                  onSubmit={handleSubmit}
                 >
-                  <circle cx="5" cy="3" r="1.2" />
-                  <circle cx="11" cy="3" r="1.2" />
-                  <circle cx="5" cy="8" r="1.2" />
-                  <circle cx="11" cy="8" r="1.2" />
-                  <circle cx="5" cy="13" r="1.2" />
-                  <circle cx="11" cy="13" r="1.2" />
-                </svg>
-              </article>
-            ) : null}
-          </DragOverlay>
-        </DndContext>
+                  <label className="sr-only" htmlFor="new-list-name">
+                    Tên danh sách
+                  </label>
+                  <input
+                    autoFocus
+                    className="h-10 rounded-md border border-gray-300 bg-white px-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    id="new-list-name"
+                    maxLength={150}
+                    onChange={(event) => setName(event.target.value)}
+                    placeholder="Nhập tên danh sách..."
+                    value={name}
+                  />
+                  <div className="flex items-center gap-2">
+                    <Button disabled={isSubmitting || !name.trim()} type="submit">
+                      {isSubmitting ? "Đang thêm..." : "Thêm danh sách"}
+                    </Button>
+                    <button
+                      className="rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-200"
+                      disabled={isSubmitting}
+                      onClick={() => {
+                        setIsAdding(false);
+                        setError(null);
+                      }}
+                      type="button"
+                    >
+                      Hủy
+                    </button>
+                  </div>
+                </form>
+              ) : board.canManageLists ? (
+                <button
+                  className="flex h-12 w-72 shrink-0 items-center gap-2 rounded-xl bg-white/20 px-4 text-left text-sm font-semibold text-white transition hover:bg-white/30 disabled:cursor-not-allowed disabled:opacity-60"
+                  disabled={isSavingOrder}
+                  onClick={() => setIsAdding(true)}
+                  type="button"
+                >
+                  <span aria-hidden="true" className="text-lg leading-none">
+                    +
+                  </span>
+                  Thêm danh sách khác
+                </button>
+              ) : null}
+            </div>
+            <DragOverlay dropAnimation={null} zIndex={1000}>
+              {activeCard ? (
+                <article className="flex w-60 items-start justify-between gap-2 rounded-lg bg-white p-3 text-sm text-gray-900 shadow-xl ring-1 ring-black/10">
+                  <span className="min-w-0 flex-1 break-words">
+                    {activeCard.title}
+                  </span>
+                  <svg
+                    aria-hidden="true"
+                    className="h-4 w-4 shrink-0 text-gray-400"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                  >
+                    <circle cx="5" cy="3" r="1.2" />
+                    <circle cx="11" cy="3" r="1.2" />
+                    <circle cx="5" cy="8" r="1.2" />
+                    <circle cx="11" cy="8" r="1.2" />
+                    <circle cx="5" cy="13" r="1.2" />
+                    <circle cx="11" cy="13" r="1.2" />
+                  </svg>
+                </article>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
+        </div>
         {isSavingOrder && (
-          <p aria-live="polite" className="shrink-0 text-sm text-white/75">
+          <p aria-live="polite" className="shrink-0 text-sm text-gray-600">
             Đang lưu thứ tự danh sách...
           </p>
         )}
       </section>
-    </main>
+      </main>
+    </div>
   );
 }
