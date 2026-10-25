@@ -38,6 +38,7 @@ import type {
   BoardTask,
 } from "@/app/types/board";
 import { useUser } from "@/app/providers/UserProvider";
+import { createSerialAsyncQueue } from "@/utils/serialAsyncQueue";
 
 import { Avatar, Button, Icon } from "../atoms";
 import { SortableBoardList } from "../molecules";
@@ -71,18 +72,23 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
   const [members, setMembers] = useState(board.members);
   const [isAdding, setIsAdding] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSavingOrder, setIsSavingOrder] = useState(false);
-  const [isSavingCardOrder, setIsSavingCardOrder] = useState(false);
+  const [pendingSaveCount, setPendingSaveCount] = useState(0);
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [activeCard, setActiveCard] = useState<BoardTask | null>(null);
+  const listsRef = useRef(lists);
   const pendingDragDropActions = useRef(0);
+  const persistQueueRef = useRef(createSerialAsyncQueue());
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
+
+  useEffect(() => {
+    listsRef.current = lists;
+  }, [lists]);
 
   useEffect(() => {
     function warnBeforeUnload(event: BeforeUnloadEvent) {
@@ -104,76 +110,99 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
     }
 
     const cardId = activeId.slice("card:".length);
-    const card = lists
+    const card = listsRef.current
       .flatMap((list) => list.cards)
       .find((item) => item.id === cardId);
     setActiveCard(card ?? null);
   }
 
-  async function handleDragEnd(event: DragEndEvent) {
+  function enqueueBoardPersist(task: () => Promise<void>) {
+    pendingDragDropActions.current += 1;
+    setPendingSaveCount((count) => count + 1);
+    persistQueueRef.current.enqueue(async () => {
+      try {
+        await task();
+      } finally {
+        pendingDragDropActions.current -= 1;
+        setPendingSaveCount((count) => Math.max(0, count - 1));
+      }
+    });
+  }
+
+  function persistListOrder(orderedListIds: string[]) {
+    enqueueBoardPersist(async () => {
+      try {
+        const saved = await reorderBoardLists(
+          board.encryptedId,
+          orderedListIds,
+        );
+        if (!saved) throw new Error("Board list order was rejected.");
+      } catch (cause: unknown) {
+        console.error("Failed to save board list order.", cause);
+        setError("Không thể lưu thứ tự danh sách. Vui lòng thử lại.");
+      }
+    });
+  }
+
+  function persistCardOrder(
+    orderedLists: { listId: string; cardIds: string[] }[],
+  ) {
+    enqueueBoardPersist(async () => {
+      try {
+        const saved = await reorderBoardCards(board.encryptedId, orderedLists);
+        if (!saved) throw new Error("Board card order was rejected.");
+      } catch (cause: unknown) {
+        console.error("Failed to save board card order.", cause);
+        setError("Không thể lưu thay đổi thẻ. Vui lòng thử lại.");
+      }
+    });
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
     setActiveCard(null);
     const { active, over } = event;
-    if (
-      !board.canManageLists ||
-      isAdding ||
-      !over ||
-      active.id === over.id ||
-      isSavingOrder
-    ) {
+    if (!board.canManageLists || isAdding || !over || active.id === over.id) {
       return;
     }
 
+    const currentLists = listsRef.current;
     const activeId = String(active.id);
     const overId = String(over.id);
     if (activeId.startsWith("list:")) {
       const overListId = overId.startsWith("list:")
         ? overId.slice("list:".length)
         : null;
-      const oldIndex = lists.findIndex(
+      const oldIndex = currentLists.findIndex(
         (list) => `list:${list.id}` === activeId,
       );
       const newIndex = overListId
-        ? lists.findIndex((list) => list.id === overListId)
+        ? currentLists.findIndex((list) => list.id === overListId)
         : -1;
       if (oldIndex < 0 || newIndex < 0) return;
 
-      const previousLists = lists;
-      const reorderedLists = arrayMove(lists, oldIndex, newIndex);
+      const reorderedLists = arrayMove(currentLists, oldIndex, newIndex);
+      listsRef.current = reorderedLists;
       setLists(reorderedLists);
-      setIsSavingOrder(true);
-      pendingDragDropActions.current += 1;
       setError(null);
-
-      try {
-        const saved = await reorderBoardLists(
-          board.encryptedId,
-          reorderedLists.map((list) => list.id),
-        );
-        if (!saved) throw new Error("Board list order was rejected.");
-      } catch (cause: unknown) {
-        console.error("Failed to save board list order.", cause);
-        setLists(previousLists);
-        setError("Không thể lưu thứ tự danh sách. Vui lòng thử lại.");
-      } finally {
-        pendingDragDropActions.current -= 1;
-        setIsSavingOrder(false);
-      }
+      persistListOrder(reorderedLists.map((list) => list.id));
       return;
     }
 
     if (!activeId.startsWith("card:")) return;
     const activeCardId = activeId.slice("card:".length);
-    const sourceList = lists.find((list) =>
+    const sourceList = currentLists.find((list) =>
       list.cards.some((card) => card.id === activeCardId),
     );
     const destinationListId = overId.startsWith("card:")
-      ? lists.find((list) =>
+      ? currentLists.find((list) =>
           list.cards.some((card) => card.id === overId.slice("card:".length)),
         )?.id
       : overId.startsWith("list:")
         ? overId.slice("list:".length)
         : undefined;
-    const destinationList = lists.find((list) => list.id === destinationListId);
+    const destinationList = currentLists.find(
+      (list) => list.id === destinationListId,
+    );
     if (!sourceList || !destinationList) return;
 
     const sourceIndex = sourceList.cards.findIndex(
@@ -199,7 +228,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
       ) {
         return;
       }
-      await handleReorderCards(sourceList.id, reorderedCards);
+      handleReorderCards(sourceList.id, reorderedCards);
       return;
     }
 
@@ -208,7 +237,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
     );
     const destinationCards = [...destinationList.cards];
     destinationCards.splice(targetIndex, 0, sourceList.cards[sourceIndex]);
-    await handleReorderCards(
+    handleReorderCards(
       sourceList.id,
       sourceCards,
       destinationList.id,
@@ -331,57 +360,42 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
     );
   }
 
-  async function handleReorderCards(
+  function handleReorderCards(
     sourceListId: string,
     sourceCards: BoardTask[],
     destinationListId = sourceListId,
     destinationCards = sourceCards,
-  ): Promise<void> {
-    if (isSavingCardOrder) return;
-
-    const previousLists = lists;
-    setLists((currentLists) =>
-      currentLists.map((list) =>
-        list.id === sourceListId
-          ? { ...list, cards: sourceCards }
-          : list.id === destinationListId
-            ? { ...list, cards: destinationCards }
-            : list,
-      ),
+  ) {
+    const nextLists = listsRef.current.map((list) =>
+      list.id === sourceListId
+        ? { ...list, cards: sourceCards }
+        : list.id === destinationListId
+          ? { ...list, cards: destinationCards }
+          : list,
     );
-    setIsSavingCardOrder(true);
-    pendingDragDropActions.current += 1;
+    listsRef.current = nextLists;
+    setLists(nextLists);
     setError(null);
 
-    try {
-      const orderedLists =
-        sourceListId === destinationListId
-          ? [
-              {
-                listId: sourceListId,
-                cardIds: sourceCards.map((card) => card.id),
-              },
-            ]
-          : [
-              {
-                listId: sourceListId,
-                cardIds: sourceCards.map((card) => card.id),
-              },
-              {
-                listId: destinationListId,
-                cardIds: destinationCards.map((card) => card.id),
-              },
-            ];
-      const saved = await reorderBoardCards(board.encryptedId, orderedLists);
-      if (!saved) throw new Error("Board card order was rejected.");
-    } catch (cause: unknown) {
-      console.error("Failed to save board card order.", cause);
-      setLists(previousLists);
-      setError("Không thể lưu thay đổi thẻ. Vui lòng thử lại.");
-    } finally {
-      pendingDragDropActions.current -= 1;
-      setIsSavingCardOrder(false);
-    }
+    const orderedLists =
+      sourceListId === destinationListId
+        ? [
+            {
+              listId: sourceListId,
+              cardIds: sourceCards.map((card) => card.id),
+            },
+          ]
+        : [
+            {
+              listId: sourceListId,
+              cardIds: sourceCards.map((card) => card.id),
+            },
+            {
+              listId: destinationListId,
+              cardIds: destinationCards.map((card) => card.id),
+            },
+          ];
+    persistCardOrder(orderedLists);
   }
 
   return (
@@ -490,12 +504,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
               >
                 {lists.map((list: BoardList) => (
                   <SortableBoardList
-                    disabled={
-                      isSavingOrder ||
-                      isSavingCardOrder ||
-                      isAdding ||
-                      !board.canManageLists
-                    }
+                    disabled={isAdding || !board.canManageLists}
                     canAddCards={board.canManageLists}
                     boardToken={board.encryptedId}
                     key={list.id}
@@ -545,8 +554,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
                 </form>
               ) : board.canManageLists ? (
                 <button
-                  className="flex h-12 w-72 shrink-0 items-center gap-2 rounded-xl bg-white/20 px-4 text-left text-sm font-semibold text-white transition hover:bg-white/30 disabled:cursor-not-allowed disabled:opacity-60"
-                  disabled={isSavingOrder}
+                  className="flex h-12 w-72 shrink-0 items-center gap-2 rounded-xl bg-white/20 px-4 text-left text-sm font-semibold text-white transition hover:bg-white/30"
                   onClick={() => setIsAdding(true)}
                   type="button"
                 >
@@ -581,9 +589,9 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
             </DragOverlay>
           </DndContext>
         </div>
-        {isSavingOrder && (
+        {pendingSaveCount > 0 && (
           <p aria-live="polite" className="shrink-0 text-sm text-gray-600">
-            Đang lưu thứ tự danh sách...
+            Đang lưu thứ tự...
           </p>
         )}
       </section>
