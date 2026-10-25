@@ -1,0 +1,2 @@
+ALTER TABLE `user`
+  MODIFY COLUMN `avatar_url` TEXT NULL;

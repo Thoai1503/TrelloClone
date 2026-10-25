@@ -1,8 +1,19 @@
 import { compare } from "bcryptjs";
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 
 import { prisma } from "@/lib/prisma";
+
+const googleCredentials =
+  process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+    ? [
+        GoogleProvider({
+          clientId: process.env.GOOGLE_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        }),
+      ]
+    : [];
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -14,6 +25,7 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
   providers: [
+    ...googleCredentials,
     CredentialsProvider({
       name: "Email and password",
       credentials: {
@@ -89,6 +101,75 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user, account, profile }) {
+      if (account?.provider !== "google") {
+        return true;
+      }
+
+      const email = user.email?.trim().toLowerCase();
+      if (
+        !email ||
+        !profile ||
+        !("email_verified" in profile) ||
+        profile.email_verified !== true
+      ) {
+        return false;
+      }
+
+      const matchingUsers = await prisma.user.findMany({
+        where: { email },
+        select: {
+          id: true,
+          email: true,
+          full_name: true,
+          avatar_url: true,
+        },
+        take: 2,
+      });
+
+      if (matchingUsers.length > 1) {
+        console.error(
+          "Google sign-in rejected because multiple local users share an email.",
+        );
+        return false;
+      }
+      const existingUser = matchingUsers[0];
+      const googleName = user.name?.trim().slice(0, 255) || null;
+      const googleImage = user.image || null;
+      const localUser = existingUser
+        ? await prisma.user.update({
+            where: { id: existingUser.id },
+            data: {
+              full_name: existingUser.full_name ?? googleName,
+              avatar_url: googleImage ?? existingUser.avatar_url,
+            },
+            select: {
+              id: true,
+              email: true,
+              full_name: true,
+              avatar_url: true,
+            },
+          })
+        : await prisma.user.create({
+            data: {
+              email,
+              full_name: googleName,
+              avatar_url: googleImage,
+            },
+            select: {
+              id: true,
+              email: true,
+              full_name: true,
+              avatar_url: true,
+            },
+          });
+
+      user.id = String(localUser.id);
+      user.email = localUser.email;
+      user.name = localUser.full_name;
+      user.image = localUser.avatar_url;
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.sub = user.id;

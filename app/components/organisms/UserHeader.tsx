@@ -26,7 +26,9 @@ export default function UserHeader() {
         <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-lg font-black text-white shadow-sm">
           t
         </span>
-        <span className="text-[21px] font-bold tracking-tight text-gray-800">trello</span>
+        <span className="text-[21px] font-bold tracking-tight text-gray-800">
+          trello
+        </span>
       </Link>
 
       {isBoardCollection && (
@@ -54,7 +56,11 @@ export default function UserHeader() {
             >
               {displayName}
             </span>
-            <Avatar label={displayName} userId={user.id} />
+            <Avatar
+              imageUrl={user.avatar_url}
+              label={displayName}
+              userId={user.id}
+            />
             <SignOutButton className="rounded-md px-3 py-2 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 hover:text-gray-900" />
           </>
         ) : (

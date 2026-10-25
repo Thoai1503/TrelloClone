@@ -41,6 +41,30 @@ npm run db:migrate -- --name init
 Import the shared Prisma Client instance from `@/lib/prisma` in server-side
 code. Do not import it into Client Components.
 
+## Google sign-in
+
+Create an OAuth 2.0 Client ID of type **Web application** in Google Cloud
+Console. Add the following authorized redirect URI for local development:
+
+```text
+http://localhost:3000/api/auth/callback/google
+```
+
+For each deployed environment, add
+`https://your-domain.example/api/auth/callback/google` as an authorized redirect
+URI. Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env` or the
+deployment's secret environment configuration. The sign-in button remains
+available when these variables are absent, but displays a setup message rather
+than starting an incomplete OAuth flow.
+
+Google sign-in requires a verified Google email. It reuses the existing local
+user with that email, or creates one when no matching account exists. Never
+commit OAuth client secrets.
+
+If an existing database was created before Google sign-in support, apply the
+pending Prisma migration with `npx prisma migrate deploy` after configuring
+`DATABASE_URL`.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
