@@ -322,6 +322,26 @@ export async function getBoardByToken(
               activity.metadata,
               "toListName",
             ),
+            fromStartDate: getActivityMetadataString(
+              activity.metadata,
+              "fromStartDate",
+            ),
+            toStartDate: getActivityMetadataString(
+              activity.metadata,
+              "toStartDate",
+            ),
+            fromEndDate: getActivityMetadataString(
+              activity.metadata,
+              "fromEndDate",
+            ),
+            toEndDate: getActivityMetadataString(
+              activity.metadata,
+              "toEndDate",
+            ),
+            memberName: getActivityMetadataString(
+              activity.metadata,
+              "memberName",
+            ),
           })),
         ].sort(
           (first, second) =>

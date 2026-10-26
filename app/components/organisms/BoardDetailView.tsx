@@ -411,6 +411,23 @@ export default function BoardDetailView({
     void refreshBoard();
   }
 
+  function handleCardMemberRemoved(cardId: string, memberId: number) {
+    setLists((currentLists) =>
+      currentLists.map((list) => ({
+        ...list,
+        cards: list.cards.map((card) =>
+          card.id === cardId
+            ? {
+                ...card,
+                members: card.members.filter((member) => member.id !== memberId),
+              }
+            : card,
+        ),
+      })),
+    );
+    void refreshBoard();
+  }
+
   function handleReorderCards(
     sourceListId: string,
     sourceCards: BoardTask[],
@@ -583,6 +600,7 @@ export default function BoardDetailView({
                     onAddCard={handleAddCard}
                     onCardDetailsUpdated={handleCardDetailsUpdated}
                     onCardMemberAdded={handleCardMemberAdded}
+                    onCardMemberRemoved={handleCardMemberRemoved}
                     onToggleCardCompleted={handleToggleCardCompleted}
                     onUpdateCard={handleUpdateCard}
                   />
