@@ -64,9 +64,13 @@ const boardCollisionDetection: CollisionDetection = (args) => {
 
 type BoardDetailViewProps = {
   board: BoardDetail;
+  onBoardUpdated: () => Promise<BoardDetail>;
 };
 
-export default function BoardDetailView({ board }: BoardDetailViewProps) {
+export default function BoardDetailView({
+  board,
+  onBoardUpdated,
+}: BoardDetailViewProps) {
   const user = useUser();
   const [lists, setLists] = useState(board.lists);
   const [members, setMembers] = useState(board.members);
@@ -101,6 +105,19 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
     window.addEventListener("beforeunload", warnBeforeUnload);
     return () => window.removeEventListener("beforeunload", warnBeforeUnload);
   }, []);
+
+  async function refreshBoard() {
+    try {
+      const refreshedBoard = await onBoardUpdated();
+      listsRef.current = refreshedBoard.lists;
+      setLists(refreshedBoard.lists);
+      setMembers(refreshedBoard.members);
+      setError(null);
+    } catch (cause: unknown) {
+      console.error("Failed to refresh board after an update.", cause);
+      setError("Đã lưu thay đổi nhưng không thể tải lại bảng. Vui lòng thử lại.");
+    }
+  }
 
   function handleDragStart(event: DragStartEvent) {
     const activeId = String(event.active.id);
@@ -140,6 +157,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
           orderedListIds,
         );
         if (!saved) throw new Error("Board list order was rejected.");
+        if (pendingDragDropActions.current === 1) await refreshBoard();
       } catch (cause: unknown) {
         console.error("Failed to save board list order.", cause);
         setError("Không thể lưu thứ tự danh sách. Vui lòng thử lại.");
@@ -160,6 +178,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
       try {
         const saved = await reorderBoardCards(board.encryptedId, orderedLists);
         if (!saved) throw new Error("Board card order was rejected.");
+        if (pendingDragDropActions.current === 1) await refreshBoard();
       } catch (cause: unknown) {
         console.error("Failed to save board card order.", cause);
         setError("Không thể lưu thay đổi thẻ. Vui lòng thử lại.");
@@ -273,6 +292,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
         throw new Error("Board or list name is invalid, or access was denied.");
       }
       setLists((currentLists) => [...currentLists, createdList]);
+      await refreshBoard();
       setName("");
       setIsAdding(false);
     } catch (cause: unknown) {
@@ -296,6 +316,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
         list.id === listId ? { ...list, cards: [...list.cards, card] } : list,
       ),
     );
+    await refreshBoard();
     return card;
   }
 
@@ -322,6 +343,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
         ),
       })),
     );
+    await refreshBoard();
     return updatedCard;
   }
 
@@ -348,6 +370,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
         ),
       })),
     );
+    await refreshBoard();
     return updatedCard;
   }
 
@@ -367,6 +390,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
         ),
       })),
     );
+    void refreshBoard();
   }
 
   function handleCardMemberAdded(
@@ -384,6 +408,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
         ),
       })),
     );
+    void refreshBoard();
   }
 
   function handleReorderCards(
@@ -492,7 +517,7 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
             <BoardShareDialog
               boardToken={board.encryptedId}
               members={members}
-              onMemberAdded={(member) =>
+              onMemberAdded={(member) => {
                 setMembers((currentMembers) =>
                   currentMembers.some(
                     (currentMember) => currentMember.id === member.id,
@@ -501,8 +526,9 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
                         currentMember.id === member.id ? member : currentMember,
                       )
                     : [...currentMembers, member],
-                )
-              }
+                );
+                void refreshBoard();
+              }}
             />
           )}
         </div>

@@ -6,6 +6,7 @@ import type { Session } from "next-auth";
 
 import type { CurrentUser } from "@/app/types/user";
 
+import QueryProvider from "./QueryProvider";
 import { UserProvider } from "./UserProvider";
 
 type AuthProvidersProps = {
@@ -20,8 +21,10 @@ export default function AuthProviders({
   user,
 }: AuthProvidersProps) {
   return (
-    <SessionProvider session={session}>
-      <UserProvider user={user}>{children}</UserProvider>
-    </SessionProvider>
+    <QueryProvider>
+      <SessionProvider session={session}>
+        <UserProvider user={user}>{children}</UserProvider>
+      </SessionProvider>
+    </QueryProvider>
   );
 }
