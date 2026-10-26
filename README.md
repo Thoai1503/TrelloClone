@@ -3,6 +3,14 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 <img width="1900" height="906" alt="Screenshot 2026-10-26 182414" src="https://github.com/user-attachments/assets/d2b4feed-4265-4ba3-963c-d883f44fa42f" />
 
 
+
+<img width="1907" height="901" alt="Screenshot 2026-10-26 182803" src="https://github.com/user-attachments/assets/9ba99ec8-2481-4bff-be14-cf71191180b1" />
+
+
+
+<img width="1905" height="898" alt="Screenshot 2026-10-26 182826" src="https://github.com/user-attachments/assets/ce903d24-6337-40ad-b0ed-58b36c082859" />
+
+
 ## Getting Started
 
 First, run the development server:
