@@ -12,6 +12,7 @@ import type {
   CardActivityFeedItem,
   BoardDetail,
   BoardMemberCandidate,
+  BoardMemberRole,
   BoardMemberSummary,
   BoardSummary,
 } from "@/app/types/board";
@@ -57,6 +58,19 @@ function canManageBoardMembers(
       (member) => member.role === "OWNER" || member.role === "ADMIN",
     ) ||
     board.board_members.some((member) => member.role === "ADMIN")
+  );
+}
+
+function canManageBoardAdmins(
+  board: BoardMemberAccess,
+  currentUserId: bigint,
+): boolean {
+  return (
+    board.created_by === currentUserId ||
+    board.workspace.created_by === currentUserId ||
+    board.workspace.members.some(
+      (member) => member.role === "OWNER" || member.role === "ADMIN",
+    )
   );
 }
 
@@ -252,6 +266,15 @@ export async function getBoardByToken(
     },
     currentUserId,
   );
+  const canManageAdminMembers = canManageBoardAdmins(
+    {
+      id: board.id,
+      created_by: board.created_by,
+      workspace: board.workspace,
+      board_members: currentUserBoardMembership,
+    },
+    currentUserId,
+  );
 
   return {
     encryptedId: token,
@@ -261,9 +284,13 @@ export async function getBoardByToken(
     workspaceName: board.workspace.name,
     canManageLists,
     canManageMembers,
+    canManageAdminMembers,
     members: board.board_members.map((member) => ({
       ...member.user,
       role: member.role,
+      isProtected:
+        BigInt(member.user.id) === board.created_by ||
+        BigInt(member.user.id) === board.workspace.created_by,
     })),
     lists: board.lists.map((list) => ({
       id: list.id.toString(),
@@ -412,6 +439,164 @@ export async function addBoardMember(
     });
 
     return { ...user, role: membership.role };
+  });
+}
+
+export async function updateBoardMemberRole(
+  boardToken: string,
+  memberId: number,
+  role: BoardMemberRole,
+): Promise<BoardMemberSummary | null> {
+  if (
+    typeof boardToken !== "string" ||
+    !Number.isSafeInteger(memberId) ||
+    memberId < 1 ||
+    !["ADMIN", "EDITOR", "VIEWER"].includes(role)
+  ) {
+    return null;
+  }
+
+  const boardId = decryptBoardId(boardToken);
+  if (boardId === null) return null;
+
+  const currentUser = await getCurrentUser();
+  if (!currentUser) return null;
+
+  return prisma.$transaction(async (transaction) => {
+    const board = await findBoardForMemberManagement(
+      transaction,
+      boardId,
+      currentUser.id,
+    );
+    if (!board) return null;
+
+    const target = await transaction.board_member.findUnique({
+      where: {
+        board_id_user_id: { board_id: board.id, user_id: memberId },
+      },
+      select: {
+        role: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            full_name: true,
+            avatar_url: true,
+          },
+        },
+      },
+    });
+    if (!target) return null;
+
+    const access: BoardMemberAccess = {
+      id: board.id,
+      created_by: board.created_by,
+      workspace: board.workspace,
+      board_members: board.board_members,
+    };
+    const canManageAdmins = canManageBoardAdmins(
+      access,
+      BigInt(currentUser.id),
+    );
+    const targetIsProtected =
+      BigInt(memberId) === board.created_by ||
+      BigInt(memberId) === board.workspace.created_by;
+    if (
+      targetIsProtected ||
+      (target.role === "ADMIN" && !canManageAdmins) ||
+      (target.role === "ADMIN" &&
+        role !== "ADMIN" &&
+        (await transaction.board_member.count({
+          where: {
+            board_id: board.id,
+            role: "ADMIN",
+            user_id: { not: memberId },
+          },
+        })) === 0)
+    ) {
+      return null;
+    }
+
+    const updated = await transaction.board_member.update({
+      where: {
+        board_id_user_id: { board_id: board.id, user_id: memberId },
+      },
+      data: { role },
+      select: { role: true },
+    });
+
+    return { ...target.user, role: updated.role };
+  });
+}
+
+export async function removeBoardMember(
+  boardToken: string,
+  memberId: number,
+): Promise<boolean> {
+  if (
+    typeof boardToken !== "string" ||
+    !Number.isSafeInteger(memberId) ||
+    memberId < 1
+  ) {
+    return false;
+  }
+
+  const boardId = decryptBoardId(boardToken);
+  if (boardId === null) return false;
+
+  const currentUser = await getCurrentUser();
+  if (!currentUser) return false;
+
+  return prisma.$transaction(async (transaction) => {
+    const board = await findBoardForMemberManagement(
+      transaction,
+      boardId,
+      currentUser.id,
+    );
+    if (!board) return false;
+
+    const target = await transaction.board_member.findUnique({
+      where: {
+        board_id_user_id: { board_id: board.id, user_id: memberId },
+      },
+      select: { role: true },
+    });
+    if (!target) return false;
+
+    const access: BoardMemberAccess = {
+      id: board.id,
+      created_by: board.created_by,
+      workspace: board.workspace,
+      board_members: board.board_members,
+    };
+    const canManageAdmins = canManageBoardAdmins(
+      access,
+      BigInt(currentUser.id),
+    );
+    const targetIsProtected =
+      BigInt(memberId) === board.created_by ||
+      BigInt(memberId) === board.workspace.created_by;
+    if (
+      targetIsProtected ||
+      (target.role === "ADMIN" && !canManageAdmins) ||
+      (target.role === "ADMIN" &&
+        (await transaction.board_member.count({
+          where: {
+            board_id: board.id,
+            role: "ADMIN",
+            user_id: { not: memberId },
+          },
+        })) === 0)
+    ) {
+      return false;
+    }
+
+    await transaction.board_member.delete({
+      where: {
+        board_id_user_id: { board_id: board.id, user_id: memberId },
+      },
+    });
+    return true;
   });
 }
 

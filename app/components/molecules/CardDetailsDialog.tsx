@@ -759,7 +759,11 @@ export default function CardDetailsDialog({
                             <p className="mt-1 text-sm leading-6 text-gray-700">
                               {item.action === "card_moved"
                                 ? `đã chuyển thẻ “${item.cardTitle || card.title}” từ “${item.fromListName || "danh sách khác"}” sang “${item.toListName || "danh sách khác"}”.`
-                                : "đã cập nhật hoạt động trên thẻ."}
+                                : item.action === "card_completed"
+                                  ? `đã đánh dấu thẻ “${item.cardTitle || card.title}” hoàn thành.`
+                                  : item.action === "card_uncompleted"
+                                    ? `đã đánh dấu thẻ “${item.cardTitle || card.title}” chưa hoàn thành.`
+                                    : "đã cập nhật hoạt động trên thẻ."}
                             </p>
                           )}
                         </div>
