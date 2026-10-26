@@ -9,6 +9,7 @@ import {
 import { getCurrentUser } from "@/utils/auth-session";
 import { prisma } from "@/lib/prisma";
 import type {
+  CardActivityFeedItem,
   BoardDetail,
   BoardMemberCandidate,
   BoardMemberSummary,
@@ -28,6 +29,22 @@ type BoardMemberAccess = {
 };
 
 type BoardDatabaseClient = typeof prisma | Prisma.TransactionClient;
+
+function getActivityMetadataString(
+  metadata: Prisma.JsonValue,
+  key: string,
+): string | null {
+  if (
+    typeof metadata !== "object" ||
+    metadata === null ||
+    Array.isArray(metadata)
+  ) {
+    return null;
+  }
+
+  const value = metadata[key];
+  return typeof value === "string" ? value : null;
+}
 
 function canManageBoardMembers(
   board: BoardMemberAccess,
@@ -175,6 +192,38 @@ export async function getBoardByToken(
                 },
                 orderBy: [{ assigned_at: "asc" }, { user_id: "asc" }],
               },
+              activity_logs: {
+                select: {
+                  id: true,
+                  action: true,
+                  actor: {
+                    select: {
+                      id: true,
+                      email: true,
+                      full_name: true,
+                      avatar_url: true,
+                    },
+                  },
+                  metadata: true,
+                  created_at: true,
+                },
+              },
+              comments: {
+                select: {
+                  id: true,
+                  content: true,
+                  created_at: true,
+                  user: {
+                    select: {
+                      id: true,
+                      email: true,
+                      full_name: true,
+                      avatar_url: true,
+                    },
+                  },
+                },
+                orderBy: [{ created_at: "asc" }, { id: "asc" }],
+              },
             },
             orderBy: [{ position: "asc" }, { id: "asc" }],
           },
@@ -219,56 +268,53 @@ export async function getBoardByToken(
     lists: board.lists.map((list) => ({
       id: list.id.toString(),
       name: list.name,
-      cards: list.cards.map((card) => ({
-        id: card.id.toString(),
-        title: card.title,
-        is_completed: card.is_completed,
-        description: card.description,
-        start_date: card.start_date?.toISOString() ?? null,
-        due_date: card.due_date?.toISOString() ?? null,
-        members: card.members.map(({ user: member }) => member),
-      })),
+      cards: list.cards.map((card) => {
+        const activityFeed: CardActivityFeedItem[] = [
+          ...card.comments.map((comment) => ({
+            kind: "comment" as const,
+            id: comment.id.toString(),
+            content: comment.content,
+            created_at: comment.created_at.toISOString(),
+            author: comment.user,
+          })),
+          ...card.activity_logs.map((activity) => ({
+            kind: "activity" as const,
+            id: activity.id.toString(),
+            action: activity.action,
+            created_at: activity.created_at.toISOString(),
+            actor: activity.actor,
+            cardTitle: getActivityMetadataString(
+              activity.metadata,
+              "cardTitle",
+            ),
+            fromListName: getActivityMetadataString(
+              activity.metadata,
+              "fromListName",
+            ),
+            toListName: getActivityMetadataString(
+              activity.metadata,
+              "toListName",
+            ),
+          })),
+        ].sort(
+          (first, second) =>
+            Date.parse(second.created_at) - Date.parse(first.created_at) ||
+            second.id.localeCompare(first.id),
+        );
+
+        return {
+          id: card.id.toString(),
+          title: card.title,
+          is_completed: card.is_completed,
+          description: card.description,
+          start_date: card.start_date?.toISOString() ?? null,
+          due_date: card.due_date?.toISOString() ?? null,
+          members: card.members.map(({ user: member }) => member),
+          activityFeed,
+        };
+      }),
     })),
   };
-}
-
-export async function getBoardMembers(
-  boardToken: string,
-): Promise<BoardMemberSummary[] | null> {
-  if (typeof boardToken !== "string") return null;
-  const boardId = decryptBoardId(boardToken);
-  if (boardId === null) return null;
-
-  const currentUser = await getCurrentUser();
-  if (!currentUser) return null;
-
-  const board = await findBoardForMemberManagement(
-    prisma,
-    boardId,
-    currentUser.id,
-  );
-  if (!board) return null;
-
-  const members = await prisma.board_member.findMany({
-    where: { board_id: board.id },
-    select: {
-      role: true,
-      user: {
-        select: {
-          id: true,
-          email: true,
-          full_name: true,
-          avatar_url: true,
-        },
-      },
-    },
-    orderBy: [{ joined_at: "asc" }, { user_id: "asc" }],
-  });
-
-  return members.map((member) => ({
-    ...member.user,
-    role: member.role,
-  }));
 }
 
 export async function findBoardMemberCandidate(

@@ -7,7 +7,6 @@ import {
   addCardMember,
   createCardComment,
   findCardMemberCandidate,
-  getCardActivityFeed,
   updateCardDetails,
 } from "@/app/actions/lists";
 import type {
@@ -45,9 +44,10 @@ export default function CardDetailsDialog({
   const [startDate, setStartDate] = useState(card.start_date?.slice(0, 10) ?? "");
   const [endDate, setEndDate] = useState(card.due_date?.slice(0, 10) ?? "");
   const [members, setMembers] = useState(card.members);
-  const [activityFeed, setActivityFeed] = useState<CardActivityFeedItem[]>([]);
+  const [activityFeed, setActivityFeed] = useState<CardActivityFeedItem[]>(
+    card.activityFeed,
+  );
   const [commentDraft, setCommentDraft] = useState("");
-  const [isLoadingActivity, setIsLoadingActivity] = useState(true);
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [commentError, setCommentError] = useState<string | null>(null);
   const [email, setEmail] = useState("");
@@ -69,32 +69,6 @@ export default function CardDetailsDialog({
     isSavingDates ||
     isAddingMember ||
     isSubmittingComment;
-
-  useEffect(() => {
-    let active = true;
-
-    void getCardActivityFeed(boardToken, card.id)
-      .then((loadedFeed) => {
-        if (!active) return;
-        if (!loadedFeed) {
-          setCommentError("Không thể tải hoạt động cho thẻ này.");
-          return;
-        }
-        setActivityFeed(loadedFeed);
-      })
-      .catch((cause: unknown) => {
-        if (!active) return;
-        console.error("Failed to load card activity feed.", cause);
-        setCommentError("Không thể tải hoạt động. Vui lòng thử lại.");
-      })
-      .finally(() => {
-        if (active) setIsLoadingActivity(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [boardToken, card.id]);
 
   useLayoutEffect(() => {
     if (!activePanel) return;
@@ -276,19 +250,19 @@ export default function CardDetailsDialog({
       if (!createdComment) {
         throw new Error("Card comment was rejected or access was denied.");
       }
-      setActivityFeed((currentFeed) =>
-        [
-          {
-            kind: "comment" as const,
-            ...createdComment,
-          },
-          ...currentFeed,
-        ].sort(
-          (first, second) =>
-            Date.parse(second.created_at) - Date.parse(first.created_at) ||
-            second.id.localeCompare(first.id),
-        ),
+      const nextFeed = [
+        {
+          kind: "comment" as const,
+          ...createdComment,
+        },
+        ...activityFeed,
+      ].sort(
+        (first, second) =>
+          Date.parse(second.created_at) - Date.parse(first.created_at) ||
+          second.id.localeCompare(first.id),
       );
+      setActivityFeed(nextFeed);
+      onCardUpdated({ ...card, activityFeed: nextFeed });
       setCommentDraft("");
     } catch (cause: unknown) {
       console.error("Failed to create card comment.", cause);
@@ -713,9 +687,7 @@ export default function CardDetailsDialog({
               aria-live="polite"
               className="mt-4 min-h-0 flex-1 overflow-y-auto border-t border-gray-100 pt-4 pr-1"
             >
-              {isLoadingActivity ? (
-                <p className="text-sm text-gray-500">Đang tải hoạt động...</p>
-              ) : activityFeed.length > 0 ? (
+              {activityFeed.length > 0 ? (
                 <div className="space-y-4">
                   {activityFeed.map((item) => {
                     const actor =

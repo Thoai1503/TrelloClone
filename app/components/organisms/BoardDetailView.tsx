@@ -316,7 +316,9 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
       currentLists.map((list) => ({
         ...list,
         cards: list.cards.map((card) =>
-          card.id === updatedCard.id ? updatedCard : card,
+          card.id === updatedCard.id
+            ? { ...updatedCard, activityFeed: card.activityFeed }
+            : card,
         ),
       })),
     );
@@ -340,7 +342,9 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
       currentLists.map((list) => ({
         ...list,
         cards: list.cards.map((card) =>
-          card.id === updatedCard.id ? updatedCard : card,
+          card.id === updatedCard.id
+            ? { ...updatedCard, activityFeed: card.activityFeed }
+            : card,
         ),
       })),
     );
@@ -352,7 +356,14 @@ export default function BoardDetailView({ board }: BoardDetailViewProps) {
       currentLists.map((list) => ({
         ...list,
         cards: list.cards.map((card) =>
-          card.id === updatedCard.id ? updatedCard : card,
+          card.id === updatedCard.id
+            ? {
+                ...updatedCard,
+                activityFeed: updatedCard.activityFeed.length
+                  ? updatedCard.activityFeed
+                  : card.activityFeed,
+              }
+            : card,
         ),
       })),
     );

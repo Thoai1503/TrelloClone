@@ -21,6 +21,7 @@ export type BoardTask = {
   start_date: string | null;
   due_date: string | null;
   members: CardMemberSummary[];
+  activityFeed: CardActivityFeedItem[];
 };
 
 export type CardMemberSummary = {
