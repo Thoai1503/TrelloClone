@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/utils/auth-session";
 import { prisma } from "@/lib/prisma";
 import type {
   CardCommentSummary,
+  CardActivityFeedItem,
   BoardList,
   BoardTask,
   CardMemberSummary,
@@ -877,10 +878,26 @@ export async function addCardMember(
   });
 }
 
-export async function getCardComments(
+function getActivityMetadataString(
+  metadata: Prisma.JsonValue,
+  key: string,
+): string | null {
+  if (
+    typeof metadata !== "object" ||
+    metadata === null ||
+    Array.isArray(metadata)
+  ) {
+    return null;
+  }
+
+  const value = metadata[key];
+  return typeof value === "string" ? value : null;
+}
+
+export async function getCardActivityFeed(
   boardToken: string,
   cardId: string,
-): Promise<CardCommentSummary[] | null> {
+): Promise<CardActivityFeedItem[] | null> {
   if (
     typeof boardToken !== "string" ||
     typeof cardId !== "string" ||
@@ -901,36 +918,79 @@ export async function getCardComments(
   );
   if (!board) return null;
 
-  const comments = await prisma.comment.findMany({
-    where: {
-      card_id: BigInt(cardId),
-      card: {
-        archived_at: null,
-        list: { board_id: board.id, archived_at: null },
-      },
-    },
-    select: {
-      id: true,
-      content: true,
-      created_at: true,
-      user: {
-        select: {
-          id: true,
-          email: true,
-          full_name: true,
-          avatar_url: true,
+  const parsedCardId = BigInt(cardId);
+  const [comments, activities] = await Promise.all([
+    prisma.comment.findMany({
+      where: {
+        card_id: parsedCardId,
+        card: {
+          archived_at: null,
+          list: { board_id: board.id, archived_at: null },
         },
       },
-    },
-    orderBy: [{ created_at: "asc" }, { id: "asc" }],
-  });
+      select: {
+        id: true,
+        content: true,
+        created_at: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            full_name: true,
+            avatar_url: true,
+          },
+        },
+      },
+      orderBy: [{ created_at: "desc" }, { id: "desc" }],
+    }),
+    prisma.activity_log.findMany({
+      where: {
+        board_id: board.id,
+        card_id: parsedCardId,
+      },
+      select: {
+        id: true,
+        action: true,
+        metadata: true,
+        created_at: true,
+        actor: {
+          select: {
+            id: true,
+            email: true,
+            full_name: true,
+            avatar_url: true,
+          },
+        },
+      },
+      orderBy: [{ created_at: "desc" }, { id: "desc" }],
+    }),
+  ]);
 
-  return comments.map((comment) => ({
-    id: comment.id.toString(),
-    content: comment.content,
-    created_at: comment.created_at.toISOString(),
-    author: comment.user,
-  }));
+  const feed: CardActivityFeedItem[] = [
+    ...comments.map((comment) => ({
+      kind: "comment" as const,
+      id: comment.id.toString(),
+      content: comment.content,
+      created_at: comment.created_at.toISOString(),
+      author: comment.user,
+    })),
+    ...activities.map((activity) => ({
+      kind: "activity" as const,
+      id: activity.id.toString(),
+      action: activity.action,
+      created_at: activity.created_at.toISOString(),
+      actor: activity.actor,
+      cardTitle: getActivityMetadataString(activity.metadata, "cardTitle"),
+      fromListName: getActivityMetadataString(activity.metadata, "fromListName"),
+      toListName: getActivityMetadataString(activity.metadata, "toListName"),
+    })),
+  ];
+
+  return feed.sort(
+    (first, second) =>
+      Date.parse(second.created_at) - Date.parse(first.created_at) ||
+      second.id.localeCompare(first.id),
+  );
 }
 
 export async function createCardComment(
@@ -1113,9 +1173,10 @@ export async function reorderBoardCards(
       },
       select: {
         id: true,
+        name: true,
         cards: {
           where: { archived_at: null },
-          select: { id: true },
+          select: { id: true, title: true },
         },
       },
     });
@@ -1131,6 +1192,34 @@ export async function reorderBoardCards(
       return false;
     }
 
+    const originalCardLocations = new Map(
+      lists.flatMap((list) =>
+        list.cards.map((card) => [
+          card.id.toString(),
+          { listId: list.id, listName: list.name, cardTitle: card.title },
+        ] as const),
+      ),
+    );
+    const listsById = new Map(lists.map((list) => [list.id.toString(), list]));
+    const movedCards = parsedLists.flatMap((destinationList) =>
+      destinationList.cardIds.flatMap((cardId) => {
+        const original = originalCardLocations.get(cardId.toString());
+        if (!original || original.listId === destinationList.id) return [];
+
+        const destination = listsById.get(destinationList.id.toString());
+        if (!destination) return [];
+
+        return [{
+          cardId,
+          cardTitle: original.cardTitle,
+          fromListId: original.listId,
+          fromListName: original.listName,
+          toListId: destination.id,
+          toListName: destination.name,
+        }];
+      }),
+    );
+
     for (const orderedList of parsedLists) {
       for (const [index, cardId] of orderedList.cardIds.entries()) {
         await transaction.card.updateMany({
@@ -1145,6 +1234,24 @@ export async function reorderBoardCards(
           },
         });
       }
+    }
+
+    if (movedCards.length > 0) {
+      await transaction.activity_log.createMany({
+        data: movedCards.map((move) => ({
+          board_id: board.id,
+          card_id: move.cardId,
+          actor_id: userId,
+          action: "card_moved",
+          metadata: {
+            cardTitle: move.cardTitle,
+            fromListId: move.fromListId.toString(),
+            fromListName: move.fromListName,
+            toListId: move.toListId.toString(),
+            toListName: move.toListName,
+          },
+        })),
+      });
     }
 
     return true;
