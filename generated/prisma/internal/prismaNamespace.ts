@@ -405,7 +405,8 @@ export const ModelName = {
   list: 'list',
   card: 'card',
   card_member: 'card_member',
-  comment: 'comment'
+  comment: 'comment',
+  activity_log: 'activity_log'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -421,7 +422,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "workspace" | "workspace_member" | "board" | "board_member" | "list" | "card" | "card_member" | "comment"
+    modelProps: "user" | "workspace" | "workspace_member" | "board" | "board_member" | "list" | "card" | "card_member" | "comment" | "activity_log"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1019,6 +1020,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    activity_log: {
+      payload: Prisma.$activity_logPayload<ExtArgs>
+      fields: Prisma.activity_logFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.activity_logFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$activity_logPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.activity_logFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$activity_logPayload>
+        }
+        findFirst: {
+          args: Prisma.activity_logFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$activity_logPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.activity_logFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$activity_logPayload>
+        }
+        findMany: {
+          args: Prisma.activity_logFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$activity_logPayload>[]
+        }
+        create: {
+          args: Prisma.activity_logCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$activity_logPayload>
+        }
+        createMany: {
+          args: Prisma.activity_logCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.activity_logDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$activity_logPayload>
+        }
+        update: {
+          args: Prisma.activity_logUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$activity_logPayload>
+        }
+        deleteMany: {
+          args: Prisma.activity_logDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.activity_logUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.activity_logUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$activity_logPayload>
+        }
+        aggregate: {
+          args: Prisma.Activity_logAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateActivity_log>
+        }
+        groupBy: {
+          args: Prisma.activity_logGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Activity_logGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.activity_logCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Activity_logCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1174,12 +1241,33 @@ export const CommentScalarFieldEnum = {
 export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeof CommentScalarFieldEnum]
 
 
+export const Activity_logScalarFieldEnum = {
+  id: 'id',
+  board_id: 'board_id',
+  card_id: 'card_id',
+  actor_id: 'actor_id',
+  action: 'action',
+  metadata: 'metadata',
+  created_at: 'created_at'
+} as const
+
+export type Activity_logScalarFieldEnum = (typeof Activity_logScalarFieldEnum)[keyof typeof Activity_logScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const NullsOrder = {
@@ -1238,6 +1326,30 @@ export const commentOrderByRelevanceFieldEnum = {
 } as const
 
 export type commentOrderByRelevanceFieldEnum = (typeof commentOrderByRelevanceFieldEnum)[keyof typeof commentOrderByRelevanceFieldEnum]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const activity_logOrderByRelevanceFieldEnum = {
+  action: 'action'
+} as const
+
+export type activity_logOrderByRelevanceFieldEnum = (typeof activity_logOrderByRelevanceFieldEnum)[keyof typeof activity_logOrderByRelevanceFieldEnum]
 
 
 
@@ -1306,6 +1418,20 @@ export type EnumCardPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$Pri
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -1475,6 +1601,7 @@ export type GlobalOmitConfig = {
   card?: Prisma.cardOmit
   card_member?: Prisma.card_memberOmit
   comment?: Prisma.commentOmit
+  activity_log?: Prisma.activity_logOmit
 }
 
 /* Types for Logging */
