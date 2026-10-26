@@ -60,7 +60,8 @@ export const ModelName = {
   card: 'card',
   card_member: 'card_member',
   comment: 'comment',
-  activity_log: 'activity_log'
+  activity_log: 'activity_log',
+  attachment: 'attachment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -208,6 +209,20 @@ export const Activity_logScalarFieldEnum = {
 export type Activity_logScalarFieldEnum = (typeof Activity_logScalarFieldEnum)[keyof typeof Activity_logScalarFieldEnum]
 
 
+export const AttachmentScalarFieldEnum = {
+  id: 'id',
+  card_id: 'card_id',
+  uploaded_by: 'uploaded_by',
+  file_name: 'file_name',
+  file_url: 'file_url',
+  mime_type: 'mime_type',
+  file_size: 'file_size',
+  created_at: 'created_at'
+} as const
+
+export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof typeof AttachmentScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -304,4 +319,13 @@ export const activity_logOrderByRelevanceFieldEnum = {
 } as const
 
 export type activity_logOrderByRelevanceFieldEnum = (typeof activity_logOrderByRelevanceFieldEnum)[keyof typeof activity_logOrderByRelevanceFieldEnum]
+
+
+export const attachmentOrderByRelevanceFieldEnum = {
+  file_name: 'file_name',
+  file_url: 'file_url',
+  mime_type: 'mime_type'
+} as const
+
+export type attachmentOrderByRelevanceFieldEnum = (typeof attachmentOrderByRelevanceFieldEnum)[keyof typeof attachmentOrderByRelevanceFieldEnum]
 
