@@ -25,6 +25,7 @@ type SortableTaskCardProps = {
   ) => Promise<BoardTask>;
   onDetailsUpdated: (card: BoardTask) => void;
   onMemberAdded: (cardId: string, member: CardMemberSummary) => void;
+  onMemberRemoved: (cardId: string, memberId: number) => void;
 };
 
 function formatCardDate(date: string): string {
@@ -43,6 +44,7 @@ export default function SortableTaskCard({
   onToggleCompleted,
   onDetailsUpdated,
   onMemberAdded,
+  onMemberRemoved,
 }: SortableTaskCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -426,6 +428,7 @@ export default function SortableTaskCard({
           onCardUpdated={onDetailsUpdated}
           onClose={() => setIsDetailsOpen(false)}
           onMemberAdded={onMemberAdded}
+          onMemberRemoved={onMemberRemoved}
         />
       )}
     </article>

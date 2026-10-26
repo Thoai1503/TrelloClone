@@ -7,6 +7,7 @@ import {
   addCardMember,
   createCardComment,
   findCardMemberCandidate,
+  removeCardMember,
   updateCardDetails,
 } from "@/app/actions/lists";
 import type {
@@ -23,6 +24,7 @@ type CardDetailsDialogProps = {
   onClose: () => void;
   onCardUpdated: (card: BoardTask) => void;
   onMemberAdded: (cardId: string, member: CardMemberSummary) => void;
+  onMemberRemoved: (cardId: string, memberId: number) => void;
 };
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -38,6 +40,7 @@ export default function CardDetailsDialog({
   onClose,
   onCardUpdated,
   onMemberAdded,
+  onMemberRemoved,
 }: CardDetailsDialogProps) {
   const [description, setDescription] = useState(card.description ?? "");
   const [isEditingDescription, setIsEditingDescription] = useState(false);
@@ -46,13 +49,20 @@ export default function CardDetailsDialog({
   const [locallyAddedMembers, setLocallyAddedMembers] = useState<
     CardMemberSummary[]
   >([]);
+  const [locallyRemovedMemberIds, setLocallyRemovedMemberIds] = useState<
+    number[]
+  >([]);
   const [locallyCreatedComments, setLocallyCreatedComments] = useState<
     CardActivityFeedItem[]
   >([]);
   const members = [
-    ...card.members,
+    ...card.members.filter(
+      (member) => !locallyRemovedMemberIds.includes(member.id),
+    ),
     ...locallyAddedMembers.filter(
-      (member) => !card.members.some((current) => current.id === member.id),
+      (member) =>
+        !card.members.some((current) => current.id === member.id) &&
+        !locallyRemovedMemberIds.includes(member.id),
     ),
   ];
   const activityFeed = [
@@ -76,6 +86,7 @@ export default function CardDetailsDialog({
   const [isSavingDescription, setIsSavingDescription] = useState(false);
   const [isSavingDates, setIsSavingDates] = useState(false);
   const [isAddingMember, setIsAddingMember] = useState(false);
+  const [removingMemberId, setRemovingMemberId] = useState<number | null>(null);
   const [activePanel, setActivePanel] = useState<"members" | "dates" | null>(
     null,
   );
@@ -88,6 +99,7 @@ export default function CardDetailsDialog({
     isSavingDescription ||
     isSavingDates ||
     isAddingMember ||
+    removingMemberId !== null ||
     isSubmittingComment;
 
   useLayoutEffect(() => {
@@ -252,6 +264,31 @@ export default function CardDetailsDialog({
       setError("Không thể thêm thành viên. Vui lòng thử lại.");
     } finally {
       setIsAddingMember(false);
+    }
+  }
+
+  async function handleRemoveMember(member: CardMemberSummary) {
+    if (removingMemberId !== null) return;
+
+    setRemovingMemberId(member.id);
+    setError(null);
+    try {
+      const removed = await removeCardMember(boardToken, card.id, member.id);
+      if (!removed) {
+        throw new Error("Card member could not be removed.");
+      }
+      setLocallyRemovedMemberIds((currentIds) =>
+        currentIds.includes(member.id) ? currentIds : [...currentIds, member.id],
+      );
+      setLocallyAddedMembers((currentMembers) =>
+        currentMembers.filter((currentMember) => currentMember.id !== member.id),
+      );
+      onMemberRemoved(card.id, member.id);
+    } catch (cause: unknown) {
+      console.error("Failed to remove card member.", cause);
+      setError("Không thể xóa thành viên khỏi thẻ. Vui lòng thử lại.");
+    } finally {
+      setRemovingMemberId(null);
     }
   }
 
@@ -479,6 +516,17 @@ export default function CardDetailsDialog({
                           </span>
                         )}
                       </span>
+                      {canEdit && (
+                        <button
+                          aria-label={`Xóa ${displayMemberName(member)} khỏi thẻ`}
+                          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-gray-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                          disabled={removingMemberId !== null}
+                          onClick={() => void handleRemoveMember(member)}
+                          type="button"
+                        >
+                          {removingMemberId === member.id ? "…" : "×"}
+                        </button>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -763,7 +811,13 @@ export default function CardDetailsDialog({
                                   ? `đã đánh dấu thẻ “${item.cardTitle || card.title}” hoàn thành.`
                                   : item.action === "card_uncompleted"
                                     ? `đã đánh dấu thẻ “${item.cardTitle || card.title}” chưa hoàn thành.`
-                                    : "đã cập nhật hoạt động trên thẻ."}
+                                    : item.action === "card_dates_updated"
+                                      ? `đã cập nhật ngày của thẻ “${item.cardTitle || card.title}”: bắt đầu ${item.fromStartDate || "chưa đặt"} → ${item.toStartDate || "chưa đặt"}, kết thúc ${item.fromEndDate || "chưa đặt"} → ${item.toEndDate || "chưa đặt"}.`
+                                      : item.action === "card_member_added"
+                                        ? `đã thêm ${item.memberName || "một thành viên"} vào thẻ “${item.cardTitle || card.title}”.`
+                                        : item.action === "card_member_removed"
+                                          ? `đã xóa ${item.memberName || "một thành viên"} khỏi thẻ “${item.cardTitle || card.title}”.`
+                                          : "đã cập nhật hoạt động trên thẻ."}
                             </p>
                           )}
                         </div>

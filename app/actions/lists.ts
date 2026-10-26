@@ -743,9 +743,27 @@ export async function updateCardDetails(
     );
     if (!board) return null;
 
-    const updatedCount = await transaction.card.updateMany({
+    const existingCard = await transaction.card.findFirst({
       where: {
         id: parsedCardId,
+        archived_at: null,
+        list: { board_id: board.id, archived_at: null },
+      },
+      select: {
+        id: true,
+        title: true,
+        start_date: true,
+        due_date: true,
+      },
+    });
+    if (!existingCard) return null;
+
+    const datesChanged =
+      existingCard.start_date?.getTime() !== parsedStartDate?.getTime() ||
+      existingCard.due_date?.getTime() !== parsedEndDate?.getTime();
+    const updatedCount = await transaction.card.updateMany({
+      where: {
+        id: existingCard.id,
         archived_at: null,
         list: { board_id: board.id, archived_at: null },
       },
@@ -757,8 +775,28 @@ export async function updateCardDetails(
     });
     if (updatedCount.count !== 1) return null;
 
+    if (datesChanged) {
+      await transaction.activity_log.create({
+        data: {
+          board_id: board.id,
+          card_id: existingCard.id,
+          actor_id: currentUser.id,
+          action: "card_dates_updated",
+          metadata: {
+            cardTitle: existingCard.title,
+            fromStartDate:
+              existingCard.start_date?.toISOString().slice(0, 10) ?? null,
+            toStartDate: parsedStartDate?.toISOString().slice(0, 10) ?? null,
+            fromEndDate:
+              existingCard.due_date?.toISOString().slice(0, 10) ?? null,
+            toEndDate: parsedEndDate?.toISOString().slice(0, 10) ?? null,
+          },
+        },
+      });
+    }
+
     const card = await transaction.card.findUnique({
-      where: { id: parsedCardId },
+      where: { id: existingCard.id },
       select: {
         id: true,
         title: true,
@@ -883,7 +921,7 @@ export async function addCardMember(
         list: { board_id: board.id, archived_at: null },
         archived_at: null,
       },
-      select: { id: true },
+      select: { id: true, title: true },
     });
     if (!card) return null;
 
@@ -898,6 +936,13 @@ export async function addCardMember(
     });
     if (!member) return null;
 
+    const existingMembership = await transaction.card_member.findUnique({
+      where: {
+        card_id_user_id: { card_id: card.id, user_id: memberId },
+      },
+      select: { card_id: true },
+    });
+
     await transaction.card_member.upsert({
       where: {
         card_id_user_id: { card_id: card.id, user_id: memberId },
@@ -905,7 +950,107 @@ export async function addCardMember(
       create: { card_id: card.id, user_id: memberId },
       update: {},
     });
+
+    if (!existingMembership) {
+      await transaction.activity_log.create({
+        data: {
+          board_id: board.id,
+          card_id: card.id,
+          actor_id: currentUser.id,
+          action: "card_member_added",
+          metadata: {
+            cardTitle: card.title,
+            memberName:
+              member.full_name?.trim() ||
+              member.email ||
+              `Thành viên ${member.id}`,
+          },
+        },
+      });
+    }
+
     return member;
+  });
+}
+
+export async function removeCardMember(
+  boardToken: string,
+  cardId: string,
+  memberId: number,
+): Promise<boolean> {
+  if (
+    typeof boardToken !== "string" ||
+    typeof cardId !== "string" ||
+    cardId.length > 19 ||
+    !/^\d+$/.test(cardId) ||
+    !Number.isSafeInteger(memberId) ||
+    memberId < 1
+  ) {
+    return false;
+  }
+
+  const boardId = decryptBoardId(boardToken);
+  if (boardId === null) return false;
+
+  const currentUser = await getCurrentUser();
+  if (!currentUser) return false;
+
+  return prisma.$transaction(async (transaction) => {
+    const board = await findEditableCardBoard(
+      transaction,
+      boardId,
+      currentUser.id,
+    );
+    if (!board) return false;
+
+    const card = await transaction.card.findFirst({
+      where: {
+        id: BigInt(cardId),
+        list: { board_id: board.id, archived_at: null },
+        archived_at: null,
+      },
+      select: { id: true, title: true },
+    });
+    if (!card) return false;
+
+    const membership = await transaction.card_member.findUnique({
+      where: {
+        card_id_user_id: { card_id: card.id, user_id: memberId },
+      },
+      select: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            full_name: true,
+          },
+        },
+      },
+    });
+    if (!membership) return false;
+
+    const removed = await transaction.card_member.deleteMany({
+      where: { card_id: card.id, user_id: memberId },
+    });
+    if (removed.count !== 1) return false;
+
+    await transaction.activity_log.create({
+      data: {
+        board_id: board.id,
+        card_id: card.id,
+        actor_id: currentUser.id,
+        action: "card_member_removed",
+        metadata: {
+          cardTitle: card.title,
+          memberName:
+            membership.user.full_name?.trim() ||
+            membership.user.email ||
+            `Thành viên ${membership.user.id}`,
+        },
+      },
+    });
+
+    return true;
   });
 }
 

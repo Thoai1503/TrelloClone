@@ -54,6 +54,11 @@ export type CardActivityFeedItem =
       cardTitle: string | null;
       fromListName: string | null;
       toListName: string | null;
+      fromStartDate: string | null;
+      toStartDate: string | null;
+      fromEndDate: string | null;
+      toEndDate: string | null;
+      memberName: string | null;
     };
 
 export type BoardMemberRole = "ADMIN" | "EDITOR" | "VIEWER";

@@ -24,6 +24,7 @@ Last verified: 2026-10-25.
 - Cards can be dragged from anywhere on the card, edited from a hover control, and marked completed with a hover checkbox. `card.is_completed` is persisted and synchronized with `completed_at`.
 - Moving cards between lists records a `card_moved` activity log in the same transaction as the reorder, with the actor, card, source list, and destination list.
 - Marking a card complete or incomplete records `card_completed` or `card_uncompleted` in the same transaction as the status update; repeated requests that do not change the status do not create duplicate activity entries.
+- Updating card dates records `card_dates_updated` only when a date value changes. Adding or removing a card member records `card_member_added` or `card_member_removed` atomically with the membership change.
 - Board detail loads each card's comments and activity logs in the authorized `getBoardByToken` query; the card detail dialog renders that preloaded feed and updates it locally when a comment is created.
 - Clicking a card opens a detail dialog with editable description, card-member assignment by email, and optional start/end dates. Card start dates are stored in `card.start_date`; end dates use `card.due_date`.
 

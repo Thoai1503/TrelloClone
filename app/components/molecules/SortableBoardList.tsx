@@ -29,6 +29,7 @@ type SortableBoardListProps = {
   ) => Promise<BoardTask>;
   onCardDetailsUpdated: (card: BoardTask) => void;
   onCardMemberAdded: (cardId: string, member: CardMemberSummary) => void;
+  onCardMemberRemoved: (cardId: string, memberId: number) => void;
 };
 
 export default function SortableBoardList({
@@ -41,6 +42,7 @@ export default function SortableBoardList({
   onToggleCardCompleted,
   onCardDetailsUpdated,
   onCardMemberAdded,
+  onCardMemberRemoved,
 }: SortableBoardListProps) {
   const { attributes, isDragging, listeners, setNodeRef, transform, transition } =
     useSortable({ id: `list:${list.id}`, disabled });
@@ -113,6 +115,7 @@ export default function SortableBoardList({
                 key={card.id}
                 onDetailsUpdated={onCardDetailsUpdated}
                 onMemberAdded={onCardMemberAdded}
+                onMemberRemoved={onCardMemberRemoved}
                 onToggleCompleted={onToggleCardCompleted}
                 onSave={onUpdateCard}
               />
