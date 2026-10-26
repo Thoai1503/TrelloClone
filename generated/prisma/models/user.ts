@@ -237,6 +237,7 @@ export type userWhereInput = {
   created_cards?: Prisma.CardListRelationFilter
   card_members?: Prisma.Card_memberListRelationFilter
   comments?: Prisma.CommentListRelationFilter
+  activity_logs?: Prisma.Activity_logListRelationFilter
 }
 
 export type userOrderByWithRelationInput = {
@@ -252,6 +253,7 @@ export type userOrderByWithRelationInput = {
   created_cards?: Prisma.cardOrderByRelationAggregateInput
   card_members?: Prisma.card_memberOrderByRelationAggregateInput
   comments?: Prisma.commentOrderByRelationAggregateInput
+  activity_logs?: Prisma.activity_logOrderByRelationAggregateInput
   _relevance?: Prisma.userOrderByRelevanceInput
 }
 
@@ -271,6 +273,7 @@ export type userWhereUniqueInput = Prisma.AtLeast<{
   created_cards?: Prisma.CardListRelationFilter
   card_members?: Prisma.Card_memberListRelationFilter
   comments?: Prisma.CommentListRelationFilter
+  activity_logs?: Prisma.Activity_logListRelationFilter
 }, "id">
 
 export type userOrderByWithAggregationInput = {
@@ -313,6 +316,7 @@ export type userCreateInput = {
   created_cards?: Prisma.cardCreateNestedManyWithoutCreatorInput
   card_members?: Prisma.card_memberCreateNestedManyWithoutUserInput
   comments?: Prisma.commentCreateNestedManyWithoutUserInput
+  activity_logs?: Prisma.activity_logCreateNestedManyWithoutActorInput
 }
 
 export type userUncheckedCreateInput = {
@@ -328,6 +332,7 @@ export type userUncheckedCreateInput = {
   created_cards?: Prisma.cardUncheckedCreateNestedManyWithoutCreatorInput
   card_members?: Prisma.card_memberUncheckedCreateNestedManyWithoutUserInput
   comments?: Prisma.commentUncheckedCreateNestedManyWithoutUserInput
+  activity_logs?: Prisma.activity_logUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type userUpdateInput = {
@@ -342,6 +347,7 @@ export type userUpdateInput = {
   created_cards?: Prisma.cardUpdateManyWithoutCreatorNestedInput
   card_members?: Prisma.card_memberUpdateManyWithoutUserNestedInput
   comments?: Prisma.commentUpdateManyWithoutUserNestedInput
+  activity_logs?: Prisma.activity_logUpdateManyWithoutActorNestedInput
 }
 
 export type userUncheckedUpdateInput = {
@@ -357,6 +363,7 @@ export type userUncheckedUpdateInput = {
   created_cards?: Prisma.cardUncheckedUpdateManyWithoutCreatorNestedInput
   card_members?: Prisma.card_memberUncheckedUpdateManyWithoutUserNestedInput
   comments?: Prisma.commentUncheckedUpdateManyWithoutUserNestedInput
+  activity_logs?: Prisma.activity_logUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type userCreateManyInput = {
@@ -527,6 +534,20 @@ export type userUpdateOneRequiredWithoutCommentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.userUpdateToOneWithWhereWithoutCommentsInput, Prisma.userUpdateWithoutCommentsInput>, Prisma.userUncheckedUpdateWithoutCommentsInput>
 }
 
+export type userCreateNestedOneWithoutActivity_logsInput = {
+  create?: Prisma.XOR<Prisma.userCreateWithoutActivity_logsInput, Prisma.userUncheckedCreateWithoutActivity_logsInput>
+  connectOrCreate?: Prisma.userCreateOrConnectWithoutActivity_logsInput
+  connect?: Prisma.userWhereUniqueInput
+}
+
+export type userUpdateOneRequiredWithoutActivity_logsNestedInput = {
+  create?: Prisma.XOR<Prisma.userCreateWithoutActivity_logsInput, Prisma.userUncheckedCreateWithoutActivity_logsInput>
+  connectOrCreate?: Prisma.userCreateOrConnectWithoutActivity_logsInput
+  upsert?: Prisma.userUpsertWithoutActivity_logsInput
+  connect?: Prisma.userWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.userUpdateToOneWithWhereWithoutActivity_logsInput, Prisma.userUpdateWithoutActivity_logsInput>, Prisma.userUncheckedUpdateWithoutActivity_logsInput>
+}
+
 export type userCreateWithoutWorkspace_membersInput = {
   email?: string | null
   password_hash?: string | null
@@ -538,6 +559,7 @@ export type userCreateWithoutWorkspace_membersInput = {
   created_cards?: Prisma.cardCreateNestedManyWithoutCreatorInput
   card_members?: Prisma.card_memberCreateNestedManyWithoutUserInput
   comments?: Prisma.commentCreateNestedManyWithoutUserInput
+  activity_logs?: Prisma.activity_logCreateNestedManyWithoutActorInput
 }
 
 export type userUncheckedCreateWithoutWorkspace_membersInput = {
@@ -552,6 +574,7 @@ export type userUncheckedCreateWithoutWorkspace_membersInput = {
   created_cards?: Prisma.cardUncheckedCreateNestedManyWithoutCreatorInput
   card_members?: Prisma.card_memberUncheckedCreateNestedManyWithoutUserInput
   comments?: Prisma.commentUncheckedCreateNestedManyWithoutUserInput
+  activity_logs?: Prisma.activity_logUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type userCreateOrConnectWithoutWorkspace_membersInput = {
@@ -581,6 +604,7 @@ export type userUpdateWithoutWorkspace_membersInput = {
   created_cards?: Prisma.cardUpdateManyWithoutCreatorNestedInput
   card_members?: Prisma.card_memberUpdateManyWithoutUserNestedInput
   comments?: Prisma.commentUpdateManyWithoutUserNestedInput
+  activity_logs?: Prisma.activity_logUpdateManyWithoutActorNestedInput
 }
 
 export type userUncheckedUpdateWithoutWorkspace_membersInput = {
@@ -595,6 +619,7 @@ export type userUncheckedUpdateWithoutWorkspace_membersInput = {
   created_cards?: Prisma.cardUncheckedUpdateManyWithoutCreatorNestedInput
   card_members?: Prisma.card_memberUncheckedUpdateManyWithoutUserNestedInput
   comments?: Prisma.commentUncheckedUpdateManyWithoutUserNestedInput
+  activity_logs?: Prisma.activity_logUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type userCreateWithoutBoard_membersInput = {
@@ -608,6 +633,7 @@ export type userCreateWithoutBoard_membersInput = {
   created_cards?: Prisma.cardCreateNestedManyWithoutCreatorInput
   card_members?: Prisma.card_memberCreateNestedManyWithoutUserInput
   comments?: Prisma.commentCreateNestedManyWithoutUserInput
+  activity_logs?: Prisma.activity_logCreateNestedManyWithoutActorInput
 }
 
 export type userUncheckedCreateWithoutBoard_membersInput = {
@@ -622,6 +648,7 @@ export type userUncheckedCreateWithoutBoard_membersInput = {
   created_cards?: Prisma.cardUncheckedCreateNestedManyWithoutCreatorInput
   card_members?: Prisma.card_memberUncheckedCreateNestedManyWithoutUserInput
   comments?: Prisma.commentUncheckedCreateNestedManyWithoutUserInput
+  activity_logs?: Prisma.activity_logUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type userCreateOrConnectWithoutBoard_membersInput = {
@@ -651,6 +678,7 @@ export type userUpdateWithoutBoard_membersInput = {
   created_cards?: Prisma.cardUpdateManyWithoutCreatorNestedInput
   card_members?: Prisma.card_memberUpdateManyWithoutUserNestedInput
   comments?: Prisma.commentUpdateManyWithoutUserNestedInput
+  activity_logs?: Prisma.activity_logUpdateManyWithoutActorNestedInput
 }
 
 export type userUncheckedUpdateWithoutBoard_membersInput = {
@@ -665,6 +693,7 @@ export type userUncheckedUpdateWithoutBoard_membersInput = {
   created_cards?: Prisma.cardUncheckedUpdateManyWithoutCreatorNestedInput
   card_members?: Prisma.card_memberUncheckedUpdateManyWithoutUserNestedInput
   comments?: Prisma.commentUncheckedUpdateManyWithoutUserNestedInput
+  activity_logs?: Prisma.activity_logUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type userCreateWithoutCreated_cardsInput = {
@@ -678,6 +707,7 @@ export type userCreateWithoutCreated_cardsInput = {
   board_members?: Prisma.board_memberCreateNestedManyWithoutUserInput
   card_members?: Prisma.card_memberCreateNestedManyWithoutUserInput
   comments?: Prisma.commentCreateNestedManyWithoutUserInput
+  activity_logs?: Prisma.activity_logCreateNestedManyWithoutActorInput
 }
 
 export type userUncheckedCreateWithoutCreated_cardsInput = {
@@ -692,6 +722,7 @@ export type userUncheckedCreateWithoutCreated_cardsInput = {
   board_members?: Prisma.board_memberUncheckedCreateNestedManyWithoutUserInput
   card_members?: Prisma.card_memberUncheckedCreateNestedManyWithoutUserInput
   comments?: Prisma.commentUncheckedCreateNestedManyWithoutUserInput
+  activity_logs?: Prisma.activity_logUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type userCreateOrConnectWithoutCreated_cardsInput = {
@@ -721,6 +752,7 @@ export type userUpdateWithoutCreated_cardsInput = {
   board_members?: Prisma.board_memberUpdateManyWithoutUserNestedInput
   card_members?: Prisma.card_memberUpdateManyWithoutUserNestedInput
   comments?: Prisma.commentUpdateManyWithoutUserNestedInput
+  activity_logs?: Prisma.activity_logUpdateManyWithoutActorNestedInput
 }
 
 export type userUncheckedUpdateWithoutCreated_cardsInput = {
@@ -735,6 +767,7 @@ export type userUncheckedUpdateWithoutCreated_cardsInput = {
   board_members?: Prisma.board_memberUncheckedUpdateManyWithoutUserNestedInput
   card_members?: Prisma.card_memberUncheckedUpdateManyWithoutUserNestedInput
   comments?: Prisma.commentUncheckedUpdateManyWithoutUserNestedInput
+  activity_logs?: Prisma.activity_logUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type userCreateWithoutCard_membersInput = {
@@ -748,6 +781,7 @@ export type userCreateWithoutCard_membersInput = {
   board_members?: Prisma.board_memberCreateNestedManyWithoutUserInput
   created_cards?: Prisma.cardCreateNestedManyWithoutCreatorInput
   comments?: Prisma.commentCreateNestedManyWithoutUserInput
+  activity_logs?: Prisma.activity_logCreateNestedManyWithoutActorInput
 }
 
 export type userUncheckedCreateWithoutCard_membersInput = {
@@ -762,6 +796,7 @@ export type userUncheckedCreateWithoutCard_membersInput = {
   board_members?: Prisma.board_memberUncheckedCreateNestedManyWithoutUserInput
   created_cards?: Prisma.cardUncheckedCreateNestedManyWithoutCreatorInput
   comments?: Prisma.commentUncheckedCreateNestedManyWithoutUserInput
+  activity_logs?: Prisma.activity_logUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type userCreateOrConnectWithoutCard_membersInput = {
@@ -791,6 +826,7 @@ export type userUpdateWithoutCard_membersInput = {
   board_members?: Prisma.board_memberUpdateManyWithoutUserNestedInput
   created_cards?: Prisma.cardUpdateManyWithoutCreatorNestedInput
   comments?: Prisma.commentUpdateManyWithoutUserNestedInput
+  activity_logs?: Prisma.activity_logUpdateManyWithoutActorNestedInput
 }
 
 export type userUncheckedUpdateWithoutCard_membersInput = {
@@ -805,6 +841,7 @@ export type userUncheckedUpdateWithoutCard_membersInput = {
   board_members?: Prisma.board_memberUncheckedUpdateManyWithoutUserNestedInput
   created_cards?: Prisma.cardUncheckedUpdateManyWithoutCreatorNestedInput
   comments?: Prisma.commentUncheckedUpdateManyWithoutUserNestedInput
+  activity_logs?: Prisma.activity_logUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type userCreateWithoutCommentsInput = {
@@ -818,6 +855,7 @@ export type userCreateWithoutCommentsInput = {
   board_members?: Prisma.board_memberCreateNestedManyWithoutUserInput
   created_cards?: Prisma.cardCreateNestedManyWithoutCreatorInput
   card_members?: Prisma.card_memberCreateNestedManyWithoutUserInput
+  activity_logs?: Prisma.activity_logCreateNestedManyWithoutActorInput
 }
 
 export type userUncheckedCreateWithoutCommentsInput = {
@@ -832,6 +870,7 @@ export type userUncheckedCreateWithoutCommentsInput = {
   board_members?: Prisma.board_memberUncheckedCreateNestedManyWithoutUserInput
   created_cards?: Prisma.cardUncheckedCreateNestedManyWithoutCreatorInput
   card_members?: Prisma.card_memberUncheckedCreateNestedManyWithoutUserInput
+  activity_logs?: Prisma.activity_logUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type userCreateOrConnectWithoutCommentsInput = {
@@ -861,6 +900,7 @@ export type userUpdateWithoutCommentsInput = {
   board_members?: Prisma.board_memberUpdateManyWithoutUserNestedInput
   created_cards?: Prisma.cardUpdateManyWithoutCreatorNestedInput
   card_members?: Prisma.card_memberUpdateManyWithoutUserNestedInput
+  activity_logs?: Prisma.activity_logUpdateManyWithoutActorNestedInput
 }
 
 export type userUncheckedUpdateWithoutCommentsInput = {
@@ -875,6 +915,81 @@ export type userUncheckedUpdateWithoutCommentsInput = {
   board_members?: Prisma.board_memberUncheckedUpdateManyWithoutUserNestedInput
   created_cards?: Prisma.cardUncheckedUpdateManyWithoutCreatorNestedInput
   card_members?: Prisma.card_memberUncheckedUpdateManyWithoutUserNestedInput
+  activity_logs?: Prisma.activity_logUncheckedUpdateManyWithoutActorNestedInput
+}
+
+export type userCreateWithoutActivity_logsInput = {
+  email?: string | null
+  password_hash?: string | null
+  full_name?: string | null
+  avatar_url?: string | null
+  createdAt?: Date | string
+  updated_at?: Date | string | null
+  workspace_members?: Prisma.workspace_memberCreateNestedManyWithoutUserInput
+  board_members?: Prisma.board_memberCreateNestedManyWithoutUserInput
+  created_cards?: Prisma.cardCreateNestedManyWithoutCreatorInput
+  card_members?: Prisma.card_memberCreateNestedManyWithoutUserInput
+  comments?: Prisma.commentCreateNestedManyWithoutUserInput
+}
+
+export type userUncheckedCreateWithoutActivity_logsInput = {
+  id?: number
+  email?: string | null
+  password_hash?: string | null
+  full_name?: string | null
+  avatar_url?: string | null
+  createdAt?: Date | string
+  updated_at?: Date | string | null
+  workspace_members?: Prisma.workspace_memberUncheckedCreateNestedManyWithoutUserInput
+  board_members?: Prisma.board_memberUncheckedCreateNestedManyWithoutUserInput
+  created_cards?: Prisma.cardUncheckedCreateNestedManyWithoutCreatorInput
+  card_members?: Prisma.card_memberUncheckedCreateNestedManyWithoutUserInput
+  comments?: Prisma.commentUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type userCreateOrConnectWithoutActivity_logsInput = {
+  where: Prisma.userWhereUniqueInput
+  create: Prisma.XOR<Prisma.userCreateWithoutActivity_logsInput, Prisma.userUncheckedCreateWithoutActivity_logsInput>
+}
+
+export type userUpsertWithoutActivity_logsInput = {
+  update: Prisma.XOR<Prisma.userUpdateWithoutActivity_logsInput, Prisma.userUncheckedUpdateWithoutActivity_logsInput>
+  create: Prisma.XOR<Prisma.userCreateWithoutActivity_logsInput, Prisma.userUncheckedCreateWithoutActivity_logsInput>
+  where?: Prisma.userWhereInput
+}
+
+export type userUpdateToOneWithWhereWithoutActivity_logsInput = {
+  where?: Prisma.userWhereInput
+  data: Prisma.XOR<Prisma.userUpdateWithoutActivity_logsInput, Prisma.userUncheckedUpdateWithoutActivity_logsInput>
+}
+
+export type userUpdateWithoutActivity_logsInput = {
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatar_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace_members?: Prisma.workspace_memberUpdateManyWithoutUserNestedInput
+  board_members?: Prisma.board_memberUpdateManyWithoutUserNestedInput
+  created_cards?: Prisma.cardUpdateManyWithoutCreatorNestedInput
+  card_members?: Prisma.card_memberUpdateManyWithoutUserNestedInput
+  comments?: Prisma.commentUpdateManyWithoutUserNestedInput
+}
+
+export type userUncheckedUpdateWithoutActivity_logsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatar_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace_members?: Prisma.workspace_memberUncheckedUpdateManyWithoutUserNestedInput
+  board_members?: Prisma.board_memberUncheckedUpdateManyWithoutUserNestedInput
+  created_cards?: Prisma.cardUncheckedUpdateManyWithoutCreatorNestedInput
+  card_members?: Prisma.card_memberUncheckedUpdateManyWithoutUserNestedInput
+  comments?: Prisma.commentUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -888,6 +1003,7 @@ export type UserCountOutputType = {
   created_cards: number
   card_members: number
   comments: number
+  activity_logs: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -896,6 +1012,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   created_cards?: boolean | UserCountOutputTypeCountCreated_cardsArgs
   card_members?: boolean | UserCountOutputTypeCountCard_membersArgs
   comments?: boolean | UserCountOutputTypeCountCommentsArgs
+  activity_logs?: boolean | UserCountOutputTypeCountActivity_logsArgs
 }
 
 /**
@@ -943,6 +1060,13 @@ export type UserCountOutputTypeCountCommentsArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.commentWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountActivity_logsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.activity_logWhereInput
+}
+
 
 export type userSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -957,6 +1081,7 @@ export type userSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   created_cards?: boolean | Prisma.user$created_cardsArgs<ExtArgs>
   card_members?: boolean | Prisma.user$card_membersArgs<ExtArgs>
   comments?: boolean | Prisma.user$commentsArgs<ExtArgs>
+  activity_logs?: boolean | Prisma.user$activity_logsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -979,6 +1104,7 @@ export type userInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   created_cards?: boolean | Prisma.user$created_cardsArgs<ExtArgs>
   card_members?: boolean | Prisma.user$card_membersArgs<ExtArgs>
   comments?: boolean | Prisma.user$commentsArgs<ExtArgs>
+  activity_logs?: boolean | Prisma.user$activity_logsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 
@@ -990,6 +1116,7 @@ export type $userPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     created_cards: Prisma.$cardPayload<ExtArgs>[]
     card_members: Prisma.$card_memberPayload<ExtArgs>[]
     comments: Prisma.$commentPayload<ExtArgs>[]
+    activity_logs: Prisma.$activity_logPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1344,6 +1471,7 @@ export interface Prisma__userClient<T, Null = never, ExtArgs extends runtime.Typ
   created_cards<T extends Prisma.user$created_cardsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$created_cardsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$cardPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   card_members<T extends Prisma.user$card_membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$card_membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$card_memberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   comments<T extends Prisma.user$commentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$commentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  activity_logs<T extends Prisma.user$activity_logsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$activity_logsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$activity_logPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1845,6 +1973,30 @@ export type user$commentsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.CommentScalarFieldEnum | Prisma.CommentScalarFieldEnum[]
+}
+
+/**
+ * user.activity_logs
+ */
+export type user$activity_logsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the activity_log
+   */
+  select?: Prisma.activity_logSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the activity_log
+   */
+  omit?: Prisma.activity_logOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.activity_logInclude<ExtArgs> | null
+  where?: Prisma.activity_logWhereInput
+  orderBy?: Prisma.activity_logOrderByWithRelationInput | Prisma.activity_logOrderByWithRelationInput[]
+  cursor?: Prisma.activity_logWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Activity_logScalarFieldEnum | Prisma.Activity_logScalarFieldEnum[]
 }
 
 /**

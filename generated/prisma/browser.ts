@@ -62,3 +62,8 @@ export type card_member = Prisma.card_memberModel
  * 
  */
 export type comment = Prisma.commentModel
+/**
+ * Model activity_log
+ * 
+ */
+export type activity_log = Prisma.activity_logModel

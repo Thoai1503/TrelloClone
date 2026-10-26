@@ -1,0 +1,1 @@
+-- Intentionally empty: board position is not part of the current schema.

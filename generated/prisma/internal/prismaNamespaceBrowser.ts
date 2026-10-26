@@ -59,7 +59,8 @@ export const ModelName = {
   list: 'list',
   card: 'card',
   card_member: 'card_member',
-  comment: 'comment'
+  comment: 'comment',
+  activity_log: 'activity_log'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -194,12 +195,33 @@ export const CommentScalarFieldEnum = {
 export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeof CommentScalarFieldEnum]
 
 
+export const Activity_logScalarFieldEnum = {
+  id: 'id',
+  board_id: 'board_id',
+  card_id: 'card_id',
+  actor_id: 'actor_id',
+  action: 'action',
+  metadata: 'metadata',
+  created_at: 'created_at'
+} as const
+
+export type Activity_logScalarFieldEnum = (typeof Activity_logScalarFieldEnum)[keyof typeof Activity_logScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const NullsOrder = {
@@ -258,4 +280,28 @@ export const commentOrderByRelevanceFieldEnum = {
 } as const
 
 export type commentOrderByRelevanceFieldEnum = (typeof commentOrderByRelevanceFieldEnum)[keyof typeof commentOrderByRelevanceFieldEnum]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const activity_logOrderByRelevanceFieldEnum = {
+  action: 'action'
+} as const
+
+export type activity_logOrderByRelevanceFieldEnum = (typeof activity_logOrderByRelevanceFieldEnum)[keyof typeof activity_logOrderByRelevanceFieldEnum]
 
