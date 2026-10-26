@@ -42,6 +42,19 @@ export type CardCommentSummary = {
   };
 };
 
+export type CardActivityFeedItem =
+  | ({ kind: "comment" } & CardCommentSummary)
+  | {
+      kind: "activity";
+      id: string;
+      action: string;
+      created_at: string;
+      actor: CardCommentSummary["author"];
+      cardTitle: string | null;
+      fromListName: string | null;
+      toListName: string | null;
+    };
+
 export type BoardMemberRole = "ADMIN" | "EDITOR" | "VIEWER";
 
 export type BoardMemberSummary = {

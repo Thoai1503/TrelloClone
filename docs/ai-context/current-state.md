@@ -20,6 +20,7 @@ Last verified: 2026-10-25.
 - Workspace records store a preset hex background in `background_color`; create-workspace UI writes it with an ADMIN membership and navigates using the encrypted workspace ID.
 - Workspace-level board creation appends a board using the last active board's position plus `1000`, inside a transaction. Board detail displays lists (columns), can append a list in position order, and persists drag-and-drop reordering to list positions.
 - Cards can be dragged from anywhere on the card, edited from a hover control, and marked completed with a hover checkbox. `card.is_completed` is persisted and synchronized with `completed_at`.
+- Moving cards between lists records a `card_moved` activity log in the same transaction as the reorder, with the actor, card, source list, and destination list.
 - Clicking a card opens a detail dialog with editable description, card-member assignment by email, and optional start/end dates. Card start dates are stored in `card.start_date`; end dates use `card.due_date`.
 
 ## Verified constraints
