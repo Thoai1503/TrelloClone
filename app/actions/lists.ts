@@ -5,7 +5,6 @@ import { getCurrentUser } from "@/utils/auth-session";
 import { prisma } from "@/lib/prisma";
 import type {
   CardCommentSummary,
-  CardActivityFeedItem,
   BoardList,
   BoardTask,
   CardMemberSummary,
@@ -119,6 +118,7 @@ function serializeCard(
     start_date: card.start_date?.toISOString() ?? null,
     due_date: card.due_date?.toISOString() ?? null,
     members: card.members.map(({ user }) => user),
+    activityFeed: [],
   };
 }
 
@@ -414,6 +414,7 @@ export async function createListCard(
       start_date: card.start_date?.toISOString() ?? null,
       due_date: card.due_date?.toISOString() ?? null,
       members: [],
+      activityFeed: [],
     };
   });
 }
@@ -538,6 +539,7 @@ export async function updateListCardTitle(
       start_date: updatedCard.start_date?.toISOString() ?? null,
       due_date: updatedCard.due_date?.toISOString() ?? null,
       members: updatedCard.members.map(({ user }) => user),
+      activityFeed: [],
     };
   });
 }
@@ -662,6 +664,7 @@ export async function setListCardCompleted(
       start_date: updatedCard.start_date?.toISOString() ?? null,
       due_date: updatedCard.due_date?.toISOString() ?? null,
       members: updatedCard.members.map(({ user }) => user),
+      activityFeed: [],
     };
   });
 }
@@ -876,121 +879,6 @@ export async function addCardMember(
     });
     return member;
   });
-}
-
-function getActivityMetadataString(
-  metadata: Prisma.JsonValue,
-  key: string,
-): string | null {
-  if (
-    typeof metadata !== "object" ||
-    metadata === null ||
-    Array.isArray(metadata)
-  ) {
-    return null;
-  }
-
-  const value = metadata[key];
-  return typeof value === "string" ? value : null;
-}
-
-export async function getCardActivityFeed(
-  boardToken: string,
-  cardId: string,
-): Promise<CardActivityFeedItem[] | null> {
-  if (
-    typeof boardToken !== "string" ||
-    typeof cardId !== "string" ||
-    cardId.length > 19 ||
-    !/^\d+$/.test(cardId)
-  ) {
-    return null;
-  }
-
-  const boardId = decryptBoardId(boardToken);
-  if (boardId === null) return null;
-
-  const currentUser = await getCurrentUser();
-  if (!currentUser) return null;
-
-  const board = await prisma.$transaction((transaction) =>
-    findAccessibleCardBoard(transaction, boardId, currentUser.id),
-  );
-  if (!board) return null;
-
-  const parsedCardId = BigInt(cardId);
-  const [comments, activities] = await Promise.all([
-    prisma.comment.findMany({
-      where: {
-        card_id: parsedCardId,
-        card: {
-          archived_at: null,
-          list: { board_id: board.id, archived_at: null },
-        },
-      },
-      select: {
-        id: true,
-        content: true,
-        created_at: true,
-        user: {
-          select: {
-            id: true,
-            email: true,
-            full_name: true,
-            avatar_url: true,
-          },
-        },
-      },
-      orderBy: [{ created_at: "desc" }, { id: "desc" }],
-    }),
-    prisma.activity_log.findMany({
-      where: {
-        board_id: board.id,
-        card_id: parsedCardId,
-      },
-      select: {
-        id: true,
-        action: true,
-        metadata: true,
-        created_at: true,
-        actor: {
-          select: {
-            id: true,
-            email: true,
-            full_name: true,
-            avatar_url: true,
-          },
-        },
-      },
-      orderBy: [{ created_at: "desc" }, { id: "desc" }],
-    }),
-  ]);
-
-  const feed: CardActivityFeedItem[] = [
-    ...comments.map((comment) => ({
-      kind: "comment" as const,
-      id: comment.id.toString(),
-      content: comment.content,
-      created_at: comment.created_at.toISOString(),
-      author: comment.user,
-    })),
-    ...activities.map((activity) => ({
-      kind: "activity" as const,
-      id: activity.id.toString(),
-      action: activity.action,
-      created_at: activity.created_at.toISOString(),
-      actor: activity.actor,
-      cardTitle: getActivityMetadataString(activity.metadata, "cardTitle"),
-      fromListName: getActivityMetadataString(activity.metadata, "fromListName"),
-      toListName: getActivityMetadataString(activity.metadata, "toListName"),
-    })),
-  ];
-
-  return feed.sort(
-    (first, second) =>
-      Date.parse(second.created_at) - Date.parse(first.created_at) ||
-      second.id.localeCompare(first.id),
-  );
 }
 
 export async function createCardComment(
