@@ -91,3 +91,8 @@ export type comment = Prisma.commentModel
  * 
  */
 export type activity_log = Prisma.activity_logModel
+/**
+ * Model attachment
+ * 
+ */
+export type attachment = Prisma.attachmentModel

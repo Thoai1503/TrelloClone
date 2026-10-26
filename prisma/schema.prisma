@@ -41,6 +41,7 @@ model user {
   card_members      card_member[]
   comments          comment[]
   activity_logs     activity_log[]
+  attachments       attachment[]
 }
 
 model workspace {
@@ -157,6 +158,7 @@ model card {
   members       card_member[]
   comments      comment[]
   activity_logs activity_log[]
+  attachments   attachment[]
 
   @@index([list_id, position])
   @@index([created_by])
@@ -216,4 +218,23 @@ model activity_log {
   @@index([card_id, created_at])
   @@index([actor_id, created_at])
   @@map("activity_logs")
+}
+
+model attachment {
+  id          BigInt @id @default(autoincrement())
+  card_id     BigInt @map("card_id")
+  uploaded_by Int    @map("uploaded_by") @db.UnsignedInt
+
+  file_name String  @map("file_name") @db.VarChar(255)
+  file_url  String  @map("file_url") @db.VarChar(1000)
+  mime_type String? @map("mime_type") @db.VarChar(150)
+  file_size BigInt? @map("file_size")
+
+  created_at DateTime @default(now()) @map("created_at") @db.DateTime(3)
+
+  card     card @relation(fields: [card_id], references: [id], onDelete: Cascade)
+  uploader user @relation(fields: [uploaded_by], references: [id], onDelete: Restrict)
+
+  @@index([card_id])
+  @@map("attachments")
 }

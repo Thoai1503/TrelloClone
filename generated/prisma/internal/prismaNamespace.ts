@@ -406,7 +406,8 @@ export const ModelName = {
   card: 'card',
   card_member: 'card_member',
   comment: 'comment',
-  activity_log: 'activity_log'
+  activity_log: 'activity_log',
+  attachment: 'attachment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -422,7 +423,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "workspace" | "workspace_member" | "board" | "board_member" | "list" | "card" | "card_member" | "comment" | "activity_log"
+    modelProps: "user" | "workspace" | "workspace_member" | "board" | "board_member" | "list" | "card" | "card_member" | "comment" | "activity_log" | "attachment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1086,6 +1087,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    attachment: {
+      payload: Prisma.$attachmentPayload<ExtArgs>
+      fields: Prisma.attachmentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.attachmentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$attachmentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.attachmentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$attachmentPayload>
+        }
+        findFirst: {
+          args: Prisma.attachmentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$attachmentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.attachmentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$attachmentPayload>
+        }
+        findMany: {
+          args: Prisma.attachmentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$attachmentPayload>[]
+        }
+        create: {
+          args: Prisma.attachmentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$attachmentPayload>
+        }
+        createMany: {
+          args: Prisma.attachmentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.attachmentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$attachmentPayload>
+        }
+        update: {
+          args: Prisma.attachmentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$attachmentPayload>
+        }
+        deleteMany: {
+          args: Prisma.attachmentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.attachmentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.attachmentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$attachmentPayload>
+        }
+        aggregate: {
+          args: Prisma.AttachmentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAttachment>
+        }
+        groupBy: {
+          args: Prisma.attachmentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AttachmentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.attachmentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AttachmentCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1254,6 +1321,20 @@ export const Activity_logScalarFieldEnum = {
 export type Activity_logScalarFieldEnum = (typeof Activity_logScalarFieldEnum)[keyof typeof Activity_logScalarFieldEnum]
 
 
+export const AttachmentScalarFieldEnum = {
+  id: 'id',
+  card_id: 'card_id',
+  uploaded_by: 'uploaded_by',
+  file_name: 'file_name',
+  file_url: 'file_url',
+  mime_type: 'mime_type',
+  file_size: 'file_size',
+  created_at: 'created_at'
+} as const
+
+export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof typeof AttachmentScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1350,6 +1431,15 @@ export const activity_logOrderByRelevanceFieldEnum = {
 } as const
 
 export type activity_logOrderByRelevanceFieldEnum = (typeof activity_logOrderByRelevanceFieldEnum)[keyof typeof activity_logOrderByRelevanceFieldEnum]
+
+
+export const attachmentOrderByRelevanceFieldEnum = {
+  file_name: 'file_name',
+  file_url: 'file_url',
+  mime_type: 'mime_type'
+} as const
+
+export type attachmentOrderByRelevanceFieldEnum = (typeof attachmentOrderByRelevanceFieldEnum)[keyof typeof attachmentOrderByRelevanceFieldEnum]
 
 
 
@@ -1602,6 +1692,7 @@ export type GlobalOmitConfig = {
   card_member?: Prisma.card_memberOmit
   comment?: Prisma.commentOmit
   activity_log?: Prisma.activity_logOmit
+  attachment?: Prisma.attachmentOmit
 }
 
 /* Types for Logging */
