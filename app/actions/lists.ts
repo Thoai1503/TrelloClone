@@ -617,21 +617,34 @@ export async function setListCardCompleted(
       board.board_members.some((member) => member.role !== "VIEWER");
     if (!canManageCards) return null;
 
-    const card = await transaction.card.updateMany({
+    const existingCard = await transaction.card.findFirst({
       where: {
         id: parsedCardId,
         archived_at: null,
         list: { board_id: board.id, archived_at: null },
       },
-      data: {
-        is_completed: isCompleted,
-        completed_at: isCompleted ? new Date() : null,
-      },
+      select: { id: true, title: true, is_completed: true },
     });
-    if (card.count !== 1) return null;
+    if (!existingCard) return null;
+
+    const statusChanged = existingCard.is_completed !== isCompleted;
+    if (statusChanged) {
+      const updatedCount = await transaction.card.updateMany({
+        where: {
+          id: existingCard.id,
+          archived_at: null,
+          list: { board_id: board.id, archived_at: null },
+        },
+        data: {
+          is_completed: isCompleted,
+          completed_at: isCompleted ? new Date() : null,
+        },
+      });
+      if (updatedCount.count !== 1) return null;
+    }
 
     const updatedCard = await transaction.card.findUnique({
-      where: { id: parsedCardId },
+      where: { id: existingCard.id },
       select: {
         id: true,
         title: true,
@@ -655,6 +668,21 @@ export async function setListCardCompleted(
       },
     });
     if (!updatedCard) return null;
+
+    if (statusChanged) {
+      await transaction.activity_log.create({
+        data: {
+          board_id: board.id,
+          card_id: existingCard.id,
+          actor_id: userId,
+          action: isCompleted ? "card_completed" : "card_uncompleted",
+          metadata: {
+            cardTitle: existingCard.title,
+            isCompleted,
+          },
+        },
+      });
+    }
 
     return {
       id: updatedCard.id.toString(),

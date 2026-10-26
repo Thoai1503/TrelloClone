@@ -64,6 +64,7 @@ export type BoardMemberSummary = {
   full_name: string | null;
   avatar_url: string | null;
   role: BoardMemberRole;
+  isProtected?: boolean;
 };
 
 export type BoardMemberCandidate = Omit<BoardMemberSummary, "role">;
@@ -76,6 +77,7 @@ export type BoardDetail = {
   workspaceName: string;
   canManageLists: boolean;
   canManageMembers: boolean;
+  canManageAdminMembers: boolean;
   members: BoardMemberSummary[];
   lists: BoardList[];
 };

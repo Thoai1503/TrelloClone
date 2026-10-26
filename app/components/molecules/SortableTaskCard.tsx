@@ -53,8 +53,14 @@ export default function SortableTaskCard({
   const [error, setError] = useState<string | null>(null);
   const startDate = card.start_date?.slice(0, 10) ?? null;
   const dueDate = card.due_date?.slice(0, 10) ?? null;
+  const commentCount = card.activityFeed.filter(
+    (item) => item.kind === "comment",
+  ).length;
   const hasCardFooter = Boolean(
-    card.members.length > 0 || card.description?.trim() || dueDate,
+    card.members.length > 0 ||
+      card.description?.trim() ||
+      dueDate ||
+      commentCount > 0,
   );
   const pointerStart = useRef<{ x: number; y: number } | null>(null);
   const suppressNextClick = useRef(false);
@@ -322,8 +328,30 @@ export default function SortableTaskCard({
           })}
         </div>
       )}
-      {(card.description?.trim() || dueDate) && (
+      {(card.description?.trim() || dueDate || commentCount > 0) && (
         <div className="absolute bottom-2 left-3 flex max-w-[calc(100%-5rem)] items-center gap-2 text-gray-500">
+          {commentCount > 0 && (
+            <span
+              aria-label={`${commentCount} bình luận`}
+              className="inline-flex shrink-0 items-center gap-1 text-xs"
+              title={`${commentCount} bình luận`}
+            >
+              <svg
+                aria-hidden="true"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M4 4.5h12a1.5 1.5 0 0 1 1.5 1.5v7a1.5 1.5 0 0 1-1.5 1.5H9l-4.5 3v-3H4A1.5 1.5 0 0 1 2.5 13V6A1.5 1.5 0 0 1 4 4.5Z"
+                  stroke="currentColor"
+                  strokeLinejoin="round"
+                  strokeWidth="1.4"
+                />
+              </svg>
+              <span>{commentCount}</span>
+            </span>
+          )}
           {dueDate && (
             <span
               aria-label={

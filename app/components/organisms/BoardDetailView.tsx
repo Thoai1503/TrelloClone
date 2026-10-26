@@ -516,6 +516,8 @@ export default function BoardDetailView({
           {board.canManageMembers && (
             <BoardShareDialog
               boardToken={board.encryptedId}
+              canManageMembers={board.canManageMembers}
+              canManageAdminMembers={board.canManageAdminMembers}
               members={members}
               onMemberAdded={(member) => {
                 setMembers((currentMembers) =>
@@ -526,6 +528,20 @@ export default function BoardDetailView({
                         currentMember.id === member.id ? member : currentMember,
                       )
                     : [...currentMembers, member],
+                );
+                void refreshBoard();
+              }}
+              onMemberUpdated={(updatedMember) => {
+                setMembers((currentMembers) =>
+                  currentMembers.map((member) =>
+                    member.id === updatedMember.id ? updatedMember : member,
+                  ),
+                );
+                void refreshBoard();
+              }}
+              onMemberRemoved={(memberId) => {
+                setMembers((currentMembers) =>
+                  currentMembers.filter((member) => member.id !== memberId),
                 );
                 void refreshBoard();
               }}
