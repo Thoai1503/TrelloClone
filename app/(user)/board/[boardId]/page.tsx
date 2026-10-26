@@ -7,10 +7,12 @@ type BoardPageProps = {
   params: Promise<{ boardId: string }>;
 };
 
-export default function BoardPage({ params }: BoardPageProps) {
+export default async function BoardPage({ params }: BoardPageProps) {
+  const { boardId } = await params;
+
   return (
     <Suspense fallback={<BoardDetailSkeleton />}>
-      <BoardDetailPageContent params={params} />
+      <BoardDetailPageContent boardId={boardId} />
     </Suspense>
   );
 }

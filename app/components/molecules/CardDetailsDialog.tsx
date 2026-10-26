@@ -43,9 +43,29 @@ export default function CardDetailsDialog({
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [startDate, setStartDate] = useState(card.start_date?.slice(0, 10) ?? "");
   const [endDate, setEndDate] = useState(card.due_date?.slice(0, 10) ?? "");
-  const [members, setMembers] = useState(card.members);
-  const [activityFeed, setActivityFeed] = useState<CardActivityFeedItem[]>(
-    card.activityFeed,
+  const [locallyAddedMembers, setLocallyAddedMembers] = useState<
+    CardMemberSummary[]
+  >([]);
+  const [locallyCreatedComments, setLocallyCreatedComments] = useState<
+    CardActivityFeedItem[]
+  >([]);
+  const members = [
+    ...card.members,
+    ...locallyAddedMembers.filter(
+      (member) => !card.members.some((current) => current.id === member.id),
+    ),
+  ];
+  const activityFeed = [
+    ...new Map(
+      [...card.activityFeed, ...locallyCreatedComments].map((item) => [
+        `${item.kind}-${item.id}`,
+        item,
+      ]),
+    ).values(),
+  ].sort(
+    (first, second) =>
+      Date.parse(second.created_at) - Date.parse(first.created_at) ||
+      second.id.localeCompare(first.id),
   );
   const [commentDraft, setCommentDraft] = useState("");
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
@@ -219,7 +239,7 @@ export default function CardDetailsDialog({
       if (!member) {
         throw new Error("Card member was rejected or access was denied.");
       }
-      setMembers((currentMembers) =>
+      setLocallyAddedMembers((currentMembers) =>
         currentMembers.some((currentMember) => currentMember.id === member.id)
           ? currentMembers
           : [...currentMembers, member],
@@ -261,7 +281,13 @@ export default function CardDetailsDialog({
           Date.parse(second.created_at) - Date.parse(first.created_at) ||
           second.id.localeCompare(first.id),
       );
-      setActivityFeed(nextFeed);
+      setLocallyCreatedComments((currentComments) => [
+        {
+          kind: "comment",
+          ...createdComment,
+        },
+        ...currentComments,
+      ]);
       onCardUpdated({ ...card, activityFeed: nextFeed });
       setCommentDraft("");
     } catch (cause: unknown) {

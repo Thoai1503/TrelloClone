@@ -5,6 +5,7 @@ Last verified: 2026-10-25.
 ## Implemented
 
 - The app is a Next.js 16 App Router project using React 19, TypeScript, Tailwind CSS 4, Prisma 7, and MySQL.
+- Board detail data is fetched on the client through the `useBoardById` TanStack Query hook. Successful board/card mutations refetch the board query, and the board view synchronizes its local list/member state with the refreshed data.
 - `app/layout.tsx` wraps routes in a server-side `CurrentUserProvider` and a client-side `UserProvider`.
 - Email/password authentication uses the NextAuth Credentials provider and bcrypt hashes in `user.password_hash`. NextAuth keeps a seven-day encrypted JWT session in an HttpOnly cookie. `CurrentUserProvider` reads the user ID from that session and reloads the profile; unauthenticated requests do not receive a mock user.
 - Usernames in the board-collection route are stable slugs derived from the authenticated user's full name or email plus their ID; they are URL handles, not authentication credentials.
