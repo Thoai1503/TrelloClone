@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import {
   addCardMember,
-  findCardMemberCandidate,
   removeCardMember,
   updateCardDetails,
 } from "@/app/actions/lists";
 import type {
+  BoardMemberSummary,
   BoardTask,
   CardMemberSummary,
 } from "@/app/types/board";
@@ -17,6 +17,7 @@ import { Avatar, Button, Icon } from "@/app/components/atoms";
 
 type CardDetailsControlsProps = {
   boardToken: string;
+  boardMembers: BoardMemberSummary[];
   card: BoardTask;
   canEdit: boolean;
   onBusyChange: (isBusy: boolean) => void;
@@ -27,14 +28,13 @@ type CardDetailsControlsProps = {
 
 type ActivePanel = "members" | "dates" | null;
 
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 function displayMemberName(member: CardMemberSummary): string {
   return member.full_name?.trim() || member.email || `Thành viên ${member.id}`;
 }
 
 export default function CardDetailsControls({
   boardToken,
+  boardMembers,
   card,
   canEdit,
   onBusyChange,
@@ -64,9 +64,7 @@ export default function CardDetailsControls({
         !locallyRemovedMemberIds.includes(member.id),
     ),
   ];
-  const [email, setEmail] = useState("");
-  const [candidate, setCandidate] = useState<CardMemberSummary | null>(null);
-  const [isSearching, setIsSearching] = useState(false);
+  const [memberSearch, setMemberSearch] = useState("");
   const [isAddingMember, setIsAddingMember] = useState(false);
   const [removingMemberId, setRemovingMemberId] = useState<number | null>(null);
   const [startDate, setStartDate] = useState(card.start_date?.slice(0, 10) ?? "");
@@ -76,37 +74,16 @@ export default function CardDetailsControls({
   const membersTriggerRef = useRef<HTMLButtonElement>(null);
   const datesTriggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (
-      activePanel !== "members" ||
-      !emailPattern.test(email.trim())
-    ) {
-      return;
-    }
-
-    let active = true;
-    const timeoutId = window.setTimeout(() => {
-      setIsSearching(true);
-      void findCardMemberCandidate(boardToken, card.id, email.trim())
-        .then((foundCandidate) => {
-          if (active) setCandidate(foundCandidate);
-        })
-        .catch((cause: unknown) => {
-          if (!active) return;
-          console.error("Failed to find card member candidate.", cause);
-          setError("Không thể tìm tài khoản. Vui lòng thử lại.");
-        })
-        .finally(() => {
-          if (active) setIsSearching(false);
-        });
-    }, 300);
-
-    return () => {
-      active = false;
-      window.clearTimeout(timeoutId);
-    };
-  }, [activePanel, boardToken, card.id, email]);
+  const availableBoardMembers = boardMembers
+    .filter((member) => !members.some((current) => current.id === member.id))
+    .filter((member) => {
+      const search = memberSearch.trim().toLocaleLowerCase();
+      return (
+        !search ||
+        displayMemberName(member).toLocaleLowerCase().includes(search) ||
+        member.email?.toLocaleLowerCase().includes(search)
+      );
+    });
 
   useLayoutEffect(() => {
     if (!activePanel) return;
@@ -148,10 +125,10 @@ export default function CardDetailsControls({
       window.removeEventListener("resize", updatePosition);
       window.removeEventListener("scroll", updatePosition, true);
     };
-  }, [activePanel, candidate, email, isSearching, members.length]);
+  }, [activePanel, memberSearch, members.length, availableBoardMembers.length]);
 
-  async function handleAddMember() {
-    if (!candidate || isAddingMember) return;
+  async function handleAddMember(candidate: CardMemberSummary) {
+    if (isAddingMember) return;
 
     setIsAddingMember(true);
     onBusyChange(true);
@@ -166,8 +143,7 @@ export default function CardDetailsControls({
         current.filter((id) => id !== member.id),
       );
       onMemberAdded(card.id, member);
-      setEmail("");
-      setCandidate(null);
+      setMemberSearch("");
     } catch (cause: unknown) {
       console.error("Failed to add card member.", cause);
       setError("Không thể thêm thành viên. Vui lòng thử lại.");
@@ -235,8 +211,7 @@ export default function CardDetailsControls({
     setActivePanel((current) => (current === panel ? null : panel));
     setError(null);
     if (panel === "members") {
-      setEmail("");
-      setCandidate(null);
+      setMemberSearch("");
     } else {
       setStartDate(card.start_date?.slice(0, 10) ?? "");
       setEndDate(card.due_date?.slice(0, 10) ?? "");
@@ -302,60 +277,64 @@ export default function CardDetailsControls({
             {activePanel === "members" ? (
               <>
                 <h3 className="text-sm font-semibold">Thành viên của thẻ</h3>
-                <label className="sr-only" htmlFor={`card-member-email-${card.id}`}>
-                  Email thành viên
+                <label className="sr-only" htmlFor={`card-member-search-${card.id}`}>
+                  Tìm thành viên trong board
                 </label>
-                <div className="relative mt-3">
+                <div className="mt-3">
                   <input
                     autoComplete="off"
                     className="h-10 w-full rounded-md border border-gray-300 px-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                    id={`card-member-email-${card.id}`}
+                    id={`card-member-search-${card.id}`}
                     onChange={(event) => {
-                      setEmail(event.target.value);
-                      setCandidate(null);
+                      setMemberSearch(event.target.value);
                       setError(null);
                     }}
-                    placeholder="Nhập email..."
-                    type="email"
-                    value={email}
+                    placeholder="Tìm thành viên trong board..."
+                    type="search"
+                    value={memberSearch}
                   />
-                  {candidate && (
-                    <button
-                      className="absolute left-0 right-0 top-full z-20 mt-1 flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 text-left shadow-lg hover:bg-gray-50"
-                      onClick={() => void handleAddMember()}
-                      type="button"
-                    >
-                      <Avatar
-                        imageUrl={candidate.avatar_url}
-                        label={displayMemberName(candidate)}
-                        userId={candidate.id}
-                      />
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm font-medium">
-                          {displayMemberName(candidate)}
-                        </span>
-                        <span className="block truncate text-xs text-gray-500">
-                          {candidate.email}
-                        </span>
-                      </span>
-                      <span className="text-xs text-blue-700">
-                        {isAddingMember ? "Đang thêm..." : "Thêm"}
-                      </span>
-                    </button>
-                  )}
-                  {isSearching && (
-                    <span className="absolute right-3 top-3 text-xs text-gray-500">
-                      Đang tìm...
-                    </span>
-                  )}
-                  {!isSearching &&
-                    !candidate &&
-                    emailPattern.test(email.trim()) && (
-                      <span className="mt-2 block text-xs text-gray-500">
-                        Không tìm thấy tài khoản phù hợp.
-                      </span>
-                    )}
                 </div>
+                {availableBoardMembers.length > 0 ? (
+                  <ul className="mt-3 max-h-52 space-y-1 overflow-y-auto">
+                    {availableBoardMembers.map((member) => (
+                      <li key={member.id}>
+                        <button
+                          className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-left hover:bg-gray-100 disabled:opacity-50"
+                          disabled={isAddingMember}
+                          onClick={() => void handleAddMember(member)}
+                          type="button"
+                        >
+                          <Avatar
+                            imageUrl={member.avatar_url}
+                            label={displayMemberName(member)}
+                            userId={member.id}
+                          />
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-sm font-medium">
+                              {displayMemberName(member)}
+                            </span>
+                            {member.email && (
+                              <span className="block truncate text-xs text-gray-500">
+                                {member.email}
+                              </span>
+                            )}
+                          </span>
+                          <span className="text-xs text-blue-700">
+                            {isAddingMember ? "Đang thêm..." : "Thêm"}
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-3 text-sm text-gray-500">
+                    {boardMembers.length === 0
+                      ? "Board chưa có thành viên."
+                      : memberSearch.trim()
+                        ? "Không tìm thấy thành viên phù hợp."
+                        : "Tất cả thành viên board đã có trong card."}
+                  </p>
+                )}
                 {members.length > 0 && (
                   <ul className="mt-4 space-y-2">
                     {members.map((member) => (

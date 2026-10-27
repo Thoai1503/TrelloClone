@@ -80,6 +80,7 @@ export default function BoardDetailView({
   const [isAdding, setIsAdding] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pendingSaveCount, setPendingSaveCount] = useState(0);
+  const [dueDateRefreshToken, setDueDateRefreshToken] = useState(0);
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [activeCard, setActiveCard] = useState<BoardTask | null>(null);
@@ -126,6 +127,7 @@ export default function BoardDetailView({
       listsRef.current = refreshedBoard.lists;
       setLists(refreshedBoard.lists);
       setMembers(refreshedBoard.members);
+      setDueDateRefreshToken((current) => current + 1);
       setError(null);
     } catch (cause: unknown) {
       console.error("Failed to refresh board after an update.", cause);
@@ -565,7 +567,7 @@ export default function BoardDetailView({
 
   return (
     <div className="flex h-[calc(100vh-68px)] gap-3 overflow-hidden bg-white p-3">
-      <BoardDueDateSidebar lists={lists} />
+      <BoardDueDateSidebar refreshToken={dueDateRefreshToken} />
       <main
         className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-xl text-white shadow-sm"
         style={{ backgroundColor: board.backgroundColor }}
@@ -795,6 +797,7 @@ export default function BoardDetailView({
       {activeDetailsCard && (
         <CardDetailsDialog
           boardToken={board.encryptedId}
+          boardMembers={members}
           canEdit={!isAdding && board.canManageLists}
           card={activeDetailsCard}
           key={activeDetailsCard.id}

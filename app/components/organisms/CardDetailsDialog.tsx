@@ -3,7 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import type { BoardTask, CardMemberSummary } from "@/app/types/board";
+import type {
+  BoardMemberSummary,
+  BoardTask,
+  CardMemberSummary,
+} from "@/app/types/board";
 import { Icon } from "@/app/components/atoms";
 import CardActivitySection from "@/app/components/molecules/card-details/CardActivitySection";
 import CardAttachmentsSection from "@/app/components/molecules/card-details/CardAttachmentsSection";
@@ -12,6 +16,8 @@ import CardDetailsControls from "@/app/components/molecules/card-details/CardDet
 
 export type CardDetailsDialogProps = {
   boardToken: string;
+  boardMembers: BoardMemberSummary[];
+  locationLabel?: string;
   card: BoardTask;
   canEdit: boolean;
   onClose: () => void;
@@ -22,6 +28,8 @@ export type CardDetailsDialogProps = {
 
 export default function CardDetailsDialog({
   boardToken,
+  boardMembers,
+  locationLabel,
   card,
   canEdit,
   onClose,
@@ -84,7 +92,10 @@ export default function CardDetailsDialog({
               >
                 {card.title}
               </h2>
-              <p className="mt-1 text-sm text-gray-500">Chi tiết thẻ</p>
+              <p className="mt-1 text-sm text-gray-500">
+                Chi tiết thẻ
+                {locationLabel ? ` · ${locationLabel}` : ""}
+              </p>
             </div>
           </div>
           <button
@@ -102,6 +113,7 @@ export default function CardDetailsDialog({
           <div className="p-5 sm:p-7 lg:min-h-0 lg:overflow-y-auto">
             <CardDetailsControls
               boardToken={boardToken}
+              boardMembers={boardMembers}
               canEdit={canEdit}
               card={card}
               onBusyChange={handleBusyChange}
