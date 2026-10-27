@@ -219,6 +219,51 @@ export async function createBoardList(
   });
 }
 
+export async function updateBoardListName(
+  boardToken: string,
+  listId: string,
+  name: string,
+): Promise<string | null> {
+  if (
+    typeof boardToken !== "string" ||
+    typeof listId !== "string" ||
+    listId.length > 19 ||
+    !/^\d+$/.test(listId) ||
+    typeof name !== "string"
+  ) {
+    return null;
+  }
+
+  const trimmedName = name.trim();
+  if (!trimmedName || trimmedName.length > 150) return null;
+
+  const boardId = decryptBoardId(boardToken);
+  if (boardId === null) return null;
+
+  const currentUser = await getCurrentUser();
+  if (!currentUser) return null;
+
+  return prisma.$transaction(async (transaction) => {
+    const board = await findEditableCardBoard(
+      transaction,
+      boardId,
+      currentUser.id,
+    );
+    if (!board) return null;
+
+    const updated = await transaction.list.updateMany({
+      where: {
+        id: BigInt(listId),
+        board_id: board.id,
+        archived_at: null,
+      },
+      data: { name: trimmedName },
+    });
+    if (updated.count !== 1) return null;
+    return trimmedName;
+  });
+}
+
 export async function reorderBoardLists(
   boardToken: string,
   orderedListIds: string[],

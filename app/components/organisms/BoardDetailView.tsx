@@ -11,6 +11,7 @@ import {
   useSensors,
   type CollisionDetection,
   type DragEndEvent,
+  type DragOverEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
 import {
@@ -28,6 +29,7 @@ import {
   reorderBoardCards,
   reorderBoardLists,
   setListCardCompleted,
+  updateBoardListName,
   updateListCardTitle,
 } from "@/app/actions/lists";
 import type {
@@ -81,6 +83,10 @@ export default function BoardDetailView({
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [activeCard, setActiveCard] = useState<BoardTask | null>(null);
+  const [cardDropTarget, setCardDropTarget] = useState<{
+    listId: string;
+    index: number;
+  } | null>(null);
   const [activeCardDetailsId, setActiveCardDetailsId] = useState<string | null>(
     null,
   );
@@ -123,12 +129,15 @@ export default function BoardDetailView({
       setError(null);
     } catch (cause: unknown) {
       console.error("Failed to refresh board after an update.", cause);
-      setError("Đã lưu thay đổi nhưng không thể tải lại bảng. Vui lòng thử lại.");
+      setError(
+        "Đã lưu thay đổi nhưng không thể tải lại bảng. Vui lòng thử lại.",
+      );
     }
   }
 
   function handleDragStart(event: DragStartEvent) {
     const activeId = String(event.active.id);
+    setCardDropTarget(null);
     if (!activeId.startsWith("card:")) {
       setActiveCard(null);
       return;
@@ -139,6 +148,39 @@ export default function BoardDetailView({
       .flatMap((list) => list.cards)
       .find((item) => item.id === cardId);
     setActiveCard(card ?? null);
+  }
+
+  function handleDragOver(event: DragOverEvent) {
+    const activeId = String(event.active.id);
+    const overId = event.over ? String(event.over.id) : null;
+    if (!activeId.startsWith("card:") || !overId) {
+      setCardDropTarget(null);
+      return;
+    }
+
+    const currentLists = listsRef.current;
+    const activeCardId = activeId.slice("card:".length);
+    const sourceListId = currentLists.find((list) =>
+      list.cards.some((card) => card.id === activeCardId),
+    )?.id;
+    const destinationList = overId.startsWith("card:")
+      ? currentLists.find((list) =>
+          list.cards.some((card) => card.id === overId.slice("card:".length)),
+        )
+      : overId.startsWith("list:")
+        ? currentLists.find((list) => list.id === overId.slice("list:".length))
+        : undefined;
+    if (!destinationList || destinationList.id === sourceListId) {
+      setCardDropTarget(null);
+      return;
+    }
+
+    const index = overId.startsWith("card:")
+      ? destinationList.cards.findIndex(
+          (card) => card.id === overId.slice("card:".length),
+        )
+      : destinationList.cards.length;
+    setCardDropTarget(index < 0 ? null : { listId: destinationList.id, index });
   }
 
   function enqueueBoardPersist(
@@ -158,50 +200,60 @@ export default function BoardDetailView({
   }
 
   function persistListOrder(orderedListIds: string[]) {
-    enqueueBoardPersist(async () => {
-      try {
-        const saved = await reorderBoardLists(
-          board.encryptedId,
-          orderedListIds,
-        );
-        if (!saved) throw new Error("Board list order was rejected.");
-        if (pendingDragDropActions.current === 1) await refreshBoard();
-      } catch (cause: unknown) {
-        console.error("Failed to save board list order.", cause);
-        setError("Không thể lưu thứ tự danh sách. Vui lòng thử lại.");
-        throw cause;
-      }
-    }, {
-      name: "reorderBoardLists",
-      details: {
-        orderedListIds,
+    enqueueBoardPersist(
+      async () => {
+        try {
+          const saved = await reorderBoardLists(
+            board.encryptedId,
+            orderedListIds,
+          );
+          if (!saved) throw new Error("Board list order was rejected.");
+          if (pendingDragDropActions.current === 1) await refreshBoard();
+        } catch (cause: unknown) {
+          console.error("Failed to save board list order.", cause);
+          setError("Không thể lưu thứ tự danh sách. Vui lòng thử lại.");
+          throw cause;
+        }
       },
-    });
+      {
+        name: "reorderBoardLists",
+        details: {
+          orderedListIds,
+        },
+      },
+    );
   }
 
   function persistCardOrder(
     orderedLists: { listId: string; cardIds: string[] }[],
   ) {
-    enqueueBoardPersist(async () => {
-      try {
-        const saved = await reorderBoardCards(board.encryptedId, orderedLists);
-        if (!saved) throw new Error("Board card order was rejected.");
-        if (pendingDragDropActions.current === 1) await refreshBoard();
-      } catch (cause: unknown) {
-        console.error("Failed to save board card order.", cause);
-        setError("Không thể lưu thay đổi thẻ. Vui lòng thử lại.");
-        throw cause;
-      }
-    }, {
-      name: "reorderBoardCards",
-      details: {
-        orderedLists,
+    enqueueBoardPersist(
+      async () => {
+        try {
+          const saved = await reorderBoardCards(
+            board.encryptedId,
+            orderedLists,
+          );
+          if (!saved) throw new Error("Board card order was rejected.");
+          if (pendingDragDropActions.current === 1) await refreshBoard();
+        } catch (cause: unknown) {
+          console.error("Failed to save board card order.", cause);
+          setError("Không thể lưu thay đổi thẻ. Vui lòng thử lại.");
+          throw cause;
+        }
       },
-    });
+      {
+        name: "reorderBoardCards",
+        details: {
+          orderedLists,
+        },
+      },
+    );
   }
 
   function handleDragEnd(event: DragEndEvent) {
     setActiveCard(null);
+    setCardDropTarget(null);
     const { active, over } = event;
     if (!board.canManageLists || isAdding || !over || active.id === over.id) {
       return;
@@ -328,6 +380,27 @@ export default function BoardDetailView({
     return card;
   }
 
+  async function handleRenameList(
+    listId: string,
+    name: string,
+  ): Promise<string> {
+    const updatedName = await updateBoardListName(
+      board.encryptedId,
+      listId,
+      name,
+    );
+    if (!updatedName) {
+      throw new Error("List name was rejected or access was denied.");
+    }
+
+    const updatedLists = listsRef.current.map((list) =>
+      list.id === listId ? { ...list, name: updatedName } : list,
+    );
+    listsRef.current = updatedLists;
+    setLists(updatedLists);
+    return updatedName;
+  }
+
   async function handleUpdateCard(
     cardId: string,
     title: string,
@@ -371,7 +444,9 @@ export default function BoardDetailView({
       isCompleted,
     );
     if (!updatedCard) {
-      throw new Error("Card completion update was rejected or access was denied.");
+      throw new Error(
+        "Card completion update was rejected or access was denied.",
+      );
     }
 
     setLists((currentLists) =>
@@ -416,10 +491,7 @@ export default function BoardDetailView({
     void refreshBoard();
   }
 
-  function handleCardMemberAdded(
-    cardId: string,
-    member: CardMemberSummary,
-  ) {
+  function handleCardMemberAdded(cardId: string, member: CardMemberSummary) {
     setLists((currentLists) =>
       currentLists.map((list) => ({
         ...list,
@@ -442,7 +514,9 @@ export default function BoardDetailView({
           card.id === cardId
             ? {
                 ...card,
-                members: card.members.filter((member) => member.id !== memberId),
+                members: card.members.filter(
+                  (member) => member.id !== memberId,
+                ),
               }
             : card,
         ),
@@ -490,220 +564,233 @@ export default function BoardDetailView({
   }
 
   return (
-    <div
-      className="flex h-[calc(100vh-68px)] gap-3 overflow-hidden bg-white p-3"
-    >
+    <div className="flex h-[calc(100vh-68px)] gap-3 overflow-hidden bg-white p-3">
       <BoardDueDateSidebar lists={lists} />
       <main
         className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-xl text-white shadow-sm"
         style={{ backgroundColor: board.backgroundColor }}
       >
-      <header
-        className="flex h-14 shrink-0 items-center border-b border-white/15 px-4 sm:px-6"
-        style={{
-          backgroundColor: `color-mix(in srgb, ${board.backgroundColor} 85%, black)`,
-        }}
-      >
-        <Link
-          aria-label="Quay lại danh sách workspace và bảng"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-white/90 transition hover:bg-white/15"
-          href={
-            user
-              ? `/u/${encodeURIComponent(user.username)}/board#workspace-${board.workspaceEncryptedId}`
-              : "/"
-          }
+        <header
+          className="flex h-14 shrink-0 items-center border-b border-white/15 px-4 sm:px-6"
+          style={{
+            backgroundColor: `color-mix(in srgb, ${board.backgroundColor} 85%, black)`,
+          }}
         >
-          <Icon className="h-5 w-5 rotate-180" name="arrow" />
-        </Link>
-        <span className="mx-3 h-7 w-px shrink-0 bg-white/25" />
-        <div className="min-w-0">
-          <p className="truncate text-xs text-white/70">
-            {board.workspaceName}
-          </p>
-          <h1 className="truncate text-sm font-semibold sm:text-base">
-            {board.name}
-          </h1>
-        </div>
-        <div className="ml-auto flex min-w-0 items-center gap-3">
-          {members.length > 0 && (
-            <div
-              aria-label="Thành viên trong bảng"
-              className="flex shrink-0 items-center -space-x-2"
-            >
-              {members.map((member: BoardMemberSummary) => {
-                const name =
-                  member.full_name?.trim() ||
-                  member.email ||
-                  `Thành viên ${member.id}`;
-                return (
-                  <span
-                    aria-label={member.email || name}
-                    className="rounded-full ring-2 ring-white"
-                    key={member.id}
-                    title={member.email || name}
-                  >
-                    <Avatar
-                      imageUrl={member.avatar_url}
-                      label={name}
-                      title={member.email || name}
-                      userId={member.id}
-                    />
-                  </span>
-                );
-              })}
-            </div>
-          )}
-          {board.canManageMembers && (
-            <BoardShareDialog
-              boardToken={board.encryptedId}
-              canManageMembers={board.canManageMembers}
-              canManageAdminMembers={board.canManageAdminMembers}
-              members={members}
-              onMemberAdded={(member) => {
-                setMembers((currentMembers) =>
-                  currentMembers.some(
-                    (currentMember) => currentMember.id === member.id,
-                  )
-                    ? currentMembers.map((currentMember) =>
-                        currentMember.id === member.id ? member : currentMember,
-                      )
-                    : [...currentMembers, member],
-                );
-                void refreshBoard();
-              }}
-              onMemberUpdated={(updatedMember) => {
-                setMembers((currentMembers) =>
-                  currentMembers.map((member) =>
-                    member.id === updatedMember.id ? updatedMember : member,
-                  ),
-                );
-                void refreshBoard();
-              }}
-              onMemberRemoved={(memberId) => {
-                setMembers((currentMembers) =>
-                  currentMembers.filter((member) => member.id !== memberId),
-                );
-                void refreshBoard();
-              }}
-            />
-          )}
-        </div>
-      </header>
-
-      <section className="flex min-h-0 flex-1 flex-col p-3 sm:p-4">
-        {error && (
-          <p className="mb-4 shrink-0 text-sm text-red-700" role="alert">
-            {error}
-          </p>
-        )}
-
-        <div className="flex min-h-0 flex-1 overflow-hidden">
-          <DndContext
-            collisionDetection={boardCollisionDetection}
-            onDragCancel={() => setActiveCard(null)}
-            onDragEnd={handleDragEnd}
-            onDragStart={handleDragStart}
-            sensors={sensors}
+          <Link
+            aria-label="Quay lại danh sách workspace và bảng"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-white/90 transition hover:bg-white/15"
+            href={
+              user
+                ? `/u/${encodeURIComponent(user.username)}/board#workspace-${board.workspaceEncryptedId}`
+                : "/"
+            }
           >
-            <div
-              aria-label="Các danh sách trong bảng"
-              className="flex min-h-0 min-w-0 flex-1 items-start gap-3 overflow-x-auto overflow-y-hidden pb-4"
-            >
-              <SortableContext
-                items={lists.map((list) => `list:${list.id}`)}
-                strategy={horizontalListSortingStrategy}
+            <Icon className="h-5 w-5 rotate-180" name="arrow" />
+          </Link>
+          <span className="mx-3 h-7 w-px shrink-0 bg-white/25" />
+          <div className="min-w-0">
+            <p className="truncate text-xs text-white/70">
+              {board.workspaceName}
+            </p>
+            <h1 className="truncate text-sm font-semibold sm:text-base">
+              {board.name}
+            </h1>
+          </div>
+          <div className="ml-auto flex min-w-0 items-center gap-3">
+            {members.length > 0 && (
+              <div
+                aria-label="Thành viên trong bảng"
+                className="flex shrink-0 items-center -space-x-2"
               >
-                {lists.map((list: BoardList) => (
-                  <SortableBoardList
-                    disabled={isAdding || !board.canManageLists}
-                    canAddCards={board.canManageLists}
-                    key={list.id}
-                    list={list}
-                    onAddCard={handleAddCard}
-                    onOpenCardDetails={setActiveCardDetailsId}
-                    onToggleCardCompleted={handleToggleCardCompleted}
-                    onUpdateCard={handleUpdateCard}
-                  />
-                ))}
-              </SortableContext>
-
-              {isAdding ? (
-                <form
-                  className="flex w-72 shrink-0 flex-col gap-3 rounded-xl bg-gray-100 p-3 text-gray-900 shadow-sm"
-                  onSubmit={handleSubmit}
-                >
-                  <label className="sr-only" htmlFor="new-list-name">
-                    Tên danh sách
-                  </label>
-                  <input
-                    autoFocus
-                    className="h-10 rounded-md border border-gray-300 bg-white px-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                    id="new-list-name"
-                    maxLength={150}
-                    onChange={(event) => setName(event.target.value)}
-                    placeholder="Nhập tên danh sách..."
-                    value={name}
-                  />
-                  <div className="flex items-center gap-2">
-                    <Button disabled={isSubmitting || !name.trim()} type="submit">
-                      {isSubmitting ? "Đang thêm..." : "Thêm danh sách"}
-                    </Button>
-                    <button
-                      className="rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-200"
-                      disabled={isSubmitting}
-                      onClick={() => {
-                        setIsAdding(false);
-                        setError(null);
-                      }}
-                      type="button"
+                {members.map((member: BoardMemberSummary) => {
+                  const name =
+                    member.full_name?.trim() ||
+                    member.email ||
+                    `Thành viên ${member.id}`;
+                  return (
+                    <span
+                      aria-label={member.email || name}
+                      className="rounded-full ring-2 ring-white"
+                      key={member.id}
+                      title={member.email || name}
                     >
-                      Hủy
-                    </button>
-                  </div>
-                </form>
-              ) : board.canManageLists ? (
-                <button
-                  className="flex h-12 w-72 shrink-0 items-center gap-2 rounded-xl bg-white/20 px-4 text-left text-sm font-semibold text-white transition hover:bg-white/30"
-                  onClick={() => setIsAdding(true)}
-                  type="button"
+                      <Avatar
+                        imageUrl={member.avatar_url}
+                        label={name}
+                        title={member.email || name}
+                        userId={member.id}
+                      />
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+            {board.canManageMembers && (
+              <BoardShareDialog
+                boardToken={board.encryptedId}
+                canManageMembers={board.canManageMembers}
+                canManageAdminMembers={board.canManageAdminMembers}
+                members={members}
+                onMemberAdded={(member) => {
+                  setMembers((currentMembers) =>
+                    currentMembers.some(
+                      (currentMember) => currentMember.id === member.id,
+                    )
+                      ? currentMembers.map((currentMember) =>
+                          currentMember.id === member.id
+                            ? member
+                            : currentMember,
+                        )
+                      : [...currentMembers, member],
+                  );
+                  void refreshBoard();
+                }}
+                onMemberUpdated={(updatedMember) => {
+                  setMembers((currentMembers) =>
+                    currentMembers.map((member) =>
+                      member.id === updatedMember.id ? updatedMember : member,
+                    ),
+                  );
+                  void refreshBoard();
+                }}
+                onMemberRemoved={(memberId) => {
+                  setMembers((currentMembers) =>
+                    currentMembers.filter((member) => member.id !== memberId),
+                  );
+                  void refreshBoard();
+                }}
+              />
+            )}
+          </div>
+        </header>
+
+        <section className="flex min-h-0 flex-1 flex-col p-3 sm:p-4">
+          {error && (
+            <p className="mb-4 shrink-0 text-sm text-red-700" role="alert">
+              {error}
+            </p>
+          )}
+
+          <div className="flex min-h-0 flex-1 overflow-hidden">
+            <DndContext
+              collisionDetection={boardCollisionDetection}
+              onDragCancel={() => {
+                setActiveCard(null);
+                setCardDropTarget(null);
+              }}
+              onDragEnd={handleDragEnd}
+              onDragOver={handleDragOver}
+              onDragStart={handleDragStart}
+              sensors={sensors}
+            >
+              <div
+                aria-label="Các danh sách trong bảng"
+                className="flex min-h-0 min-w-0 flex-1 items-start gap-3 overflow-x-auto overflow-y-hidden pb-4"
+              >
+                <SortableContext
+                  items={lists.map((list) => `list:${list.id}`)}
+                  strategy={horizontalListSortingStrategy}
                 >
-                  <span aria-hidden="true" className="text-lg leading-none">
-                    +
-                  </span>
-                  Thêm danh sách khác
-                </button>
-              ) : null}
-            </div>
-            <DragOverlay dropAnimation={null} zIndex={1000}>
-              {activeCard ? (
-                <article className="flex w-60 items-start justify-between gap-2 rounded-lg bg-white p-3 text-sm text-gray-900 shadow-xl ring-1 ring-black/10">
-                  <span className="min-w-0 flex-1 break-words">
-                    {activeCard.title}
-                  </span>
-                  <svg
-                    aria-hidden="true"
-                    className="h-4 w-4 shrink-0 text-gray-400"
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
+                  {lists.map((list: BoardList) => (
+                    <SortableBoardList
+                      dropPreview={
+                        activeCard && cardDropTarget?.listId === list.id
+                          ? { index: cardDropTarget.index, card: activeCard }
+                          : null
+                      }
+                      disabled={isAdding || !board.canManageLists}
+                      canAddCards={board.canManageLists}
+                      key={list.id}
+                      list={list}
+                      onAddCard={handleAddCard}
+                      onOpenCardDetails={setActiveCardDetailsId}
+                      onRenameList={handleRenameList}
+                      onToggleCardCompleted={handleToggleCardCompleted}
+                      onUpdateCard={handleUpdateCard}
+                    />
+                  ))}
+                </SortableContext>
+
+                {isAdding ? (
+                  <form
+                    className="flex w-72 shrink-0 flex-col gap-3 rounded-xl bg-gray-100 p-3 text-gray-900 shadow-sm"
+                    onSubmit={handleSubmit}
                   >
-                    <circle cx="5" cy="3" r="1.2" />
-                    <circle cx="11" cy="3" r="1.2" />
-                    <circle cx="5" cy="8" r="1.2" />
-                    <circle cx="11" cy="8" r="1.2" />
-                    <circle cx="5" cy="13" r="1.2" />
-                    <circle cx="11" cy="13" r="1.2" />
-                  </svg>
-                </article>
-              ) : null}
-            </DragOverlay>
-          </DndContext>
-        </div>
-        {pendingSaveCount > 0 && (
-          <p aria-live="polite" className="shrink-0 text-sm text-gray-600">
-            Đang lưu thứ tự...
-          </p>
-        )}
-      </section>
+                    <label className="sr-only" htmlFor="new-list-name">
+                      Tên danh sách
+                    </label>
+                    <input
+                      autoFocus
+                      className="h-10 rounded-md border border-gray-300 bg-white px-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      id="new-list-name"
+                      maxLength={150}
+                      onChange={(event) => setName(event.target.value)}
+                      placeholder="Nhập tên danh sách..."
+                      value={name}
+                    />
+                    <div className="flex items-center gap-2">
+                      <Button
+                        disabled={isSubmitting || !name.trim()}
+                        type="submit"
+                      >
+                        {isSubmitting ? "Đang thêm..." : "Thêm danh sách"}
+                      </Button>
+                      <button
+                        className="rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-200"
+                        disabled={isSubmitting}
+                        onClick={() => {
+                          setIsAdding(false);
+                          setError(null);
+                        }}
+                        type="button"
+                      >
+                        Hủy
+                      </button>
+                    </div>
+                  </form>
+                ) : board.canManageLists ? (
+                  <button
+                    className="flex h-12 w-72 shrink-0 items-center gap-2 rounded-xl bg-white/20 px-4 text-left text-sm font-semibold text-white transition hover:bg-white/30"
+                    onClick={() => setIsAdding(true)}
+                    type="button"
+                  >
+                    <span aria-hidden="true" className="text-lg leading-none">
+                      +
+                    </span>
+                    Thêm danh sách khác
+                  </button>
+                ) : null}
+              </div>
+              <DragOverlay dropAnimation={null} zIndex={1000}>
+                {activeCard ? (
+                  <article className="flex w-60 rotate-[4deg] items-start justify-between gap-2 rounded-lg bg-white p-3 text-sm text-gray-900 shadow-xl ring-1 ring-black/10">
+                    <span className="min-w-0 flex-1 break-words">
+                      {activeCard.title}
+                    </span>
+                    <svg
+                      aria-hidden="true"
+                      className="h-4 w-4 shrink-0 text-gray-400"
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                    >
+                      <circle cx="5" cy="3" r="1.2" />
+                      <circle cx="11" cy="3" r="1.2" />
+                      <circle cx="5" cy="8" r="1.2" />
+                      <circle cx="11" cy="8" r="1.2" />
+                      <circle cx="5" cy="13" r="1.2" />
+                      <circle cx="11" cy="13" r="1.2" />
+                    </svg>
+                  </article>
+                ) : null}
+              </DragOverlay>
+            </DndContext>
+          </div>
+          {pendingSaveCount > 0 && (
+            <p aria-live="polite" className="shrink-0 text-sm text-gray-600">
+              Đang lưu thứ tự...
+            </p>
+          )}
+        </section>
       </main>
       {activeDetailsCard && (
         <CardDetailsDialog

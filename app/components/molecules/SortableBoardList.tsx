@@ -6,7 +6,13 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useId, useState, type FormEvent } from "react";
+import {
+  Fragment,
+  useId,
+  useState,
+  type FormEvent,
+  type KeyboardEvent,
+} from "react";
 
 import type {
   BoardList,
@@ -17,9 +23,11 @@ import SortableTaskCard from "./SortableTaskCard";
 
 type SortableBoardListProps = {
   list: BoardList;
+  dropPreview: { index: number; card: BoardTask } | null;
   disabled: boolean;
   canAddCards: boolean;
   onAddCard: (listId: string, title: string) => Promise<BoardTask>;
+  onRenameList: (listId: string, name: string) => Promise<string>;
   onUpdateCard: (cardId: string, title: string) => Promise<BoardTask>;
   onToggleCardCompleted: (
     cardId: string,
@@ -30,9 +38,11 @@ type SortableBoardListProps = {
 
 export default function SortableBoardList({
   list,
+  dropPreview,
   disabled,
   canAddCards,
   onAddCard,
+  onRenameList,
   onUpdateCard,
   onToggleCardCompleted,
   onOpenCardDetails,
@@ -42,8 +52,53 @@ export default function SortableBoardList({
   const inputId = useId();
   const [isAdding, setIsAdding] = useState(false);
   const [title, setTitle] = useState("");
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [listName, setListName] = useState(list.name);
+  const [isSavingName, setIsSavingName] = useState(false);
+  const [nameError, setNameError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  function cancelNameEdit() {
+    setListName(list.name);
+    setNameError(null);
+    setIsEditingName(false);
+  }
+
+  async function saveListName() {
+    const trimmedName = listName.trim();
+    if (!trimmedName || isSavingName) return;
+    if (trimmedName === list.name) {
+      setIsEditingName(false);
+      setNameError(null);
+      return;
+    }
+
+    setIsSavingName(true);
+    setNameError(null);
+    try {
+      const savedName = await onRenameList(list.id, trimmedName);
+      setListName(savedName);
+      setIsEditingName(false);
+    } catch (cause: unknown) {
+      console.error("Failed to update board list name.", cause);
+      setNameError("Không thể cập nhật tên danh sách. Vui lòng thử lại.");
+    } finally {
+      setIsSavingName(false);
+    }
+  }
+
+  function handleNameKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    event.stopPropagation();
+    if (event.key === "Escape") {
+      event.preventDefault();
+      cancelNameEdit();
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      void saveListName();
+    }
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmedTitle = title.trim();
@@ -66,6 +121,9 @@ export default function SortableBoardList({
   return (
     <article
       ref={setNodeRef}
+      onDragStartCapture={(event) => {
+        if (isEditingName) event.stopPropagation();
+      }}
       className="flex max-h-full min-h-32 w-72 shrink-0 flex-col rounded-xl bg-gray-100 p-3 text-gray-900 shadow-sm"
       style={{
         opacity: isDragging ? 0.45 : 1,
@@ -74,11 +132,63 @@ export default function SortableBoardList({
       }}
     >
       <div className="mb-3 flex items-start justify-between gap-2 px-1">
-        <h3 className="break-words text-sm font-semibold">{list.name}</h3>
+        {isEditingName ? (
+          <div className="min-w-0 flex-1">
+            <input
+              aria-label="Tên danh sách"
+              autoFocus
+              className="w-full rounded border border-blue-400 bg-white px-2 py-1 text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-100"
+              disabled={isSavingName}
+              maxLength={150}
+              onChange={(event) => {
+                setListName(event.target.value);
+                setNameError(null);
+              }}
+              onKeyDown={handleNameKeyDown}
+              onPointerDown={(event) => event.stopPropagation()}
+              value={listName}
+            />
+            {nameError && (
+              <p className="mt-1 text-xs text-red-600" role="alert">
+                {nameError}
+              </p>
+            )}
+            <div className="mt-1 flex gap-2 text-xs">
+              <button
+                className="font-medium text-blue-700 hover:underline disabled:opacity-50"
+                disabled={!listName.trim() || isSavingName}
+                onClick={() => void saveListName()}
+                type="button"
+              >
+                {isSavingName ? "Đang lưu..." : "Lưu"}
+              </button>
+              <button
+                className="text-gray-500 hover:underline disabled:opacity-50"
+                disabled={isSavingName}
+                onClick={cancelNameEdit}
+                type="button"
+              >
+                Hủy
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            className="min-w-0 flex-1 break-words rounded px-1 text-left text-sm font-semibold hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-default disabled:hover:bg-transparent"
+            disabled={disabled}
+            onClick={() => {
+              setListName(list.name);
+              setIsEditingName(true);
+            }}
+            type="button"
+          >
+            {listName}
+          </button>
+        )}
         <button
           aria-label={`Kéo để sắp xếp danh sách ${list.name}`}
           className="shrink-0 cursor-grab rounded p-1 text-gray-500 outline-none hover:bg-gray-200 hover:text-gray-900 focus-visible:ring-2 focus-visible:ring-blue-500 active:cursor-grabbing disabled:cursor-not-allowed"
-          disabled={disabled}
+          disabled={disabled || isEditingName}
           style={{ touchAction: "none" }}
           type="button"
           {...attributes}
@@ -100,16 +210,37 @@ export default function SortableBoardList({
           strategy={verticalListSortingStrategy}
         >
           <div className="min-h-4 space-y-2">
-            {list.cards.map((card) => (
-              <SortableTaskCard
-                card={card}
-                disabled={disabled || !canAddCards}
-                key={card.id}
-                onOpenCardDetails={onOpenCardDetails}
-                onToggleCompleted={onToggleCardCompleted}
-                onSave={onUpdateCard}
-              />
+            {list.cards.map((card, index) => (
+              <Fragment key={card.id}>
+                {dropPreview?.index === index && (
+                  <article
+                    aria-hidden="true"
+                    className="flex min-h-12 items-center rounded-lg border-2 border-dashed border-blue-400 bg-blue-50/70 px-3 py-2 text-sm text-blue-700"
+                  >
+                    <span className="line-clamp-2 break-words">
+                      {dropPreview.card.title}
+                    </span>
+                  </article>
+                )}
+                <SortableTaskCard
+                  card={card}
+                  disabled={disabled || !canAddCards}
+                  onOpenCardDetails={onOpenCardDetails}
+                  onToggleCompleted={onToggleCardCompleted}
+                  onSave={onUpdateCard}
+                />
+              </Fragment>
             ))}
+            {dropPreview?.index === list.cards.length && (
+              <article
+                aria-hidden="true"
+                className="flex min-h-12 items-center rounded-lg border-2 border-dashed border-blue-400 bg-blue-50/70 px-3 py-2 text-sm text-blue-700"
+              >
+                <span className="line-clamp-2 break-words">
+                  {dropPreview.card.title}
+                </span>
+              </article>
+            )}
           </div>
         </SortableContext>
         {list.cards.length === 0 && !canAddCards && (
