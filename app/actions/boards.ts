@@ -9,6 +9,7 @@ import {
 import { getCurrentUser } from "@/utils/auth-session";
 import { prisma } from "@/lib/prisma";
 import type {
+  AssignedDueDateCard,
   CardActivityFeedItem,
   BoardDetail,
   BoardMemberCandidate,
@@ -388,6 +389,65 @@ export async function getBoardByToken(
       }),
     })),
   };
+}
+
+export async function getCurrentUserAssignedDueDateCards(): Promise<
+  AssignedDueDateCard[]
+> {
+  const currentUser = await getCurrentUser();
+  if (!currentUser) return [];
+
+  const cards = await prisma.card.findMany({
+    where: {
+      archived_at: null,
+      due_date: { not: null },
+      list: {
+        archived_at: null,
+        board: {
+          archived_at: null,
+          workspace: { archived_at: null },
+        },
+      },
+      members: { some: { user_id: currentUser.id } },
+    },
+    select: {
+      id: true,
+      title: true,
+      due_date: true,
+      is_completed: true,
+      list: {
+        select: {
+          id: true,
+          name: true,
+          board: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: [{ due_date: "asc" }, { id: "asc" }],
+  });
+
+  return cards.flatMap((card) =>
+    card.due_date
+      ? [
+          {
+            id: card.id.toString(),
+            title: card.title,
+            due_date: card.due_date.toISOString(),
+            is_completed: card.is_completed,
+            listId: card.list.id.toString(),
+            listName: card.list.name,
+            boardId: card.list.board.id.toString(),
+            boardName: card.list.board.name,
+            boardToken: encryptBoardId(card.list.board.id),
+          },
+        ]
+      : [],
+  );
 }
 
 export async function findBoardMemberCandidate(

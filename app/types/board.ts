@@ -13,6 +13,18 @@ export type BoardList = {
   cards: BoardTask[];
 };
 
+export type AssignedDueDateCard = {
+  id: string;
+  title: string;
+  due_date: string;
+  is_completed: boolean;
+  listId: string;
+  listName: string;
+  boardId: string;
+  boardName: string;
+  boardToken: string;
+};
+
 export type BoardTask = {
   id: string;
   title: string;

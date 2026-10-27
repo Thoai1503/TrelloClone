@@ -923,6 +923,7 @@ export async function findCardMemberCandidate(
     const candidate = await transaction.user.findFirst({
       where: {
         email,
+        board_members: { some: { board_id: board.id } },
         card_members: {
           none: { card_id: BigInt(cardId) },
         },
@@ -988,8 +989,11 @@ export async function addCardMember(
     });
     if (!card) return null;
 
-    const member = await transaction.user.findUnique({
-      where: { id: memberId },
+    const member = await transaction.user.findFirst({
+      where: {
+        id: memberId,
+        board_members: { some: { board_id: board.id } },
+      },
       select: {
         id: true,
         email: true,
