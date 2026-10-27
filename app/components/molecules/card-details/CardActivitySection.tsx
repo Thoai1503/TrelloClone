@@ -34,6 +34,8 @@ function describeActivity(
       return `đã thêm ${item.memberName || "một thành viên"} vào thẻ “${title}”.`;
     case "card_member_removed":
       return `đã xóa ${item.memberName || "một thành viên"} khỏi thẻ “${title}”.`;
+    case "card_attachment_deleted":
+      return `đã xóa tệp “${item.attachmentName || "tệp đính kèm"}” khỏi thẻ “${title}”.`;
     default:
       return "đã cập nhật hoạt động trên thẻ.";
   }
@@ -207,9 +209,26 @@ export default function CardActivitySection({
                         {item.content}
                       </p>
                     ) : (
-                      <p className="mt-1 text-sm leading-6 text-gray-700">
-                        {describeActivity(item, card.title)}
-                      </p>
+                      item.action === "card_attachment_uploaded" &&
+                      item.attachmentName &&
+                      item.attachmentDownloadUrl ? (
+                        <p className="mt-1 text-sm leading-6 text-gray-700">
+                          đã đính kèm tệp{" "}
+                          <a
+                            className="font-medium text-blue-700 hover:text-blue-900 hover:underline"
+                            href={`${item.attachmentDownloadUrl}?inline=1`}
+                            rel="noreferrer"
+                            target="_blank"
+                          >
+                            {item.attachmentName}
+                          </a>{" "}
+                          vào thẻ “{item.cardTitle || card.title}”.
+                        </p>
+                      ) : (
+                        <p className="mt-1 text-sm leading-6 text-gray-700">
+                          {describeActivity(item, card.title)}
+                        </p>
+                      )
                     )}
                   </div>
                 </article>

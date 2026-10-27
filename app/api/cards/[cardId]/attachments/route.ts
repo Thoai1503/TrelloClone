@@ -102,7 +102,11 @@ export async function POST(request: NextRequest, context: RouteContext) {
         },
       },
     },
-    select: { id: true },
+    select: {
+      id: true,
+      title: true,
+      list: { select: { board: { select: { id: true } } } },
+    },
   });
   if (!card) {
     return NextResponse.json(
@@ -138,24 +142,42 @@ export async function POST(request: NextRequest, context: RouteContext) {
     fileName,
     mimeType,
   );
-  let attachment;
+  let result;
   try {
-    attachment = await prisma.attachment.create({
-      data: {
-        card_id: card.id,
-        uploaded_by: userId,
-        file_name: fileName,
-        file_url: storageKey,
-        mime_type: mimeType,
-        file_size: BigInt(file.size),
-      },
-      select: {
-        id: true,
-        file_name: true,
-        mime_type: true,
-        file_size: true,
-        created_at: true,
-      },
+    result = await prisma.$transaction(async (transaction) => {
+      const attachment = await transaction.attachment.create({
+        data: {
+          card_id: card.id,
+          uploaded_by: userId,
+          file_name: fileName,
+          file_url: storageKey,
+          mime_type: mimeType,
+          file_size: BigInt(file.size),
+        },
+        select: {
+          id: true,
+          file_name: true,
+          mime_type: true,
+          file_size: true,
+          created_at: true,
+        },
+      });
+      const activity = await transaction.activity_log.create({
+        data: {
+          board_id: card.list.board.id,
+          card_id: card.id,
+          actor_id: userId,
+          action: "card_attachment_uploaded",
+          metadata: {
+            cardTitle: card.title,
+            attachmentName: fileName,
+            attachmentDownloadUrl: `/api/attachments/${attachment.id.toString()}`,
+          },
+        },
+        select: { id: true, created_at: true },
+      });
+
+      return { attachment, activity };
     });
   } catch (cause: unknown) {
     try {
@@ -169,12 +191,34 @@ export async function POST(request: NextRequest, context: RouteContext) {
   return NextResponse.json(
     {
       attachment: {
-        id: attachment.id.toString(),
-        file_name: attachment.file_name,
-        mime_type: attachment.mime_type,
-        file_size: attachment.file_size?.toString() ?? null,
-        created_at: attachment.created_at.toISOString(),
-        download_url: `/api/attachments/${attachment.id.toString()}`,
+        id: result.attachment.id.toString(),
+        file_name: result.attachment.file_name,
+        mime_type: result.attachment.mime_type,
+        file_size: result.attachment.file_size?.toString() ?? null,
+        created_at: result.attachment.created_at.toISOString(),
+        download_url: `/api/attachments/${result.attachment.id.toString()}`,
+      },
+      activity: {
+        kind: "activity",
+        id: result.activity.id.toString(),
+        action: "card_attachment_uploaded",
+        created_at: result.activity.created_at.toISOString(),
+        actor: {
+          id: currentUser.id,
+          email: currentUser.email,
+          full_name: currentUser.full_name,
+          avatar_url: currentUser.avatar_url,
+        },
+        cardTitle: card.title,
+        fromListName: null,
+        toListName: null,
+        fromStartDate: null,
+        toStartDate: null,
+        fromEndDate: null,
+        toEndDate: null,
+        memberName: null,
+        attachmentName: fileName,
+        attachmentDownloadUrl: `/api/attachments/${result.attachment.id.toString()}`,
       },
     },
     { status: 201 },
