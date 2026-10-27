@@ -8,7 +8,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 
 
-<img width="1905" height="898" alt="Screenshot 2026-10-26 182826" src="https://github.com/user-attachments/assets/ce903d24-6337-40ad-b0ed-58b36c082859" />
+<img width="1917" height="917" alt="Screenshot 2026-10-27 182423" src="https://github.com/user-attachments/assets/ac1f5d51-0b9c-4620-a760-0d2a9a0303a5" />
 
 
 ## Getting Started
