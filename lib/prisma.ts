@@ -25,7 +25,7 @@ const adapter = new PrismaMariaDb({
   user: decodeURIComponent(databaseUrl.username),
   password: decodeURIComponent(databaseUrl.password),
   database,
-  connectionLimit: 5,
+  connectionLimit: 20,
 });
 
 const globalForPrisma = globalThis as typeof globalThis & {
