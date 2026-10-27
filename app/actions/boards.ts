@@ -206,6 +206,16 @@ export async function getBoardByToken(
                 },
                 orderBy: [{ assigned_at: "asc" }, { user_id: "asc" }],
               },
+              attachments: {
+                select: {
+                  id: true,
+                  file_name: true,
+                  mime_type: true,
+                  file_size: true,
+                  created_at: true,
+                },
+                orderBy: [{ created_at: "asc" }, { id: "asc" }],
+              },
               activity_logs: {
                 select: {
                   id: true,
@@ -357,6 +367,14 @@ export async function getBoardByToken(
           start_date: card.start_date?.toISOString() ?? null,
           due_date: card.due_date?.toISOString() ?? null,
           members: card.members.map(({ user: member }) => member),
+          attachments: card.attachments.map((attachment) => ({
+            id: attachment.id.toString(),
+            file_name: attachment.file_name,
+            mime_type: attachment.mime_type,
+            file_size: attachment.file_size?.toString() ?? null,
+            created_at: attachment.created_at.toISOString(),
+            download_url: `/api/attachments/${attachment.id.toString()}`,
+          })),
           activityFeed,
         };
       }),

@@ -7,3 +7,7 @@ export { default as BoardCounter } from "./BoardCounter";
 export { default as BoardEmptyState } from "./BoardEmptyState";
 export { default as BoardSearch } from "./BoardSearch";
 export { default as SignOutButton } from "./SignOutButton";
+export { default as CardActivitySection } from "./card-details/CardActivitySection";
+export { default as CardAttachmentsSection } from "./card-details/CardAttachmentsSection";
+export { default as CardDescriptionSection } from "./card-details/CardDescriptionSection";
+export { default as CardDetailsControls } from "./card-details/CardDetailsControls";

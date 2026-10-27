@@ -21,7 +21,17 @@ export type BoardTask = {
   start_date: string | null;
   due_date: string | null;
   members: CardMemberSummary[];
+  attachments: CardAttachmentSummary[];
   activityFeed: CardActivityFeedItem[];
+};
+
+export type CardAttachmentSummary = {
+  id: string;
+  file_name: string;
+  mime_type: string | null;
+  file_size: string | null;
+  created_at: string;
+  download_url: string;
 };
 
 export type CardMemberSummary = {

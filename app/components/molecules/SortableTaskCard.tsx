@@ -10,22 +10,18 @@ import {
   type KeyboardEvent,
 } from "react";
 
-import type { BoardTask, CardMemberSummary } from "@/app/types/board";
+import type { BoardTask } from "@/app/types/board";
 import { Avatar } from "@/app/components/atoms";
-import CardDetailsDialog from "./CardDetailsDialog";
 
 type SortableTaskCardProps = {
   card: BoardTask;
   disabled: boolean;
-  boardToken: string;
   onSave: (cardId: string, title: string) => Promise<BoardTask>;
   onToggleCompleted: (
     cardId: string,
     isCompleted: boolean,
   ) => Promise<BoardTask>;
-  onDetailsUpdated: (card: BoardTask) => void;
-  onMemberAdded: (cardId: string, member: CardMemberSummary) => void;
-  onMemberRemoved: (cardId: string, memberId: number) => void;
+  onOpenCardDetails: (cardId: string) => void;
 };
 
 function formatCardDate(date: string): string {
@@ -39,15 +35,11 @@ function formatCardDate(date: string): string {
 export default function SortableTaskCard({
   card,
   disabled,
-  boardToken,
   onSave,
   onToggleCompleted,
-  onDetailsUpdated,
-  onMemberAdded,
-  onMemberRemoved,
+  onOpenCardDetails,
 }: SortableTaskCardProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [title, setTitle] = useState(card.title);
   const [isCompleted, setIsCompleted] = useState(card.is_completed);
   const [isSaving, setIsSaving] = useState(false);
@@ -58,11 +50,13 @@ export default function SortableTaskCard({
   const commentCount = card.activityFeed.filter(
     (item) => item.kind === "comment",
   ).length;
+  const attachmentCount = card.attachments.length;
   const hasCardFooter = Boolean(
     card.members.length > 0 ||
       card.description?.trim() ||
       dueDate ||
-      commentCount > 0,
+      commentCount > 0 ||
+      attachmentCount > 0,
   );
   const pointerStart = useRef<{ x: number; y: number } | null>(null);
   const suppressNextClick = useRef(false);
@@ -157,7 +151,7 @@ export default function SortableTaskCard({
         ) {
           return;
         }
-        setIsDetailsOpen(true);
+        onOpenCardDetails(card.id);
       }}
       onPointerDownCapture={handlePointerDownCapture}
       onPointerMoveCapture={handlePointerMoveCapture}
@@ -330,7 +324,10 @@ export default function SortableTaskCard({
           })}
         </div>
       )}
-      {(card.description?.trim() || dueDate || commentCount > 0) && (
+      {(card.description?.trim() ||
+        dueDate ||
+        commentCount > 0 ||
+        attachmentCount > 0) && (
         <div className="absolute bottom-2 left-3 flex max-w-[calc(100%-5rem)] items-center gap-2 text-gray-500">
           {commentCount > 0 && (
             <span
@@ -352,6 +349,29 @@ export default function SortableTaskCard({
                 />
               </svg>
               <span>{commentCount}</span>
+            </span>
+          )}
+          {attachmentCount > 0 && (
+            <span
+              aria-label={`${attachmentCount} tệp đính kèm`}
+              className="inline-flex shrink-0 items-center gap-1 text-xs"
+              title={`${attachmentCount} tệp đính kèm`}
+            >
+              <svg
+                aria-hidden="true"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="m7.5 10.8 5.4-5.4a2.5 2.5 0 0 1 3.5 3.5l-7.5 7.5a4 4 0 0 1-5.7-5.7l7.2-7.2"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                />
+              </svg>
+              <span>{attachmentCount}</span>
             </span>
           )}
           {dueDate && (
@@ -419,17 +439,6 @@ export default function SortableTaskCard({
             </span>
           )}
         </div>
-      )}
-      {isDetailsOpen && (
-        <CardDetailsDialog
-          boardToken={boardToken}
-          canEdit={!disabled}
-          card={card}
-          onCardUpdated={onDetailsUpdated}
-          onClose={() => setIsDetailsOpen(false)}
-          onMemberAdded={onMemberAdded}
-          onMemberRemoved={onMemberRemoved}
-        />
       )}
     </article>
   );

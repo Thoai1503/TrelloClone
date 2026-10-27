@@ -11,7 +11,6 @@ import { useId, useState, type FormEvent } from "react";
 import type {
   BoardList,
   BoardTask,
-  CardMemberSummary,
 } from "@/app/types/board";
 
 import SortableTaskCard from "./SortableTaskCard";
@@ -20,29 +19,23 @@ type SortableBoardListProps = {
   list: BoardList;
   disabled: boolean;
   canAddCards: boolean;
-  boardToken: string;
   onAddCard: (listId: string, title: string) => Promise<BoardTask>;
   onUpdateCard: (cardId: string, title: string) => Promise<BoardTask>;
   onToggleCardCompleted: (
     cardId: string,
     isCompleted: boolean,
   ) => Promise<BoardTask>;
-  onCardDetailsUpdated: (card: BoardTask) => void;
-  onCardMemberAdded: (cardId: string, member: CardMemberSummary) => void;
-  onCardMemberRemoved: (cardId: string, memberId: number) => void;
+  onOpenCardDetails: (cardId: string) => void;
 };
 
 export default function SortableBoardList({
   list,
   disabled,
   canAddCards,
-  boardToken,
   onAddCard,
   onUpdateCard,
   onToggleCardCompleted,
-  onCardDetailsUpdated,
-  onCardMemberAdded,
-  onCardMemberRemoved,
+  onOpenCardDetails,
 }: SortableBoardListProps) {
   const { attributes, isDragging, listeners, setNodeRef, transform, transition } =
     useSortable({ id: `list:${list.id}`, disabled });
@@ -111,11 +104,8 @@ export default function SortableBoardList({
               <SortableTaskCard
                 card={card}
                 disabled={disabled || !canAddCards}
-                boardToken={boardToken}
                 key={card.id}
-                onDetailsUpdated={onCardDetailsUpdated}
-                onMemberAdded={onCardMemberAdded}
-                onMemberRemoved={onCardMemberRemoved}
+                onOpenCardDetails={onOpenCardDetails}
                 onToggleCompleted={onToggleCardCompleted}
                 onSave={onUpdateCard}
               />
