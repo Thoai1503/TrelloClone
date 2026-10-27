@@ -114,6 +114,9 @@ Dự án thể hiện chiều sâu kỹ thuật, không chỉ là việc tạo g
 - Hiển thị các tác vụ cần chú ý sớm.
 - Cải thiện việc lập kế hoạch thời gian cho các cam kết cá nhân và nhóm.
 
+<img width="1916" height="966" alt="Screenshot 2026-10-27 223627" src="https://github.com/user-attachments/assets/fef04fa6-af46-4fa3-98c4-da8ce6b18eac" />
+
+
 ### Bình luận và theo dõi hoạt động
 - Thêm bình luận vào thẻ.
 - Theo dõi các cập nhật như thay đổi trạng thái, thay đổi phân công và thay đổi ngày tháng.
