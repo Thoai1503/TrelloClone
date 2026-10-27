@@ -263,15 +263,18 @@ Dự án đặc biệt mạnh về mặt portfolio vì kết hợp:
 
 ### Chỗ dành cho ảnh chụp màn hình 1
 
-![Chỗ dành cho ảnh chụp màn hình dự án 1](#)
+<img width="1900" height="906" alt="Screenshot 2026-10-26 182414" src="https://github.com/user-attachments/assets/d684d106-5873-4cbe-818a-b7187c80d561" />
+
 
 ### Chỗ dành cho ảnh chụp màn hình 2
 
-![Chỗ dành cho ảnh chụp màn hình dự án 2](#)
+<img width="1917" height="917" alt="Screenshot 2026-10-27 182423" src="https://github.com/user-attachments/assets/25f5b14a-b2a9-4287-b483-0e162ea8bf97" />
+
 
 ### Chỗ dành cho ảnh chụp màn hình 3
 
-![Chỗ dành cho ảnh chụp màn hình dự án 3](#)
+<img width="1912" height="898" alt="Screenshot 2026-10-27 203725" src="https://github.com/user-attachments/assets/9f687076-9043-4250-a9dd-200c3ef364cb" />
+
 
 ---
 
