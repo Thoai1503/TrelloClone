@@ -1,13 +1,10 @@
 # TrelloClone
 
-<img width="1917" height="917" alt="Screenshot 2026-10-27 182423" src="https://github.com/user-attachments/assets/5e124682-4cbe-42af-b2e8-a321eebeb5eb" />
-
-
 Một nền tảng quản lý dự án và cộng tác nhóm đầy đủ tính năng, lấy cảm hứng từ Trello, được xây dựng bằng Next.js, TypeScript, Prisma và MySQL. Ứng dụng được thiết kế để giúp cá nhân và nhóm sắp xếp công việc, quản lý không gian làm việc (workspace), theo dõi mức độ ưu tiên và cộng tác trong một quy trình Kanban gọn gàng, linh hoạt.
 
 Dự án này không chỉ là một bản sao của một công cụ năng suất quen thuộc — nó là một ứng dụng hướng sản phẩm thực tế, thể hiện cách triển khai full-stack hiện đại, xác thực an toàn, quản lý bảng và thẻ, kiểm soát truy cập theo vai trò, và kiến trúc có khả năng mở rộng cho việc sử dụng thực tế.
 
-> Chỗ dành cho ảnh xem trước dự án hoặc ảnh chụp giao diện: phần này được cố ý để trống để cập nhật sau cho portfolio/demo.
+<img width="1917" height="917" alt="Screenshot 2026-10-27 182423" src="https://github.com/user-attachments/assets/5e124682-4cbe-42af-b2e8-a321eebeb5eb" />
 
 ## Vì sao dự án này quan trọng
 
