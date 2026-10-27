@@ -100,6 +100,13 @@ function serializeCard(
     description: string | null;
     start_date: Date | null;
     due_date: Date | null;
+    attachments?: {
+      id: bigint;
+      file_name: string;
+      mime_type: string | null;
+      file_size: bigint | null;
+      created_at: Date;
+    }[];
     members: {
       user: {
         id: number;
@@ -118,6 +125,14 @@ function serializeCard(
     start_date: card.start_date?.toISOString() ?? null,
     due_date: card.due_date?.toISOString() ?? null,
     members: card.members.map(({ user }) => user),
+    attachments: (card.attachments ?? []).map((attachment) => ({
+      id: attachment.id.toString(),
+      file_name: attachment.file_name,
+      mime_type: attachment.mime_type,
+      file_size: attachment.file_size?.toString() ?? null,
+      created_at: attachment.created_at.toISOString(),
+      download_url: `/api/attachments/${attachment.id.toString()}`,
+    })),
     activityFeed: [],
   };
 }
@@ -414,6 +429,7 @@ export async function createListCard(
       start_date: card.start_date?.toISOString() ?? null,
       due_date: card.due_date?.toISOString() ?? null,
       members: [],
+      attachments: [],
       activityFeed: [],
     };
   });
@@ -539,6 +555,7 @@ export async function updateListCardTitle(
       start_date: updatedCard.start_date?.toISOString() ?? null,
       due_date: updatedCard.due_date?.toISOString() ?? null,
       members: updatedCard.members.map(({ user }) => user),
+      attachments: [],
       activityFeed: [],
     };
   });
@@ -692,6 +709,7 @@ export async function setListCardCompleted(
       start_date: updatedCard.start_date?.toISOString() ?? null,
       due_date: updatedCard.due_date?.toISOString() ?? null,
       members: updatedCard.members.map(({ user }) => user),
+      attachments: [],
       activityFeed: [],
     };
   });

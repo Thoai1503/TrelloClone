@@ -44,6 +44,7 @@ import { Avatar, Button, Icon } from "../atoms";
 import { SortableBoardList } from "../molecules";
 import BoardDueDateSidebar from "./BoardDueDateSidebar";
 import BoardShareDialog from "./BoardShareDialog";
+import CardDetailsDialog from "./CardDetailsDialog";
 
 const boardCollisionDetection: CollisionDetection = (args) => {
   const activeType = String(args.active.id).split(":")[0];
@@ -80,9 +81,16 @@ export default function BoardDetailView({
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [activeCard, setActiveCard] = useState<BoardTask | null>(null);
+  const [activeCardDetailsId, setActiveCardDetailsId] = useState<string | null>(
+    null,
+  );
   const listsRef = useRef(lists);
   const pendingDragDropActions = useRef(0);
   const persistQueueRef = useRef(createSerialAsyncQueue());
+  const activeDetailsCard =
+    lists
+      .flatMap((list) => list.cards)
+      .find((card) => card.id === activeCardDetailsId) ?? null;
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, {
@@ -338,7 +346,13 @@ export default function BoardDetailView({
         ...list,
         cards: list.cards.map((card) =>
           card.id === updatedCard.id
-            ? { ...updatedCard, activityFeed: card.activityFeed }
+            ? {
+                ...updatedCard,
+                attachments: updatedCard.attachments.length
+                  ? updatedCard.attachments
+                  : card.attachments,
+                activityFeed: card.activityFeed,
+              }
             : card,
         ),
       })),
@@ -365,7 +379,13 @@ export default function BoardDetailView({
         ...list,
         cards: list.cards.map((card) =>
           card.id === updatedCard.id
-            ? { ...updatedCard, activityFeed: card.activityFeed }
+            ? {
+                ...updatedCard,
+                attachments: updatedCard.attachments.length
+                  ? updatedCard.attachments
+                  : card.attachments,
+                activityFeed: card.activityFeed,
+              }
             : card,
         ),
       })),
@@ -382,6 +402,9 @@ export default function BoardDetailView({
           card.id === updatedCard.id
             ? {
                 ...updatedCard,
+                attachments: updatedCard.attachments.length
+                  ? updatedCard.attachments
+                  : card.attachments,
                 activityFeed: updatedCard.activityFeed.length
                   ? updatedCard.activityFeed
                   : card.activityFeed,
@@ -594,13 +617,10 @@ export default function BoardDetailView({
                   <SortableBoardList
                     disabled={isAdding || !board.canManageLists}
                     canAddCards={board.canManageLists}
-                    boardToken={board.encryptedId}
                     key={list.id}
                     list={list}
                     onAddCard={handleAddCard}
-                    onCardDetailsUpdated={handleCardDetailsUpdated}
-                    onCardMemberAdded={handleCardMemberAdded}
-                    onCardMemberRemoved={handleCardMemberRemoved}
+                    onOpenCardDetails={setActiveCardDetailsId}
                     onToggleCardCompleted={handleToggleCardCompleted}
                     onUpdateCard={handleUpdateCard}
                   />
@@ -685,6 +705,18 @@ export default function BoardDetailView({
         )}
       </section>
       </main>
+      {activeDetailsCard && (
+        <CardDetailsDialog
+          boardToken={board.encryptedId}
+          canEdit={!isAdding && board.canManageLists}
+          card={activeDetailsCard}
+          key={activeDetailsCard.id}
+          onCardUpdated={handleCardDetailsUpdated}
+          onClose={() => setActiveCardDetailsId(null)}
+          onMemberAdded={handleCardMemberAdded}
+          onMemberRemoved={handleCardMemberRemoved}
+        />
+      )}
     </div>
   );
 }
