@@ -14,6 +14,7 @@ Last verified: 2026-10-25.
 - `/login` contains a Formik email/password form that authenticates against the stored bcrypt password hash, and Google OAuth sign-in when `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are configured. Google sign-in requires a verified email and reuses or creates the corresponding local user.
 - Board-collection loading, empty, missing-user, and query-error states are separate.
 - The board collection and board details use separate loading fallback components.
+- New card attachments are uploaded server-side to authenticated Cloudinary assets and downloaded through the board-access-checked attachment API. Existing local storage keys remain readable for files that are still present on the server.
 - The home UI follows Atomic Design under `app/components/atoms`, `molecules`, `organisms`, and `templates`. Route-level board-collection data and state are in `app/features/board-collection`.
 - Domain action modules and contracts are separated by entity: `app/actions/workspaces.ts`, `boards.ts`, `lists.ts` and `app/types/workspace.ts`, `board.ts`.
 - The `app/(user)/layout.tsx` route-group layout renders the shared account header for both the board collection and board detail pages; page-specific controls remain within their feature content.

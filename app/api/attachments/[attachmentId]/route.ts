@@ -1,6 +1,10 @@
 import { readFile } from "node:fs/promises";
 import { NextResponse, type NextRequest } from "next/server";
 
+import {
+  getCloudinaryAttachmentReference,
+  readCardAttachmentFromCloudinary,
+} from "@/lib/cloudinary-attachment-storage";
 import { getAttachmentStoragePath } from "@/lib/card-attachment-storage";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/utils/auth-session";
@@ -58,22 +62,27 @@ export async function GET(request: NextRequest, context: RouteContext) {
     return NextResponse.json({ error: "Không tìm thấy tệp." }, { status: 404 });
   }
 
+  const cloudinaryReference = getCloudinaryAttachmentReference(attachment.file_url);
   let file: Buffer;
-  try {
-    file = await readFile(getAttachmentStoragePath(attachment.file_url));
-  } catch (cause: unknown) {
-    if (
-      typeof cause === "object" &&
-      cause !== null &&
-      "code" in cause &&
-      cause.code === "ENOENT"
-    ) {
-      return NextResponse.json(
-        { error: "Tệp không còn trên máy chủ." },
-        { status: 404 },
-      );
+  if (cloudinaryReference) {
+    file = await readCardAttachmentFromCloudinary(cloudinaryReference);
+  } else {
+    try {
+      file = await readFile(getAttachmentStoragePath(attachment.file_url));
+    } catch (cause: unknown) {
+      if (
+        typeof cause === "object" &&
+        cause !== null &&
+        "code" in cause &&
+        cause.code === "ENOENT"
+      ) {
+        return NextResponse.json(
+          { error: "Tệp không còn trên máy chủ." },
+          { status: 404 },
+        );
+      }
+      throw cause;
     }
-    throw cause;
   }
 
   const isInlineImage =

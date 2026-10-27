@@ -1,11 +1,25 @@
 # Card attachments
 
-Card attachments are stored outside `public/` and served only through an
-authenticated download route. Uploads are limited to 10 MB per file and support
-images (JPEG, PNG, GIF, WebP), PDF, Microsoft Office documents, CSV, and TXT.
+New card attachments are uploaded server-side to Cloudinary as authenticated
+assets. Images use Cloudinary's `image` resource type; other supported files use
+`raw`. The database stores an internal Cloudinary reference in `file_url`, not a
+public delivery URL. Downloads and inline image previews continue through the
+authenticated `/api/attachments/[attachmentId]` route, which checks board
+access before fetching the asset. Cloudinary API credentials must remain
+server-side and be configured as `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`,
+and `CLOUDINARY_API_SECRET`.
 
-The default storage directory is `storage/card-attachments` in the application
-working directory. Set `CARD_ATTACHMENT_STORAGE_DIR` to an absolute path on a
-persistent volume when deploying, then ensure the application process can read
-and write that directory. The volume must remain mounted across deployments and
-be shared by every application instance that handles uploads and downloads.
+Uploads are limited to 10 MB per file and support images (JPEG, PNG, GIF, WebP),
+PDF, Microsoft Office documents, CSV, and TXT. New Cloudinary uploads use
+random public IDs and authenticated delivery.
+
+The upload request still passes through the application server. Deployments
+with request-body limits lower than the configured 10 MB attachment limit may
+reject large multipart uploads before the route runs; in that case, use a
+signed direct-to-Cloudinary upload flow rather than increasing server limits.
+
+Existing attachments whose `file_url` is a local storage key continue to be
+read from `storage/card-attachments` during migration. On deployments where
+that directory is ephemeral or unavailable, old local attachments may no
+longer be retrievable; migrate any files that still exist before removing the
+legacy local read path.
