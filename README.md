@@ -1,92 +1,394 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TrelloClone
 
-<img width="1900" height="906" alt="Screenshot 2026-10-26 182414" src="https://github.com/user-attachments/assets/d2b4feed-4265-4ba3-963c-d883f44fa42f" />
+A full-featured project management and team collaboration platform inspired by Trello, built with Next.js, TypeScript, Prisma, and MySQL. The application is designed to help individuals and teams organize tasks, manage workspaces, track priorities, and collaborate in a clean and flexible Kanban workflow.
 
+This project is not only a clone of a familiar productivity tool—it is a practical product-oriented application that demonstrates modern full-stack implementation, secure authentication, board and card management, role-based access control, and scalable architecture for real-world usage.
 
+> Placeholder for project preview or UI screenshots: this section is intentionally left blank for future portfolio/demo updates.
 
-<img width="1907" height="901" alt="Screenshot 2026-10-26 182803" src="https://github.com/user-attachments/assets/9ba99ec8-2481-4bff-be14-cf71191180b1" />
+## Why this project matters
 
+TrelloClone was built to solve real workflow problems that teams and individuals face every day:
 
+- Work becomes disorganized when tasks are scattered across notes, messages, and spreadsheets.
+- Team collaboration is harder when everyone works on different tools and there is no single source of truth.
+- Tracking progress, due dates, responsibilities, and blockers is often inefficient.
+- Productive planning requires a visual workflow that is easy to understand and manage.
 
-<img width="1917" height="917" alt="Screenshot 2026-10-27 182423" src="https://github.com/user-attachments/assets/ac1f5d51-0b9c-4620-a760-0d2a9a0303a5" />
+This project gives users a structured system to:
 
+- organize work into boards, lists, and cards;
+- visualize status and priorities clearly;
+- assign ownership and responsibilities;
+- improve communication through comments and activity tracking;
+- reduce context switching across tools;
+- support both individual and team workflows.
 
-## Getting Started
+From a portfolio perspective, this project showcases:
 
-First, run the development server:
+- a production-style full-stack architecture;
+- secure authentication and authorization patterns;
+- database modeling and relational design;
+- modern React + Next.js development; and
+- practical UX decisions for real business workflows.
+
+---
+
+## Project overview
+
+TrelloClone is a Kanban-style project management app where users can create workspaces, add boards, manage lists, and organize cards with drag-and-drop interactions. It mimics the familiar Trello workflow while incorporating custom logic and architecture patterns suitable for a modern SaaS-style web application.
+
+The product is intended for:
+
+- personal task management;
+- team project planning;
+- sprint planning and progress tracking;
+- product and marketing workflows;
+- content planning and campaign tracking;
+- internal team operations and project execution.
+
+The application supports a clear separation of responsibilities between product features and technical architecture, which makes it a strong example of maintainable software design.
+
+---
+
+## Key benefits
+
+### 1. Better task organization
+Users can structure work into clear categories using boards and lists, making it easier to track what needs to be done, what is in progress, and what has been completed.
+
+### 2. Improved team collaboration
+Board members can be assigned, tasks can be managed by responsible parties, and activity history helps everyone stay aligned on progress and decisions.
+
+### 3. Clear visibility into priorities
+With priority levels, due dates, start dates, comments, and completion status, teams can quickly understand what matters most and what needs attention next.
+
+### 4. Flexible workflows for many use cases
+The system is flexible enough for project planning, content planning, issue tracking, hiring pipelines, engineering tasks, and general operational work.
+
+### 5. Real-world engineering practice
+The app uses real application patterns such as:
+
+- authentication and session management;
+- secure server-side data access;
+- encrypted resource identifiers;
+- database relations and transactional consistency;
+- UI state synchronization after mutation;
+- role-based board and workspace access rules.
+
+### 6. Strong portfolio value
+This project demonstrates technical depth, not just UI creation. It shows the ability to implement a system that contains user flows, backend logic, database design, security principles, and modern frontend patterns in one cohesive product.
+
+---
+
+## Core features
+
+### Workspace management
+- Create and manage workspaces for different teams or projects.
+- Organize related boards under a workspace.
+- Support multiple users within the same workspace.
+- Define user roles and workspace-level access.
+
+### Board management
+- Create boards inside workspaces.
+- Assign board colors and backgrounds.
+- Keep boards organized by project or team area.
+- Support board sharing and member management.
+- Maintain board visibility and access control.
+
+### Lists and columns
+- Create multiple lists representing stages or statuses such as To do, In progress, Review, Done.
+- Reorder lists to reflect workflow changes.
+- Maintain list ordering and structure with reliable state updates.
+
+### Card management
+- Create card-based tasks with title, description, and metadata.
+- Move cards between lists.
+- Drag and drop cards for a more natural Kanban experience.
+- Reorder cards within a list or across lists.
+- Set card priorities: Low, Medium, High, Urgent.
+- Mark cards as completed or incomplete.
+
+### Due dates and scheduling
+- Assign start dates and due dates.
+- Group work by urgency and deadlines.
+- Visualize tasks that require attention soon.
+- Improve time planning for personal and team commitments.
+
+### Comments and activity tracking
+- Add comments to cards.
+- Track updates such as status changes, assignment changes, and date updates.
+- Maintain a transparent activity timeline for accountability.
+
+### User assignments and collaboration
+- Add members to boards and workspaces.
+- Assign card members by email or user identity.
+- Manage permissions for board admins and non-admin members.
+- Improve accountability and reduce coordination gaps.
+
+### Attachment support
+- Upload and store task-related attachments securely.
+- Access media through verified permission checks.
+- Support rich project documentation directly on cards.
+
+### Authentication and security
+- Email/password login using secure password hashing.
+- NextAuth-based session management.
+- Google OAuth option when configured.
+- Encrypted identifiers for resource URLs.
+- Protected server-side actions for accessing workspace and board data.
+
+### Modern UI/UX
+- Responsive interface for desktop and larger screens.
+- Clear hierarchy and intuitive workflow navigation.
+- Card hover controls and quick editing interactions.
+- Visual cues for tasks, members, completion, and urgency.
+
+### Data resilience and consistency
+- Prisma integration with MySQL for structured data persistence.
+- Transactional updates when reordering and moving tasks.
+- Relationship integrity across workspaces, boards, lists, and cards.
+- Error handling and explicit loading states for better user experience.
+
+---
+
+## Technical stack
+
+### Frontend
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS 4
+
+### Backend and data layer
+- Next.js App Router
+- Prisma ORM
+- MySQL database
+- Server actions for secure mutation logic
+
+### Authentication and session handling
+- NextAuth
+- Credentials-based login
+- Google OAuth support
+
+### Productivity and interaction libraries
+- @dnd-kit for drag-and-drop interactions
+- Formik for form handling
+- TanStack React Query for client-side data synchronization
+
+### Cloud and media
+- Cloudinary for attachment/media handling
+
+---
+
+## Architecture overview
+
+The project follows a clean layered structure aligned with modern full-stack application conventions:
+
+- `app/` — route pages, layouts, providers, server actions, and App Router features.
+- `app/components/` — atomic UI components split into atoms, molecules, organisms, and templates.
+- `app/features/` — feature orchestration and route-level logic.
+- `app/actions/` — domain-specific server actions for workspaces, boards, and lists.
+- `app/types/` — domain contracts and serializable data models.
+- `lib/` — shared infrastructure such as Prisma client configuration.
+- `utils/` — reusable helpers, validation logic, and encrypted ID utilities.
+- `prisma/` — database schema and migrations.
+- `docs/` — architecture and project-state documentation.
+
+This structure separates UI concerns, business logic, and persistence boundaries while keeping the system maintainable and scalable.
+
+---
+
+## Project flow
+
+Typical user flow in the application:
+
+1. User registers or logs in.
+2. User creates or enters a workspace.
+3. User creates a board for a project or initiative.
+4. User adds lists to represent workflow stages.
+5. User creates cards to represent tasks.
+6. User assigns members, comments, and due dates.
+7. User moves cards across lists as work progresses.
+8. Team members collaborate using the same board and activity feed.
+
+This flow mirrors common Kanban-based productivity systems and is familiar to many users, which helps the app feel natural and intuitive.
+
+---
+
+## Security and reliability considerations
+
+This project was designed with real-world application concerns in mind:
+
+- sensitive identifiers are encrypted and treated as opaque references;
+- access checks are performed on the server before data reads or mutations;
+- database access is kept on server-side boundaries;
+- authentication secrets are maintained in environment variables; and
+- data-loading failures are surfaced explicitly instead of silently turning into empty states.
+
+These practices are important for building trustworthy applications and are highly relevant for professional software work.
+
+---
+
+## Demo and portfolio fit
+
+This repository is suitable for:
+
+- a portfolio project demonstrating full-stack engineering skills;
+- a functional product demo for interviews or technical presentations;
+- a learning project for understanding modern Next.js and Prisma architecture;
+- a base for future product enhancement or SaaS feature expansion.
+
+The project is especially strong from a portfolio standpoint because it combines:
+
+- user-facing product thinking;
+- technical architecture quality;
+- backend and data modeling depth;
+- secure and scalable patterns;
+- polished UX patterns common in modern productivity products.
+
+---
+
+## Project screenshots
+
+> Add your project screenshots here. This section is intentionally left empty for future updates.
+>
+> Recommended layout:
+>
+> - Landing page
+> - Login / authentication screen
+> - Workspace overview
+> - Board detail screen
+> - Card details / comments panel
+> - Team collaboration / member management view
+
+### Screenshot placeholder 1
+
+![Project screenshot placeholder 1](#)
+
+### Screenshot placeholder 2
+
+![Project screenshot placeholder 2](#)
+
+### Screenshot placeholder 3
+
+![Project screenshot placeholder 3](#)
+
+---
+
+## Getting started
+
+### Prerequisites
+
+Before running this project, make sure you have:
+
+- Node.js 18+ or a compatible version
+- npm or another package manager
+- MySQL running locally or in a managed environment
+- environment variables configured for local development
+
+### Install dependencies
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Environment configuration
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Create a `.env` file based on your local setup and configure the required environment variables, including:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `DATABASE_URL`
+- `NEXTAUTH_SECRET`
+- `NEXTAUTH_URL` (for local development if needed)
+- `WORKSPACE_ID_ENCRYPTION_KEY`
+- Google OAuth variables when using Google sign-in
 
-## Prisma with MySQL
+Example:
 
-Prisma is configured to use MySQL. Copy `.env.example` to `.env` and replace
-`USER` and `PASSWORD` with your MySQL credentials. Make sure the database
-`trello_clone` exists and the MySQL server is running.
+```bash
+DATABASE_URL="mysql://user:password@localhost:3306/trello_clone"
+NEXTAUTH_SECRET="your_secret_here"
+NEXTAUTH_URL="http://localhost:3000"
+WORKSPACE_ID_ENCRYPTION_KEY="your_64_hex_character_key"
+GOOGLE_CLIENT_ID="your_google_client_id"
+GOOGLE_CLIENT_SECRET="your_google_client_secret"
+```
 
-Generate Prisma Client after changing `prisma/schema.prisma`:
+> Keep secrets out of version control and never commit sensitive environment values.
+
+### Generate Prisma client
 
 ```bash
 npm run db:generate
 ```
 
-Create and apply a development migration after adding your Prisma models:
+### Run database migrations
 
 ```bash
-npm run db:migrate -- --name init
+npx prisma migrate dev
 ```
 
-Import the shared Prisma Client instance from `@/lib/prisma` in server-side
-code. Do not import it into Client Components.
+### Start the app
 
-## Google sign-in
-
-Create an OAuth 2.0 Client ID of type **Web application** in Google Cloud
-Console. Add the following authorized redirect URI for local development:
-
-```text
-http://localhost:3000/api/auth/callback/google
+```bash
+npm run dev
 ```
 
-For each deployed environment, add
-`https://your-domain.example/api/auth/callback/google` as an authorized redirect
-URI. Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env` or the
-deployment's secret environment configuration. The sign-in button remains
-available when these variables are absent, but displays a setup message rather
-than starting an incomplete OAuth flow.
+Open `http://localhost:3000` in the browser to view the application.
 
-Google sign-in requires a verified Google email. It reuses the existing local
-user with that email, or creates one when no matching account exists. Never
-commit OAuth client secrets.
+---
 
-If an existing database was created before Google sign-in support, apply the
-pending Prisma migration with `npx prisma migrate deploy` after configuring
-`DATABASE_URL`.
+## Useful project commands
 
-## Learn More
+```bash
+npm run dev
+npm run build
+npm run lint -- app
+npx tsc --noEmit
+npx prisma validate
+npm run db:generate
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Roadmap and future improvements
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This project already includes a solid core product experience, and there are many opportunities to extend it further:
 
-## Deploy on Vercel
+- advanced search and filtering across boards and cards;
+- activity dashboard and analytics;
+- card labels and custom tags;
+- team notifications and reminders;
+- calendar and schedule view;
+- board templates for recurring workflows;
+- export/import of tasks and project data;
+- more role-based permission settings;
+- improved mobile optimization;
+- real-time collaboration with live updates.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+These enhancements would continue to evolve the project from a strong MVP into a more complete SaaS-style product.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Summary
+
+TrelloClone is a full-stack project management application inspired by Trello, built to demonstrate practical software engineering, collaboration workflows, and modern web development. It combines productivity features, secure architecture patterns, and realistic data modeling into a single, portfolio-friendly product.
+
+The project is suitable for:
+
+- demonstrating software engineering ability;
+- showcasing full-stack development skills;
+- proving product and UX thinking in a practical context;
+- presenting a complete workflow-driven application in a portfolio or demo.
+
+---
+
+## Author note
+
+This project is designed as a usable, production-style board and task management app with strong portfolio value. It can be expanded into a more advanced collaborative product while maintaining the same clean architecture and business logic model.
+
+If you want, this README can later be adapted into:
+
+- a more polished English portfolio version;
+- a concise GitHub project landing page version;
+- a Vietnamese-only version for local presentation; or
+- a startup-style product pitch README for investor/demo storytelling.
