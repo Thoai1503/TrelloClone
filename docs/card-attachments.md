@@ -9,6 +9,12 @@ access before fetching the asset. Cloudinary API credentials must remain
 server-side and be configured as `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`,
 and `CLOUDINARY_API_SECRET`.
 
+Uploading and deleting an attachment writes a card activity entry. Upload
+entries link to the file by its name; PDF and image links open inline when the
+browser supports it. The attachment menu provides download and, to users
+allowed to edit the card, delete actions. Deletion removes the database record,
+writes an activity entry, and then cleans up the stored file.
+
 Uploads are limited to 10 MB per file and support images (JPEG, PNG, GIF, WebP),
 PDF, Microsoft Office documents, CSV, and TXT. New Cloudinary uploads use
 random public IDs and authenticated delivery.

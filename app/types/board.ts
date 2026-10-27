@@ -69,6 +69,8 @@ export type CardActivityFeedItem =
       fromEndDate: string | null;
       toEndDate: string | null;
       memberName: string | null;
+      attachmentName: string | null;
+      attachmentDownloadUrl: string | null;
     };
 
 export type BoardMemberRole = "ADMIN" | "EDITOR" | "VIEWER";

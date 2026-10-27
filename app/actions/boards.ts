@@ -352,6 +352,14 @@ export async function getBoardByToken(
               activity.metadata,
               "memberName",
             ),
+            attachmentName: getActivityMetadataString(
+              activity.metadata,
+              "attachmentName",
+            ),
+            attachmentDownloadUrl: getActivityMetadataString(
+              activity.metadata,
+              "attachmentDownloadUrl",
+            ),
           })),
         ].sort(
           (first, second) =>
