@@ -1,157 +1,157 @@
 # TrelloClone
 
-A full-featured project management and team collaboration platform inspired by Trello, built with Next.js, TypeScript, Prisma, and MySQL. The application is designed to help individuals and teams organize tasks, manage workspaces, track priorities, and collaborate in a clean and flexible Kanban workflow.
+Một nền tảng quản lý dự án và cộng tác nhóm đầy đủ tính năng, lấy cảm hứng từ Trello, được xây dựng bằng Next.js, TypeScript, Prisma và MySQL. Ứng dụng được thiết kế để giúp cá nhân và nhóm sắp xếp công việc, quản lý không gian làm việc (workspace), theo dõi mức độ ưu tiên và cộng tác trong một quy trình Kanban gọn gàng, linh hoạt.
 
-This project is not only a clone of a familiar productivity tool—it is a practical product-oriented application that demonstrates modern full-stack implementation, secure authentication, board and card management, role-based access control, and scalable architecture for real-world usage.
+Dự án này không chỉ là một bản sao của một công cụ năng suất quen thuộc — nó là một ứng dụng hướng sản phẩm thực tế, thể hiện cách triển khai full-stack hiện đại, xác thực an toàn, quản lý bảng và thẻ, kiểm soát truy cập theo vai trò, và kiến trúc có khả năng mở rộng cho việc sử dụng thực tế.
 
-> Placeholder for project preview or UI screenshots: this section is intentionally left blank for future portfolio/demo updates.
+> Chỗ dành cho ảnh xem trước dự án hoặc ảnh chụp giao diện: phần này được cố ý để trống để cập nhật sau cho portfolio/demo.
 
-## Why this project matters
+## Vì sao dự án này quan trọng
 
-TrelloClone was built to solve real workflow problems that teams and individuals face every day:
+TrelloClone được xây dựng để giải quyết những vấn đề quy trình làm việc thực tế mà các nhóm và cá nhân gặp phải hằng ngày:
 
-- Work becomes disorganized when tasks are scattered across notes, messages, and spreadsheets.
-- Team collaboration is harder when everyone works on different tools and there is no single source of truth.
-- Tracking progress, due dates, responsibilities, and blockers is often inefficient.
-- Productive planning requires a visual workflow that is easy to understand and manage.
+- Công việc trở nên lộn xộn khi các tác vụ nằm rải rác trong ghi chú, tin nhắn và bảng tính.
+- Cộng tác nhóm khó khăn hơn khi mỗi người dùng một công cụ khác nhau và không có một nguồn thông tin duy nhất.
+- Việc theo dõi tiến độ, hạn chót, trách nhiệm và các vướng mắc thường kém hiệu quả.
+- Lập kế hoạch năng suất đòi hỏi một quy trình trực quan, dễ hiểu và dễ quản lý.
 
-This project gives users a structured system to:
+Dự án này cung cấp cho người dùng một hệ thống có cấu trúc để:
 
-- organize work into boards, lists, and cards;
-- visualize status and priorities clearly;
-- assign ownership and responsibilities;
-- improve communication through comments and activity tracking;
-- reduce context switching across tools;
-- support both individual and team workflows.
+- tổ chức công việc thành bảng (board), danh sách (list) và thẻ (card);
+- hình dung rõ ràng trạng thái và mức độ ưu tiên;
+- phân công quyền sở hữu và trách nhiệm;
+- cải thiện giao tiếp thông qua bình luận và theo dõi hoạt động;
+- giảm việc phải chuyển đổi qua lại giữa các công cụ;
+- hỗ trợ cả quy trình làm việc cá nhân lẫn nhóm.
 
-From a portfolio perspective, this project showcases:
+Xét từ góc độ portfolio, dự án này thể hiện:
 
-- a production-style full-stack architecture;
-- secure authentication and authorization patterns;
-- database modeling and relational design;
-- modern React + Next.js development; and
-- practical UX decisions for real business workflows.
-
----
-
-## Project overview
-
-TrelloClone is a Kanban-style project management app where users can create workspaces, add boards, manage lists, and organize cards with drag-and-drop interactions. It mimics the familiar Trello workflow while incorporating custom logic and architecture patterns suitable for a modern SaaS-style web application.
-
-The product is intended for:
-
-- personal task management;
-- team project planning;
-- sprint planning and progress tracking;
-- product and marketing workflows;
-- content planning and campaign tracking;
-- internal team operations and project execution.
-
-The application supports a clear separation of responsibilities between product features and technical architecture, which makes it a strong example of maintainable software design.
+- kiến trúc full-stack theo chuẩn production;
+- các mẫu xác thực và phân quyền an toàn;
+- mô hình hóa cơ sở dữ liệu và thiết kế quan hệ;
+- phát triển React + Next.js hiện đại; và
+- các quyết định UX thực tiễn cho quy trình nghiệp vụ thực tế.
 
 ---
 
-## Key benefits
+## Tổng quan dự án
 
-### 1. Better task organization
-Users can structure work into clear categories using boards and lists, making it easier to track what needs to be done, what is in progress, and what has been completed.
+TrelloClone là một ứng dụng quản lý dự án theo phong cách Kanban, nơi người dùng có thể tạo workspace, thêm bảng, quản lý danh sách và sắp xếp thẻ bằng thao tác kéo thả. Ứng dụng mô phỏng quy trình Trello quen thuộc, đồng thời bổ sung logic tùy chỉnh và các mẫu kiến trúc phù hợp với một ứng dụng web kiểu SaaS hiện đại.
 
-### 2. Improved team collaboration
-Board members can be assigned, tasks can be managed by responsible parties, and activity history helps everyone stay aligned on progress and decisions.
+Sản phẩm hướng đến:
 
-### 3. Clear visibility into priorities
-With priority levels, due dates, start dates, comments, and completion status, teams can quickly understand what matters most and what needs attention next.
+- quản lý công việc cá nhân;
+- lập kế hoạch dự án nhóm;
+- lập kế hoạch sprint và theo dõi tiến độ;
+- quy trình sản phẩm và marketing;
+- lập kế hoạch nội dung và theo dõi chiến dịch;
+- vận hành nội bộ và triển khai dự án của nhóm.
 
-### 4. Flexible workflows for many use cases
-The system is flexible enough for project planning, content planning, issue tracking, hiring pipelines, engineering tasks, and general operational work.
-
-### 5. Real-world engineering practice
-The app uses real application patterns such as:
-
-- authentication and session management;
-- secure server-side data access;
-- encrypted resource identifiers;
-- database relations and transactional consistency;
-- UI state synchronization after mutation;
-- role-based board and workspace access rules.
-
-### 6. Strong portfolio value
-This project demonstrates technical depth, not just UI creation. It shows the ability to implement a system that contains user flows, backend logic, database design, security principles, and modern frontend patterns in one cohesive product.
+Ứng dụng phân tách rõ ràng giữa các tính năng sản phẩm và kiến trúc kỹ thuật, nhờ đó trở thành một ví dụ tốt về thiết kế phần mềm dễ bảo trì.
 
 ---
 
-## Core features
+## Lợi ích chính
 
-### Workspace management
-- Create and manage workspaces for different teams or projects.
-- Organize related boards under a workspace.
-- Support multiple users within the same workspace.
-- Define user roles and workspace-level access.
+### 1. Sắp xếp công việc tốt hơn
+Người dùng có thể cấu trúc công việc thành các nhóm rõ ràng bằng bảng và danh sách, giúp dễ dàng theo dõi việc cần làm, việc đang thực hiện và việc đã hoàn thành.
 
-### Board management
-- Create boards inside workspaces.
-- Assign board colors and backgrounds.
-- Keep boards organized by project or team area.
-- Support board sharing and member management.
-- Maintain board visibility and access control.
+### 2. Cải thiện cộng tác nhóm
+Có thể gán thành viên vào bảng, giao việc cho người chịu trách nhiệm, và lịch sử hoạt động giúp mọi người luôn đồng bộ về tiến độ và các quyết định.
 
-### Lists and columns
-- Create multiple lists representing stages or statuses such as To do, In progress, Review, Done.
-- Reorder lists to reflect workflow changes.
-- Maintain list ordering and structure with reliable state updates.
+### 3. Hiển thị rõ ràng các ưu tiên
+Với mức độ ưu tiên, ngày bắt đầu, ngày đến hạn, bình luận và trạng thái hoàn thành, các nhóm có thể nhanh chóng nắm được việc nào quan trọng nhất và việc nào cần chú ý tiếp theo.
 
-### Card management
-- Create card-based tasks with title, description, and metadata.
-- Move cards between lists.
-- Drag and drop cards for a more natural Kanban experience.
-- Reorder cards within a list or across lists.
-- Set card priorities: Low, Medium, High, Urgent.
-- Mark cards as completed or incomplete.
+### 4. Quy trình linh hoạt cho nhiều trường hợp sử dụng
+Hệ thống đủ linh hoạt cho lập kế hoạch dự án, lập kế hoạch nội dung, theo dõi sự cố, quy trình tuyển dụng, công việc kỹ thuật và các công việc vận hành chung.
 
-### Due dates and scheduling
-- Assign start dates and due dates.
-- Group work by urgency and deadlines.
-- Visualize tasks that require attention soon.
-- Improve time planning for personal and team commitments.
+### 5. Thực hành kỹ thuật trong thế giới thực
+Ứng dụng sử dụng các mẫu thiết kế thực tế như:
 
-### Comments and activity tracking
-- Add comments to cards.
-- Track updates such as status changes, assignment changes, and date updates.
-- Maintain a transparent activity timeline for accountability.
+- xác thực và quản lý phiên đăng nhập;
+- truy cập dữ liệu an toàn phía máy chủ;
+- mã định danh tài nguyên được mã hóa;
+- quan hệ cơ sở dữ liệu và tính nhất quán giao dịch;
+- đồng bộ trạng thái giao diện sau khi thay đổi dữ liệu;
+- quy tắc truy cập bảng và workspace theo vai trò.
 
-### User assignments and collaboration
-- Add members to boards and workspaces.
-- Assign card members by email or user identity.
-- Manage permissions for board admins and non-admin members.
-- Improve accountability and reduce coordination gaps.
-
-### Attachment support
-- Upload and store task-related attachments securely.
-- Access media through verified permission checks.
-- Support rich project documentation directly on cards.
-
-### Authentication and security
-- Email/password login using secure password hashing.
-- NextAuth-based session management.
-- Google OAuth option when configured.
-- Encrypted identifiers for resource URLs.
-- Protected server-side actions for accessing workspace and board data.
-
-### Modern UI/UX
-- Responsive interface for desktop and larger screens.
-- Clear hierarchy and intuitive workflow navigation.
-- Card hover controls and quick editing interactions.
-- Visual cues for tasks, members, completion, and urgency.
-
-### Data resilience and consistency
-- Prisma integration with MySQL for structured data persistence.
-- Transactional updates when reordering and moving tasks.
-- Relationship integrity across workspaces, boards, lists, and cards.
-- Error handling and explicit loading states for better user experience.
+### 6. Giá trị portfolio mạnh
+Dự án thể hiện chiều sâu kỹ thuật, không chỉ là việc tạo giao diện. Nó cho thấy khả năng triển khai một hệ thống bao gồm luồng người dùng, logic backend, thiết kế cơ sở dữ liệu, nguyên tắc bảo mật và các mẫu frontend hiện đại trong một sản phẩm thống nhất.
 
 ---
 
-## Technical stack
+## Tính năng cốt lõi
+
+### Quản lý workspace
+- Tạo và quản lý workspace cho các nhóm hoặc dự án khác nhau.
+- Tổ chức các bảng liên quan trong một workspace.
+- Hỗ trợ nhiều người dùng trong cùng một workspace.
+- Định nghĩa vai trò người dùng và quyền truy cập ở cấp workspace.
+
+### Quản lý bảng
+- Tạo bảng bên trong workspace.
+- Gán màu sắc và hình nền cho bảng.
+- Giữ các bảng được tổ chức theo dự án hoặc lĩnh vực của nhóm.
+- Hỗ trợ chia sẻ bảng và quản lý thành viên.
+- Duy trì chế độ hiển thị và kiểm soát truy cập của bảng.
+
+### Danh sách và cột
+- Tạo nhiều danh sách đại diện cho các giai đoạn hoặc trạng thái như To do, In progress, Review, Done.
+- Sắp xếp lại thứ tự danh sách để phản ánh thay đổi trong quy trình làm việc.
+- Duy trì thứ tự và cấu trúc danh sách với các cập nhật trạng thái đáng tin cậy.
+
+### Quản lý thẻ
+- Tạo tác vụ dạng thẻ với tiêu đề, mô tả và siêu dữ liệu.
+- Di chuyển thẻ giữa các danh sách.
+- Kéo và thả thẻ để có trải nghiệm Kanban tự nhiên hơn.
+- Sắp xếp lại thẻ trong một danh sách hoặc giữa các danh sách.
+- Đặt mức độ ưu tiên cho thẻ: Low, Medium, High, Urgent.
+- Đánh dấu thẻ là hoàn thành hoặc chưa hoàn thành.
+
+### Hạn chót và lập lịch
+- Gán ngày bắt đầu và ngày đến hạn.
+- Nhóm công việc theo mức độ khẩn cấp và thời hạn.
+- Hiển thị các tác vụ cần chú ý sớm.
+- Cải thiện việc lập kế hoạch thời gian cho các cam kết cá nhân và nhóm.
+
+### Bình luận và theo dõi hoạt động
+- Thêm bình luận vào thẻ.
+- Theo dõi các cập nhật như thay đổi trạng thái, thay đổi phân công và thay đổi ngày tháng.
+- Duy trì dòng thời gian hoạt động minh bạch để đảm bảo trách nhiệm giải trình.
+
+### Phân công người dùng và cộng tác
+- Thêm thành viên vào bảng và workspace.
+- Gán thành viên cho thẻ bằng email hoặc danh tính người dùng.
+- Quản lý quyền cho quản trị viên bảng và thành viên không phải quản trị viên.
+- Tăng trách nhiệm giải trình và giảm khoảng trống trong phối hợp.
+
+### Hỗ trợ tệp đính kèm
+- Tải lên và lưu trữ an toàn các tệp đính kèm liên quan đến tác vụ.
+- Truy cập phương tiện thông qua các bước kiểm tra quyền đã được xác minh.
+- Hỗ trợ tài liệu dự án phong phú ngay trên thẻ.
+
+### Xác thực và bảo mật
+- Đăng nhập bằng email/mật khẩu với mật khẩu được băm an toàn.
+- Quản lý phiên dựa trên NextAuth.
+- Tùy chọn Google OAuth khi được cấu hình.
+- Mã định danh được mã hóa trong URL tài nguyên.
+- Các hành động phía máy chủ được bảo vệ khi truy cập dữ liệu workspace và bảng.
+
+### UI/UX hiện đại
+- Giao diện đáp ứng (responsive) cho máy tính để bàn và màn hình lớn.
+- Phân cấp rõ ràng và điều hướng quy trình trực quan.
+- Điều khiển khi di chuột qua thẻ và các tương tác chỉnh sửa nhanh.
+- Các tín hiệu trực quan cho tác vụ, thành viên, trạng thái hoàn thành và mức độ khẩn cấp.
+
+### Khả năng chịu lỗi và tính nhất quán dữ liệu
+- Tích hợp Prisma với MySQL để lưu trữ dữ liệu có cấu trúc.
+- Cập nhật theo giao dịch khi sắp xếp lại và di chuyển tác vụ.
+- Toàn vẹn quan hệ giữa workspace, bảng, danh sách và thẻ.
+- Xử lý lỗi và trạng thái tải rõ ràng để có trải nghiệm người dùng tốt hơn.
+
+---
+
+## Công nghệ sử dụng
 
 ### Frontend
 - Next.js 16
@@ -159,150 +159,150 @@ This project demonstrates technical depth, not just UI creation. It shows the ab
 - TypeScript
 - Tailwind CSS 4
 
-### Backend and data layer
+### Backend và tầng dữ liệu
 - Next.js App Router
 - Prisma ORM
-- MySQL database
-- Server actions for secure mutation logic
+- Cơ sở dữ liệu MySQL
+- Server actions cho logic thay đổi dữ liệu an toàn
 
-### Authentication and session handling
+### Xác thực và quản lý phiên
 - NextAuth
-- Credentials-based login
-- Google OAuth support
+- Đăng nhập bằng thông tin xác thực (credentials)
+- Hỗ trợ Google OAuth
 
-### Productivity and interaction libraries
-- @dnd-kit for drag-and-drop interactions
-- Formik for form handling
-- TanStack React Query for client-side data synchronization
+### Thư viện năng suất và tương tác
+- @dnd-kit cho tương tác kéo thả
+- Formik để xử lý biểu mẫu
+- TanStack React Query để đồng bộ dữ liệu phía client
 
-### Cloud and media
-- Cloudinary for attachment/media handling
-
----
-
-## Architecture overview
-
-The project follows a clean layered structure aligned with modern full-stack application conventions:
-
-- `app/` — route pages, layouts, providers, server actions, and App Router features.
-- `app/components/` — atomic UI components split into atoms, molecules, organisms, and templates.
-- `app/features/` — feature orchestration and route-level logic.
-- `app/actions/` — domain-specific server actions for workspaces, boards, and lists.
-- `app/types/` — domain contracts and serializable data models.
-- `lib/` — shared infrastructure such as Prisma client configuration.
-- `utils/` — reusable helpers, validation logic, and encrypted ID utilities.
-- `prisma/` — database schema and migrations.
-- `docs/` — architecture and project-state documentation.
-
-This structure separates UI concerns, business logic, and persistence boundaries while keeping the system maintainable and scalable.
+### Đám mây và phương tiện
+- Cloudinary để xử lý tệp đính kèm/phương tiện
 
 ---
 
-## Project flow
+## Tổng quan kiến trúc
 
-Typical user flow in the application:
+Dự án tuân theo cấu trúc phân lớp rõ ràng, phù hợp với các quy ước ứng dụng full-stack hiện đại:
 
-1. User registers or logs in.
-2. User creates or enters a workspace.
-3. User creates a board for a project or initiative.
-4. User adds lists to represent workflow stages.
-5. User creates cards to represent tasks.
-6. User assigns members, comments, and due dates.
-7. User moves cards across lists as work progresses.
-8. Team members collaborate using the same board and activity feed.
+- `app/` — các trang route, layout, provider, server action và các tính năng của App Router.
+- `app/components/` — các thành phần UI nguyên tử được chia thành atoms, molecules, organisms và templates.
+- `app/features/` — điều phối tính năng và logic cấp route.
+- `app/actions/` — các server action theo từng miền cho workspace, bảng và danh sách.
+- `app/types/` — các hợp đồng miền và mô hình dữ liệu có thể tuần tự hóa.
+- `lib/` — hạ tầng dùng chung như cấu hình Prisma client.
+- `utils/` — các hàm trợ giúp tái sử dụng, logic xác thực dữ liệu và tiện ích ID được mã hóa.
+- `prisma/` — lược đồ cơ sở dữ liệu và các migration.
+- `docs/` — tài liệu kiến trúc và hiện trạng dự án.
 
-This flow mirrors common Kanban-based productivity systems and is familiar to many users, which helps the app feel natural and intuitive.
-
----
-
-## Security and reliability considerations
-
-This project was designed with real-world application concerns in mind:
-
-- sensitive identifiers are encrypted and treated as opaque references;
-- access checks are performed on the server before data reads or mutations;
-- database access is kept on server-side boundaries;
-- authentication secrets are maintained in environment variables; and
-- data-loading failures are surfaced explicitly instead of silently turning into empty states.
-
-These practices are important for building trustworthy applications and are highly relevant for professional software work.
+Cấu trúc này tách biệt các mối quan tâm về UI, logic nghiệp vụ và ranh giới lưu trữ dữ liệu, đồng thời giữ cho hệ thống dễ bảo trì và có khả năng mở rộng.
 
 ---
 
-## Demo and portfolio fit
+## Luồng dự án
 
-This repository is suitable for:
+Luồng người dùng điển hình trong ứng dụng:
 
-- a portfolio project demonstrating full-stack engineering skills;
-- a functional product demo for interviews or technical presentations;
-- a learning project for understanding modern Next.js and Prisma architecture;
-- a base for future product enhancement or SaaS feature expansion.
+1. Người dùng đăng ký hoặc đăng nhập.
+2. Người dùng tạo hoặc vào một workspace.
+3. Người dùng tạo một bảng cho một dự án hoặc sáng kiến.
+4. Người dùng thêm các danh sách đại diện cho các giai đoạn của quy trình.
+5. Người dùng tạo các thẻ đại diện cho tác vụ.
+6. Người dùng gán thành viên, bình luận và đặt ngày đến hạn.
+7. Người dùng di chuyển thẻ giữa các danh sách khi công việc tiến triển.
+8. Các thành viên nhóm cộng tác bằng cùng một bảng và nguồn cấp hoạt động.
 
-The project is especially strong from a portfolio standpoint because it combines:
-
-- user-facing product thinking;
-- technical architecture quality;
-- backend and data modeling depth;
-- secure and scalable patterns;
-- polished UX patterns common in modern productivity products.
+Luồng này phản ánh các hệ thống năng suất dựa trên Kanban phổ biến và quen thuộc với nhiều người dùng, giúp ứng dụng mang lại cảm giác tự nhiên và trực quan.
 
 ---
 
-## Project screenshots
+## Cân nhắc về bảo mật và độ tin cậy
 
-> Add your project screenshots here. This section is intentionally left empty for future updates.
+Dự án được thiết kế với các mối quan tâm thực tế của ứng dụng:
+
+- các mã định danh nhạy cảm được mã hóa và được xem như các tham chiếu mờ (opaque);
+- các bước kiểm tra quyền truy cập được thực hiện trên máy chủ trước khi đọc hoặc thay đổi dữ liệu;
+- truy cập cơ sở dữ liệu được giữ ở ranh giới phía máy chủ;
+- các bí mật xác thực được lưu trong biến môi trường; và
+- các lỗi khi tải dữ liệu được hiển thị rõ ràng thay vì âm thầm biến thành trạng thái rỗng.
+
+Những thực hành này rất quan trọng để xây dựng các ứng dụng đáng tin cậy và có liên quan chặt chẽ đến công việc phần mềm chuyên nghiệp.
+
+---
+
+## Demo và sự phù hợp với portfolio
+
+Repository này phù hợp cho:
+
+- một dự án portfolio thể hiện kỹ năng kỹ thuật full-stack;
+- một bản demo sản phẩm hoạt động được cho phỏng vấn hoặc thuyết trình kỹ thuật;
+- một dự án học tập để hiểu kiến trúc Next.js và Prisma hiện đại;
+- một nền tảng cho các cải tiến sản phẩm hoặc mở rộng tính năng SaaS trong tương lai.
+
+Dự án đặc biệt mạnh về mặt portfolio vì kết hợp:
+
+- tư duy sản phẩm hướng người dùng;
+- chất lượng kiến trúc kỹ thuật;
+- chiều sâu về backend và mô hình hóa dữ liệu;
+- các mẫu thiết kế an toàn và có khả năng mở rộng;
+- các mẫu UX tinh tế thường thấy trong các sản phẩm năng suất hiện đại.
+
+---
+
+## Ảnh chụp màn hình dự án
+
+> Thêm ảnh chụp màn hình dự án của bạn tại đây. Phần này được cố ý để trống để cập nhật sau.
 >
-> Recommended layout:
+> Bố cục đề xuất:
 >
-> - Landing page
-> - Login / authentication screen
-> - Workspace overview
-> - Board detail screen
-> - Card details / comments panel
-> - Team collaboration / member management view
+> - Trang chủ (landing page)
+> - Màn hình đăng nhập / xác thực
+> - Tổng quan workspace
+> - Màn hình chi tiết bảng
+> - Chi tiết thẻ / bảng bình luận
+> - Chế độ xem cộng tác nhóm / quản lý thành viên
 
-### Screenshot placeholder 1
+### Chỗ dành cho ảnh chụp màn hình 1
 
-![Project screenshot placeholder 1](#)
+![Chỗ dành cho ảnh chụp màn hình dự án 1](#)
 
-### Screenshot placeholder 2
+### Chỗ dành cho ảnh chụp màn hình 2
 
-![Project screenshot placeholder 2](#)
+![Chỗ dành cho ảnh chụp màn hình dự án 2](#)
 
-### Screenshot placeholder 3
+### Chỗ dành cho ảnh chụp màn hình 3
 
-![Project screenshot placeholder 3](#)
+![Chỗ dành cho ảnh chụp màn hình dự án 3](#)
 
 ---
 
-## Getting started
+## Bắt đầu
 
-### Prerequisites
+### Điều kiện tiên quyết
 
-Before running this project, make sure you have:
+Trước khi chạy dự án này, hãy đảm bảo bạn có:
 
-- Node.js 18+ or a compatible version
-- npm or another package manager
-- MySQL running locally or in a managed environment
-- environment variables configured for local development
+- Node.js 18+ hoặc phiên bản tương thích
+- npm hoặc một trình quản lý gói khác
+- MySQL đang chạy cục bộ hoặc trong môi trường được quản lý
+- các biến môi trường đã được cấu hình cho phát triển cục bộ
 
-### Install dependencies
+### Cài đặt các phụ thuộc
 
 ```bash
 npm install
 ```
 
-### Environment configuration
+### Cấu hình môi trường
 
-Create a `.env` file based on your local setup and configure the required environment variables, including:
+Tạo tệp `.env` dựa trên thiết lập cục bộ của bạn và cấu hình các biến môi trường cần thiết, bao gồm:
 
 - `DATABASE_URL`
 - `NEXTAUTH_SECRET`
-- `NEXTAUTH_URL` (for local development if needed)
+- `NEXTAUTH_URL` (cho phát triển cục bộ nếu cần)
 - `WORKSPACE_ID_ENCRYPTION_KEY`
-- Google OAuth variables when using Google sign-in
+- Các biến Google OAuth khi sử dụng đăng nhập bằng Google
 
-Example:
+Ví dụ:
 
 ```bash
 DATABASE_URL="mysql://user:password@localhost:3306/trello_clone"
@@ -313,31 +313,31 @@ GOOGLE_CLIENT_ID="your_google_client_id"
 GOOGLE_CLIENT_SECRET="your_google_client_secret"
 ```
 
-> Keep secrets out of version control and never commit sensitive environment values.
+> Không đưa các bí mật vào hệ thống quản lý phiên bản và tuyệt đối không commit các giá trị môi trường nhạy cảm.
 
-### Generate Prisma client
+### Tạo Prisma client
 
 ```bash
 npm run db:generate
 ```
 
-### Run database migrations
+### Chạy migration cơ sở dữ liệu
 
 ```bash
 npx prisma migrate dev
 ```
 
-### Start the app
+### Khởi động ứng dụng
 
 ```bash
 npm run dev
 ```
 
-Open `http://localhost:3000` in the browser to view the application.
+Mở `http://localhost:3000` trong trình duyệt để xem ứng dụng.
 
 ---
 
-## Useful project commands
+## Các lệnh hữu ích của dự án
 
 ```bash
 npm run dev
@@ -350,45 +350,45 @@ npm run db:generate
 
 ---
 
-## Roadmap and future improvements
+## Lộ trình và các cải tiến trong tương lai
 
-This project already includes a solid core product experience, and there are many opportunities to extend it further:
+Dự án đã có một trải nghiệm sản phẩm cốt lõi vững chắc, và còn nhiều cơ hội để mở rộng thêm:
 
-- advanced search and filtering across boards and cards;
-- activity dashboard and analytics;
-- card labels and custom tags;
-- team notifications and reminders;
-- calendar and schedule view;
-- board templates for recurring workflows;
-- export/import of tasks and project data;
-- more role-based permission settings;
-- improved mobile optimization;
-- real-time collaboration with live updates.
+- tìm kiếm và lọc nâng cao trên các bảng và thẻ;
+- bảng điều khiển hoạt động và phân tích;
+- nhãn thẻ và thẻ tag tùy chỉnh;
+- thông báo và nhắc nhở cho nhóm;
+- chế độ xem lịch và lịch trình;
+- mẫu bảng cho các quy trình lặp lại;
+- xuất/nhập tác vụ và dữ liệu dự án;
+- thêm các thiết lập phân quyền theo vai trò;
+- cải thiện tối ưu cho thiết bị di động;
+- cộng tác thời gian thực với cập nhật trực tiếp.
 
-These enhancements would continue to evolve the project from a strong MVP into a more complete SaaS-style product.
-
----
-
-## Summary
-
-TrelloClone is a full-stack project management application inspired by Trello, built to demonstrate practical software engineering, collaboration workflows, and modern web development. It combines productivity features, secure architecture patterns, and realistic data modeling into a single, portfolio-friendly product.
-
-The project is suitable for:
-
-- demonstrating software engineering ability;
-- showcasing full-stack development skills;
-- proving product and UX thinking in a practical context;
-- presenting a complete workflow-driven application in a portfolio or demo.
+Những cải tiến này sẽ tiếp tục phát triển dự án từ một MVP mạnh thành một sản phẩm kiểu SaaS hoàn chỉnh hơn.
 
 ---
 
-## Author note
+## Tóm tắt
 
-This project is designed as a usable, production-style board and task management app with strong portfolio value. It can be expanded into a more advanced collaborative product while maintaining the same clean architecture and business logic model.
+TrelloClone là một ứng dụng quản lý dự án full-stack lấy cảm hứng từ Trello, được xây dựng để thể hiện kỹ thuật phần mềm thực tiễn, quy trình cộng tác và phát triển web hiện đại. Nó kết hợp các tính năng năng suất, các mẫu kiến trúc bảo mật và mô hình dữ liệu thực tế vào một sản phẩm duy nhất, phù hợp cho portfolio.
 
-If you want, this README can later be adapted into:
+Dự án phù hợp để:
 
-- a more polished English portfolio version;
-- a concise GitHub project landing page version;
-- a Vietnamese-only version for local presentation; or
-- a startup-style product pitch README for investor/demo storytelling.
+- thể hiện năng lực kỹ thuật phần mềm;
+- giới thiệu kỹ năng phát triển full-stack;
+- chứng minh tư duy sản phẩm và UX trong bối cảnh thực tế;
+- trình bày một ứng dụng hoàn chỉnh theo quy trình làm việc trong portfolio hoặc buổi demo.
+
+---
+
+## Lời của tác giả
+
+Dự án này được thiết kế như một ứng dụng quản lý bảng và tác vụ theo chuẩn production, có thể sử dụng thực tế và có giá trị portfolio cao. Nó có thể được mở rộng thành một sản phẩm cộng tác nâng cao hơn trong khi vẫn giữ nguyên kiến trúc sạch và mô hình logic nghiệp vụ.
+
+Nếu bạn muốn, README này sau đó có thể được điều chỉnh thành:
+
+- một phiên bản portfolio tiếng Anh trau chuốt hơn;
+- một phiên bản trang chủ GitHub ngắn gọn;
+- một phiên bản chỉ có tiếng Việt để trình bày tại địa phương; hoặc
+- một README theo phong cách startup để kể chuyện sản phẩm với nhà đầu tư/demo.
