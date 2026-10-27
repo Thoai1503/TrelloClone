@@ -124,7 +124,8 @@ Dự án thể hiện chiều sâu kỹ thuật, không chỉ là việc tạo g
 - Gán thành viên cho thẻ bằng email hoặc danh tính người dùng.
 - Quản lý quyền cho quản trị viên bảng và thành viên không phải quản trị viên.
 - Tăng trách nhiệm giải trình và giảm khoảng trống trong phối hợp.
-![Uploading Screenshot 2026-10-27 223307.png…]()
+
+<img width="1905" height="972" alt="Screenshot 2026-10-27 223307" src="https://github.com/user-attachments/assets/7980349f-ec7f-468d-971b-948ace82fa0b" />
 
 
 ### Hỗ trợ tệp đính kèm
