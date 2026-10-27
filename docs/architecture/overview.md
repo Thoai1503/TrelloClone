@@ -121,4 +121,4 @@ The shared AES-256-GCM ID utility encrypts both workspace and board identifiers.
 
 ## Infrastructure
 
-`lib/prisma.ts` creates one shared Prisma Client using the MariaDB adapter and `DATABASE_URL`. Interactive transactions use a 10-second connection-acquisition wait and a 20-second execution timeout; the adapter connection pool remains at five connections. Keep database credentials and client imports server-side. See [data-model.md](./data-model.md) for the verified schema relationships.
+`lib/prisma.ts` caches one Prisma Client per Node.js runtime using the MariaDB adapter and `DATABASE_URL`. The adapter pool is limited to two connections per runtime to reduce pressure on small MySQL deployments; serverless runtimes still have separate pools, so the aggregate can exceed the database's connection limit as Vercel scales. Interactive transactions allow a 20-second connection-acquisition wait and a 30-second execution timeout. Keep database credentials and client imports server-side. See [data-model.md](./data-model.md) for the verified schema relationships.
