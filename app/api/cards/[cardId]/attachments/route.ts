@@ -2,11 +2,13 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { prisma } from "@/lib/prisma";
 import {
+  removeCardAttachmentFromCloudinary,
+  saveCardAttachmentToCloudinary,
+} from "@/lib/cloudinary-attachment-storage";
+import {
   getAllowedAttachmentMimeType,
   MAX_CARD_ATTACHMENT_SIZE,
-  removeCardAttachmentFile,
   sanitizeAttachmentName,
-  saveCardAttachment,
 } from "@/lib/card-attachment-storage";
 import { getCurrentUser } from "@/utils/auth-session";
 import { decryptBoardId } from "@/utils/resource-id";
@@ -131,8 +133,10 @@ export async function POST(request: NextRequest, context: RouteContext) {
     );
   }
 
-  const storageKey = await saveCardAttachment(
+  const storageKey = await saveCardAttachmentToCloudinary(
     new Uint8Array(await file.arrayBuffer()),
+    fileName,
+    mimeType,
   );
   let attachment;
   try {
@@ -154,7 +158,11 @@ export async function POST(request: NextRequest, context: RouteContext) {
       },
     });
   } catch (cause: unknown) {
-    await removeCardAttachmentFile(storageKey);
+    try {
+      await removeCardAttachmentFromCloudinary(storageKey);
+    } catch (cleanupCause: unknown) {
+      console.error("Failed to remove orphaned Cloudinary attachment.", cleanupCause);
+    }
     throw cause;
   }
 

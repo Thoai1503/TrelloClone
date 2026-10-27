@@ -122,3 +122,5 @@ The shared AES-256-GCM ID utility encrypts both workspace and board identifiers.
 ## Infrastructure
 
 `lib/prisma.ts` caches one Prisma Client per Node.js runtime using the MariaDB adapter and `DATABASE_URL`. The adapter pool is limited to two connections per runtime to reduce pressure on small MySQL deployments; serverless runtimes still have separate pools, so the aggregate can exceed the database's connection limit as Vercel scales. Interactive transactions allow a 20-second connection-acquisition wait and a 30-second execution timeout. Keep database credentials and client imports server-side. See [data-model.md](./data-model.md) for the verified schema relationships.
+
+Card attachment uploads are stored as authenticated Cloudinary assets. The application stores an internal asset reference and serves both downloads and image previews through the access-checked attachment API; local-storage references remain readable for existing files. Configure Cloudinary credentials only in server environments.
