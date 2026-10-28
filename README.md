@@ -1,3 +1,4 @@
+<img width="1907" height="956" alt="Screenshot 2026-10-28 071329" src="https://github.com/user-attachments/assets/2e05870b-ec2c-4aef-8312-dd6a9a1b1d45" />
 # TrelloClone
 
 Một nền tảng quản lý dự án và cộng tác nhóm đầy đủ tính năng, lấy cảm hứng từ Trello, được xây dựng bằng Next.js, TypeScript, Prisma và MySQL. Ứng dụng được thiết kế để giúp cá nhân và nhóm sắp xếp công việc, quản lý không gian làm việc (workspace), theo dõi mức độ ưu tiên và cộng tác trong một quy trình Kanban gọn gàng, linh hoạt.
@@ -92,6 +93,8 @@ Hệ thống đủ linh hoạt cho lập kế hoạch dự án, lập kế hoạ
 - Sắp xếp lại thứ tự danh sách để phản ánh thay đổi trong quy trình làm việc.
 - Duy trì thứ tự và cấu trúc danh sách với các cập nhật trạng thái đáng tin cậy.
 
+<img width="1907" height="956" alt="Screenshot 2026-10-28 071329" src="https://github.com/user-attachments/assets/0e54ef49-b8b9-4aaa-bbcf-e8dec1f92515" />
+
 ### Quản lý thẻ
 - Tạo tác vụ dạng thẻ với tiêu đề, mô tả và siêu dữ liệu.
 - Di chuyển thẻ giữa các danh sách.
@@ -99,6 +102,10 @@ Hệ thống đủ linh hoạt cho lập kế hoạch dự án, lập kế hoạ
 - Sắp xếp lại thẻ trong một danh sách hoặc giữa các danh sách.
 - Đặt mức độ ưu tiên cho thẻ: Low, Medium, High, Urgent.
 - Đánh dấu thẻ là hoàn thành hoặc chưa hoàn thành.
+
+<img width="1907" height="963" alt="Screenshot 2026-10-28 071608" src="https://github.com/user-attachments/assets/3d8d907b-d30a-4837-bf56-837c7e964328" />
+<img width="1901" height="954" alt="Screenshot 2026-10-28 071507" src="https://github.com/user-attachments/assets/a0ebe847-b875-410b-a8bf-8fd4b512231a" />
+
 
 ### Hạn chót và lập lịch
 - Gán ngày bắt đầu và ngày đến hạn.
@@ -127,6 +134,7 @@ Hệ thống đủ linh hoạt cho lập kế hoạch dự án, lập kế hoạ
 - Tải lên và lưu trữ an toàn các tệp đính kèm liên quan đến tác vụ.
 - Truy cập phương tiện thông qua các bước kiểm tra quyền đã được xác minh.
 - Hỗ trợ tài liệu dự án phong phú ngay trên thẻ.
+<img width="1907" height="963" alt="Screenshot 2026-10-28 071608" src="https://github.com/user-attachments/assets/5d17e7bf-796a-4964-becd-da01ac8189d5" />
 
 ### Xác thực và bảo mật
 - Đăng nhập bằng email/mật khẩu với mật khẩu được băm an toàn.
@@ -134,7 +142,7 @@ Hệ thống đủ linh hoạt cho lập kế hoạch dự án, lập kế hoạ
 - Tùy chọn Google OAuth khi được cấu hình.
 - Mã định danh được mã hóa trong URL tài nguyên.
 - Các hành động phía máy chủ được bảo vệ khi truy cập dữ liệu workspace và bảng.
-
+<img width="1237" height="971" alt="Screenshot 2026-10-28 071738" src="https://github.com/user-attachments/assets/a985efc6-b83b-407a-9fe1-21eb0829b345" />
 ### UI/UX hiện đại
 - Giao diện đáp ứng (responsive) cho máy tính để bàn và màn hình lớn.
 - Phân cấp rõ ràng và điều hướng quy trình trực quan.
