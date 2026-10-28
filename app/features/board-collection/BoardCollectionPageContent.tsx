@@ -29,6 +29,26 @@ export default function BoardCollectionPageContent({ username }: BoardCollection
     return filterWorkspaceBoards(workspaces, search);
   }, [search, workspaces]);
 
+  function handleWorkspaceCreated(
+    createdWorkspace: Pick<
+      WorkspaceSummary,
+      "encryptedId" | "name" | "backgroundColor"
+    >,
+  ) {
+    const workspace: WorkspaceSummary = {
+      ...createdWorkspace,
+      description: null,
+      memberCount: 1,
+      boardCount: 0,
+      canManageBoards: true,
+      role: "ADMIN",
+      boards: [],
+    };
+
+    setWorkspaces((currentWorkspaces) => [workspace, ...currentWorkspaces]);
+    setSearchWorkspaces((currentWorkspaces) => [workspace, ...currentWorkspaces]);
+  }
+
   useEffect(() => {
     if (!user) return;
 
@@ -84,6 +104,7 @@ export default function BoardCollectionPageContent({ username }: BoardCollection
       filteredWorkspaces={filteredWorkspaces}
       onSearchChange={setSearch}
       search={search}
+      onWorkspaceCreated={handleWorkspaceCreated}
       user={user}
       workspaces={workspaces}
     />

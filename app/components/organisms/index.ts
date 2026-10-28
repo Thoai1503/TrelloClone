@@ -9,4 +9,5 @@ export { default as WorkspaceNotFoundState } from "./WorkspaceNotFoundState";
 export { default as BoardCollectionSidebar } from "./BoardCollectionSidebar";
 export { default as UserHeader } from "./UserHeader";
 export { default as CreateBoardDialog } from "./CreateBoardDialog";
+export { default as CreateWorkspaceDialog } from "./CreateWorkspaceDialog";
 export { default as WorkspaceBoards } from "./WorkspaceBoards";
