@@ -1,5 +1,5 @@
-<img width="1907" height="956" alt="Screenshot 2026-10-28 071329" src="https://github.com/user-attachments/assets/2e05870b-ec2c-4aef-8312-dd6a9a1b1d45" />
-# TrelloClone
+
+## Tifo - Project management
 
 Một nền tảng quản lý dự án và cộng tác nhóm đầy đủ tính năng, lấy cảm hứng từ Trello, được xây dựng bằng Next.js, TypeScript, Prisma và MySQL. Ứng dụng được thiết kế để giúp cá nhân và nhóm sắp xếp công việc, quản lý không gian làm việc (workspace), theo dõi mức độ ưu tiên và cộng tác trong một quy trình Kanban gọn gàng, linh hoạt.
 
