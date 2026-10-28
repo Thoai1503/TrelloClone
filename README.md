@@ -103,7 +103,6 @@ Hệ thống đủ linh hoạt cho lập kế hoạch dự án, lập kế hoạ
 - Đặt mức độ ưu tiên cho thẻ: Low, Medium, High, Urgent.
 - Đánh dấu thẻ là hoàn thành hoặc chưa hoàn thành.
 
-<img width="1907" height="963" alt="Screenshot 2026-10-28 071608" src="https://github.com/user-attachments/assets/3d8d907b-d30a-4837-bf56-837c7e964328" />
 <img width="1901" height="954" alt="Screenshot 2026-10-28 071507" src="https://github.com/user-attachments/assets/a0ebe847-b875-410b-a8bf-8fd4b512231a" />
 
 
