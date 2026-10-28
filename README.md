@@ -126,7 +126,8 @@ Hệ thống đủ linh hoạt cho lập kế hoạch dự án, lập kế hoạ
 - Quản lý quyền cho quản trị viên bảng và thành viên không phải quản trị viên.
 - Tăng trách nhiệm giải trình và giảm khoảng trống trong phối hợp.
 
-<img width="1905" height="972" alt="Screenshot 2026-10-27 223307" src="https://github.com/user-attachments/assets/7980349f-ec7f-468d-971b-948ace82fa0b" />
+<img width="1818" height="959" alt="Screenshot 2026-10-28 072436" src="https://github.com/user-attachments/assets/7d714dde-ad81-42a7-9e8c-8523b076f18f" />
+
 
 
 ### Hỗ trợ tệp đính kèm
