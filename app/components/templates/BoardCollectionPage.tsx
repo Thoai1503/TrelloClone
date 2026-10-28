@@ -2,7 +2,11 @@ import type { CurrentUser } from "@/app/types/user";
 import type { WorkspaceSummary } from "@/app/types/workspace";
 
 import { BoardCounter } from "../molecules";
-import { BoardCollection, BoardCollectionSidebar } from "../organisms";
+import {
+  BoardCollection,
+  BoardCollectionSidebar,
+  CreateWorkspaceDialog,
+} from "../organisms";
 
 type BoardCollectionPageProps = {
   user: CurrentUser;
@@ -10,6 +14,9 @@ type BoardCollectionPageProps = {
   filteredWorkspaces: WorkspaceSummary[];
   search: string;
   onSearchChange: (value: string) => void;
+  onWorkspaceCreated: (
+    workspace: Pick<WorkspaceSummary, "encryptedId" | "name" | "backgroundColor">,
+  ) => void;
 };
 
 export default function BoardCollectionPage({
@@ -18,6 +25,7 @@ export default function BoardCollectionPage({
   filteredWorkspaces,
   search,
   onSearchChange,
+  onWorkspaceCreated,
 }: BoardCollectionPageProps) {
   const boardCount = workspaces.reduce(
     (total, workspace) => total + workspace.boardCount,
@@ -44,7 +52,10 @@ export default function BoardCollectionPage({
                   Mở một bảng trong workspace để tiếp tục công việc của bạn.
                 </p>
               </div>
-              <BoardCounter count={boardCount} />
+              <div className="flex flex-wrap items-center gap-3">
+                <BoardCounter count={boardCount} />
+                <CreateWorkspaceDialog onCreated={onWorkspaceCreated} />
+              </div>
             </section>
 
             <BoardCollection
