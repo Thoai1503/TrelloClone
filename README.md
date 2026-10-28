@@ -9,7 +9,7 @@ Dự án này không chỉ là một bản sao của một công cụ năng su�
 
 ## Vì sao dự án này quan trọng
 
-TrelloClone được xây dựng để giải quyết những vấn đề quy trình làm việc thực tế mà các nhóm và cá nhân gặp phải hằng ngày:
+Tifo được xây dựng để giải quyết những vấn đề quy trình làm việc thực tế mà các nhóm và cá nhân gặp phải hằng ngày:
 
 - Công việc trở nên lộn xộn khi các tác vụ nằm rải rác trong ghi chú, tin nhắn và bảng tính.
 - Cộng tác nhóm khó khăn hơn khi mỗi người dùng một công cụ khác nhau và không có một nguồn thông tin duy nhất.
@@ -29,7 +29,7 @@ Dự án này cung cấp cho người dùng một hệ thống có cấu trúc �
 
 ## Tổng quan dự án
 
-TrelloClone là một ứng dụng quản lý dự án theo phong cách Kanban, nơi người dùng có thể tạo workspace, thêm bảng, quản lý danh sách và sắp xếp thẻ bằng thao tác kéo thả. Ứng dụng mô phỏng quy trình Trello quen thuộc, đồng thời bổ sung logic tùy chỉnh và các mẫu kiến trúc phù hợp với một ứng dụng web kiểu SaaS hiện đại.
+Tifo là một ứng dụng quản lý dự án theo phong cách Kanban, nơi người dùng có thể tạo workspace, thêm bảng, quản lý danh sách và sắp xếp thẻ bằng thao tác kéo thả. Ứng dụng mô phỏng quy trình Trello quen thuộc, đồng thời bổ sung logic tùy chỉnh và các mẫu kiến trúc phù hợp với một ứng dụng web kiểu SaaS hiện đại.
 
 Sản phẩm hướng đến:
 
