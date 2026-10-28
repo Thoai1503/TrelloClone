@@ -24,14 +24,6 @@ Dự án này cung cấp cho người dùng một hệ thống có cấu trúc �
 - giảm việc phải chuyển đổi qua lại giữa các công cụ;
 - hỗ trợ cả quy trình làm việc cá nhân lẫn nhóm.
 
-Xét từ góc độ portfolio, dự án này thể hiện:
-
-- kiến trúc full-stack theo chuẩn production;
-- các mẫu xác thực và phân quyền an toàn;
-- mô hình hóa cơ sở dữ liệu và thiết kế quan hệ;
-- phát triển React + Next.js hiện đại; và
-- các quyết định UX thực tiễn cho quy trình nghiệp vụ thực tế.
-
 ---
 
 ## Tổng quan dự án
@@ -75,9 +67,6 @@ Hệ thống đủ linh hoạt cho lập kế hoạch dự án, lập kế hoạ
 - đồng bộ trạng thái giao diện sau khi thay đổi dữ liệu;
 - quy tắc truy cập bảng và workspace theo vai trò.
 
-### 6. Giá trị portfolio mạnh
-Dự án thể hiện chiều sâu kỹ thuật, không chỉ là việc tạo giao diện. Nó cho thấy khả năng triển khai một hệ thống bao gồm luồng người dùng, logic backend, thiết kế cơ sở dữ liệu, nguyên tắc bảo mật và các mẫu frontend hiện đại trong một sản phẩm thống nhất.
-
 ---
 
 ## Tính năng cốt lõi
@@ -94,6 +83,9 @@ Dự án thể hiện chiều sâu kỹ thuật, không chỉ là việc tạo g
 - Giữ các bảng được tổ chức theo dự án hoặc lĩnh vực của nhóm.
 - Hỗ trợ chia sẻ bảng và quản lý thành viên.
 - Duy trì chế độ hiển thị và kiểm soát truy cập của bảng.
+
+<img width="1907" height="972" alt="Screenshot 2026-10-28 071018" src="https://github.com/user-attachments/assets/18912da8-5211-456c-af79-c2b570d5359d" />
+
 
 ### Danh sách và cột
 - Tạo nhiều danh sách đại diện cho các giai đoạn hoặc trạng thái như To do, In progress, Review, Done.
@@ -232,25 +224,6 @@ Dự án được thiết kế với các mối quan tâm thực tế của ứn
 - các lỗi khi tải dữ liệu được hiển thị rõ ràng thay vì âm thầm biến thành trạng thái rỗng.
 
 Những thực hành này rất quan trọng để xây dựng các ứng dụng đáng tin cậy và có liên quan chặt chẽ đến công việc phần mềm chuyên nghiệp.
-
----
-
-## Demo và sự phù hợp với portfolio
-
-Repository này phù hợp cho:
-
-- một dự án portfolio thể hiện kỹ năng kỹ thuật full-stack;
-- một bản demo sản phẩm hoạt động được cho phỏng vấn hoặc thuyết trình kỹ thuật;
-- một dự án học tập để hiểu kiến trúc Next.js và Prisma hiện đại;
-- một nền tảng cho các cải tiến sản phẩm hoặc mở rộng tính năng SaaS trong tương lai.
-
-Dự án đặc biệt mạnh về mặt portfolio vì kết hợp:
-
-- tư duy sản phẩm hướng người dùng;
-- chất lượng kiến trúc kỹ thuật;
-- chiều sâu về backend và mô hình hóa dữ liệu;
-- các mẫu thiết kế an toàn và có khả năng mở rộng;
-- các mẫu UX tinh tế thường thấy trong các sản phẩm năng suất hiện đại.
 
 ---
 
